@@ -3,6 +3,7 @@
 ## Phase 1 – Basisdienst (aktuell)
 - [x] Projektgrundstruktur und FastAPI-Basisdienst erstellen
 - [x] Deployment-Skripte und Docker-Unterstützung bereitstellen
+- [x] Board-Designer-Prototyp für Pin-Annotationen veröffentlichen
 - [ ] Endpunkte für Druckerstatus, Temperaturverläufe und Jobs implementieren
 
 ## Phase 2 – Beobachtung und Steuerung
@@ -10,17 +11,24 @@
 - [ ] Steuerbefehle (Start/Stop/Notaus) mit Sicherheitsmechanismen versehen
 - [ ] Alarm- und Benachrichtigungssystem für kritische Ereignisse hinzufügen
 
-## Phase 3 – Benutzeroberfläche
+## Phase 3 – Hardware- und Board-Definitionen
+- [ ] JSON-Schema und Versionsverwaltung für Board-Definitionen etablieren
+- [ ] Upload-Workflow für Board-Bilder und Beschreibungen ergänzen
+- [ ] Validierungslogik gegen MCU- und Pin-Datenbanken implementieren
+- [ ] Öffentliche Bibliothek mit Board-Definitionen und Suchfunktion bereitstellen
+- [ ] Vorbereitung für GitHub-zu-UI-Synchronisation der Definitionen treffen
+
+## Phase 4 – Benutzeroberfläche
 - [ ] Web-Frontend mit Dashboard, Verlaufsgrafiken und Konfigurationsseiten entwickeln
 - [ ] Responsive Layout und dunkler Modus
 - [ ] Internationalisierung der Oberfläche vorbereiten
 
-## Phase 4 – Qualitätssicherung
+## Phase 5 – Qualitätssicherung
 - [ ] Automatisierte Tests (Unit, Integration) einführen
 - [ ] Linting und Formatierung automatisieren
 - [ ] CI/CD-Pipeline mit Deployment auf Testumgebung konfigurieren
 
-## Phase 5 – Erweiterte Sicherheit und Benutzerverwaltung (später)
+## Phase 6 – Erweiterte Sicherheit und Benutzerverwaltung (später)
 - [ ] Zugriffskonzepte und Benutzerrollen definieren
 - [ ] Login- und Session-Management implementieren
 - [ ] Erweiterte Audit- und Logging-Funktionen bereitstellen

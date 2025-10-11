@@ -1,3 +1,5 @@
 # KlipperIWC Konzept
 
 KlipperIWC ist eine schlanke Weboberfläche, die Statusinformationen und Steuerbefehle für eine Klipper-basierte 3D-Druckerinstallation bereitstellt. Die Anwendung stellt einen kleinen FastAPI-Service zur Verfügung, der später um Websocket-basierte Live-Updates sowie Integrationen in bestehende Drucker-Workflows erweitert wird. Benutzerverwaltung und Login sind bewusst nicht Teil des aktuellen Umfangs und werden erst in einer späteren Ausbaustufe berücksichtigt. Ziel ist eine wartbare, erweiterbare und für verschiedene Installationsziele (Bare Metal, virtuelle Maschine, Container) leicht deploybare Lösung.
+
+Neue Board- und Druckerdefinitionen entstehen zunächst über Beiträge im GitHub-Repository. In einer späteren Phase mit Login-System sollen Anwender fehlende Hardware direkt während der Konfiguration ergänzen können. Als Zwischenschritt steht bereits eine interaktive Board-Designer-Seite zur Verfügung, auf der Pins, Stecker und MCU-Signale mit Rechtecken oder Kreisen markiert und beschriftet werden können. Diese Vorarbeit erleichtert das spätere Überführen der Daten in den produktiven Workflow.
