@@ -5,19 +5,89 @@ from __future__ import annotations
 import os
 from functools import lru_cache
 
-from fastapi import FastAPI
+from fastapi import Depends, FastAPI, Request
 from fastapi.responses import HTMLResponse
+
+from .services import KlipperClient, StatusProvider
+
+
+def _load_env_setting(name: str, fallback: str) -> str:
+    value = os.environ.get(name, fallback)
+    if isinstance(value, str):
+        stripped = value.strip()
+        return stripped or fallback
+    return fallback
+
+
+def _load_optional_setting(name: str) -> str | None:
+    value = os.environ.get(name)
+    if value is None:
+        return None
+
+    stripped = value.strip()
+    return stripped or None
+
+
+def _load_timeout(default: float = 10.0) -> float:
+    raw = os.environ.get("KLIPPER_API_TIMEOUT")
+    if raw is None:
+        return default
+
+    try:
+        return float(raw)
+    except (TypeError, ValueError):
+        return default
+
+
+def get_status_provider(request: Request) -> StatusProvider:
+    """FastAPI dependency that exposes the status provider."""
+
+    provider: StatusProvider | None = getattr(request.app.state, "status_provider", None)
+    if provider is None:
+        raise RuntimeError("Status provider is not initialised yet.")
+
+    return provider
 
 
 @lru_cache(maxsize=1)
 def create_app() -> FastAPI:
     """Create and configure the FastAPI application instance."""
     app = FastAPI(title="KlipperIWC", description="Klipper Integration Web Console")
+    app.state.klipper_client = None
+    app.state.status_provider = None
+
+    @app.on_event("startup")
+    async def setup_services() -> None:
+        base_url = _load_env_setting("KLIPPER_API_URL", "http://localhost:7125")
+        api_token = _load_optional_setting("KLIPPER_API_TOKEN")
+        websocket_url = _load_optional_setting("KLIPPER_SOCKET_URL")
+        timeout = _load_timeout()
+
+        app.state.klipper_client = KlipperClient(
+            base_url,
+            api_token=api_token,
+            websocket_url=websocket_url,
+            timeout=timeout,
+        )
+        app.state.status_provider = StatusProvider(app.state.klipper_client)
+
+    @app.on_event("shutdown")
+    async def teardown_services() -> None:
+        client: KlipperClient | None = getattr(app.state, "klipper_client", None)
+        if client is not None:
+            await client.aclose()
 
     @app.get("/")
     async def healthcheck() -> dict[str, str]:
         """Return a basic healthcheck payload."""
         return {"status": "ok"}
+
+    @app.get("/api/status")
+    async def api_status(provider: StatusProvider = Depends(get_status_provider)) -> dict[str, object]:
+        """Return a consolidated snapshot of printer state information."""
+
+        data = await provider.get_overview()
+        return {"data": data}
 
     @app.get("/board-designer", response_class=HTMLResponse)
     async def board_designer() -> str:

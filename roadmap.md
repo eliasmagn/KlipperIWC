@@ -4,7 +4,8 @@
 - [x] Projektgrundstruktur und FastAPI-Basisdienst erstellen
 - [x] Deployment-Skripte und Docker-Unterstützung bereitstellen
 - [x] Board-Designer-Prototyp für Pin-Annotationen veröffentlichen
-- [ ] API-Spezifikation, Pydantic-Modelle und Klipper-Service-Layer für Status-/Jobdaten bereitstellen
+- [ ] API-Spezifikation und Pydantic-Modelle für Status-/Jobdaten bereitstellen
+- [x] Klipper-Service-Layer für Status-/Jobdaten bereitstellen
 - [ ] Persistente Statushistorie (SQLite) mit Migrationen und Aufbewahrungslogik implementieren
 
 ## Phase 2 – Beobachtung und Steuerung

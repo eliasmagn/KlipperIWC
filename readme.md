@@ -45,12 +45,29 @@ docker build -t klipperiwc .
 docker run -p 8000:8000 --env APP_ENV=production klipperiwc
 ```
 
+## Klipper-Verbindung konfigurieren
+
+Der neue Service-Layer kapselt die Kommunikation mit Moonraker/ Klipper. Die folgenden Umgebungsvariablen steuern die Verbindungsparameter und können in `.env`-Dateien, Shell-Skripten oder beim Containerstart gesetzt werden:
+
+| Variable | Beschreibung | Standardwert |
+| --- | --- | --- |
+| `KLIPPER_API_URL` | Basis-URL der Moonraker-HTTP-API | `http://localhost:7125` |
+| `KLIPPER_API_TOKEN` | Optionales API-Token für gesicherte Installationen | _leer_ |
+| `KLIPPER_SOCKET_URL` | Websocket-Endpunkt für Echtzeit-Events | _leer_ |
+| `KLIPPER_API_TIMEOUT` | Timeout in Sekunden für HTTP-Aufrufe | `10.0` |
+
+Nach dem Start stellt der Dienst unter `GET /api/status` eine aggregierte Ansicht von Drucker-, Job- und Temperaturdaten bereit. Die Daten werden über den neuen `StatusProvider` aus der Moonraker-API gelesen und als strukturierte JSON-Antwort zurückgegeben.
+
 ## Projektstruktur
 
 ```
 klipperiwc/          # FastAPI-Anwendung
 ├── __init__.py
-└── app.py
+├── app.py
+└── services/
+    ├── __init__.py
+    ├── klipper_client.py
+    └── status_provider.py
 requirements.txt     # Python-Abhängigkeiten
 deploy.sh            # Produktionsdeployment
 deploy_dev.sh        # Entwicklungssetup

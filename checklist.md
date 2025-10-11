@@ -9,7 +9,7 @@
 ## Offene Schritte Richtung Produktivbetrieb
 
 - [ ] API-Spezifikation und Pydantic-Modelle für Druckerstatus, Temperaturen und aktive Jobs erstellen
-- [ ] Klipper-Polling-Client bzw. Event-Receiver implementieren und als Service-Layer kapseln
+- [x] Klipper-Polling-Client bzw. Event-Receiver implementieren und als Service-Layer kapseln
 - [ ] Persistente Statushistorie via SQLite inklusive Migrationen und Retention-Strategie aufbauen
 - [ ] Websocket-Gateway zur Verteilung der Status-Updates an UI-Clients entwickeln
 - [ ] Dashboard-Layout im Webfrontend mit Navigation und Grundseiten strukturieren
