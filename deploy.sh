@@ -13,6 +13,7 @@ if [ ! -d "$VENV_PATH" ]; then
 fi
 
 source "$VENV_PATH/bin/activate"
+echo "Installing Python dependencies (inklusive SQLAlchemy und Alembic)..."
 python -m pip install --upgrade pip wheel
 python -m pip install -r "$PROJECT_ROOT/requirements.txt"
 
