@@ -7,6 +7,9 @@
 - [x] Datenbankbasis mit SQLite und Alembic vorbereiten
 - [ ] API-Spezifikation, Pydantic-Modelle und Klipper-Service-Layer für Status-/Jobdaten bereitstellen
 - [ ] Persistente Statushistorie (SQLite) mit Service-Layer und Aufbewahrungslogik implementieren
+- [x] API-Spezifikation und Pydantic-Modelle für Status-/Jobdaten bereitstellen
+- [ ] Klipper-Service-Layer für Status-/Jobdaten anbinden
+- [ ] Persistente Statushistorie (SQLite) mit Migrationen und Aufbewahrungslogik implementieren
 
 ## Phase 2 – Beobachtung und Steuerung
 - [ ] Websocket-Streaming für Echtzeit-Updates inklusive Gateway und Autorisierung integrieren

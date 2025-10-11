@@ -88,6 +88,21 @@ alembic/             # Datenbankmigrationen
 Dockerfile           # Container-Build
 ```
 
+## HTTP-API
+
+Die Anwendung stellt derzeit drei schreibgeschützte Endpunkte bereit, über die sich ein
+Frontend mit Statusdaten versorgen kann. Solange noch keine Anbindung an einen realen
+Klipper-Service existiert, liefern die Endpunkte repräsentative Beispielwerte.
+
+| Methode | Pfad               | Beschreibung                                      |
+| ------- | ------------------ | ------------------------------------------------- |
+| GET     | `/api/status`      | Aggregierter Druckerstatus inkl. aktiver und wartender Jobs |
+| GET     | `/api/jobs`        | Liste aus aktivem Druckauftrag und Warteschlange |
+| GET     | `/api/temperatures`| Letzte Temperaturwerte für Hotend, Heizbett etc. |
+
+Die Antworten basieren auf Pydantic-Modellen unter `klipperiwc/models/status.py` und
+lassen sich dadurch leicht erweitern oder zur Schema-Dokumentation exportieren.
+
 ## Weiterführende Schritte
 
 Siehe `roadmap.md` für geplante Erweiterungen und `checklist.md` für den aktuellen Arbeitsfortschritt. Der aktuelle Fokus liegt auf der Definition der Status-API, der Integration eines Klipper-Service-Layers und dem Aufbau einer kleinen Statushistorie, um den Weg in Richtung produktiver Einsatz zu ebnen.
