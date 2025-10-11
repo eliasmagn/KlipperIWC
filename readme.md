@@ -50,12 +50,33 @@ docker run -p 8000:8000 --env APP_ENV=production klipperiwc
 ```
 klipperiwc/          # FastAPI-Anwendung
 ├── __init__.py
-└── app.py
+├── api/
+│   ├── __init__.py
+│   └── status.py
+├── app.py
+└── models/
+    ├── __init__.py
+    └── status.py
 requirements.txt     # Python-Abhängigkeiten
 deploy.sh            # Produktionsdeployment
 deploy_dev.sh        # Entwicklungssetup
 Dockerfile           # Container-Build
 ```
+
+## HTTP-API
+
+Die Anwendung stellt derzeit drei schreibgeschützte Endpunkte bereit, über die sich ein
+Frontend mit Statusdaten versorgen kann. Solange noch keine Anbindung an einen realen
+Klipper-Service existiert, liefern die Endpunkte repräsentative Beispielwerte.
+
+| Methode | Pfad               | Beschreibung                                      |
+| ------- | ------------------ | ------------------------------------------------- |
+| GET     | `/api/status`      | Aggregierter Druckerstatus inkl. aktiver und wartender Jobs |
+| GET     | `/api/jobs`        | Liste aus aktivem Druckauftrag und Warteschlange |
+| GET     | `/api/temperatures`| Letzte Temperaturwerte für Hotend, Heizbett etc. |
+
+Die Antworten basieren auf Pydantic-Modellen unter `klipperiwc/models/status.py` und
+lassen sich dadurch leicht erweitern oder zur Schema-Dokumentation exportieren.
 
 ## Weiterführende Schritte
 
