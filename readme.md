@@ -9,6 +9,7 @@ Neue Board- oder Druckerdefinitionen werden aktuell über Pull Requests im GitHu
 ## Voraussetzungen
 
 - Python 3.11 oder neuer
+- SQLite 3 (in der Regel bereits im Betriebssystem enthalten)
 - Optional: Docker 24+
 
 ## Installation und Betrieb
@@ -36,6 +37,31 @@ export LOG_LEVEL=debug
 uvicorn klipperiwc.app:create_app --factory --host 0.0.0.0 --port 8000 --reload --log-level debug
 ```
 
+### Datenbank-Migrationen
+
+KlipperIWC nutzt SQLAlchemy mit einer SQLite-Datenbank im Verzeichnis `data/klipperiwc.sqlite3`. Eigene Pfade lassen sich über
+die Umgebungsvariable `DATABASE_URL` konfigurieren (z. B. `sqlite:////pfad/zur/datei.db`).
+
+**Setup:**
+
+```bash
+# Virtuelle Umgebung aktivieren (falls noch nicht geschehen)
+. .venv/bin/activate
+
+# Erste Migration anwenden
+alembic upgrade head
+```
+
+**Neue Migration erzeugen:**
+
+```bash
+alembic revision --autogenerate -m "kurze beschreibung"
+alembic upgrade head
+```
+
+Die Generierung nutzt die SQLAlchemy-Modelle innerhalb von `klipperiwc.db`. Zusätzliche Tabellen oder Änderungen müssen dort als
+ORM-Modelle gepflegt werden.
+
 ### Docker
 
 Ein containerisiertes Deployment ist über das bereitgestellte `Dockerfile` möglich.
@@ -50,10 +76,15 @@ docker run -p 8000:8000 --env APP_ENV=production klipperiwc
 ```
 klipperiwc/          # FastAPI-Anwendung
 ├── __init__.py
+├── db/              # SQLAlchemy-Engine & Session-Handling
+│   ├── __init__.py
+│   └── session.py
 └── app.py
 requirements.txt     # Python-Abhängigkeiten
 deploy.sh            # Produktionsdeployment
 deploy_dev.sh        # Entwicklungssetup
+alembic/             # Datenbankmigrationen
+└── versions/        # Migration-Skripte
 Dockerfile           # Container-Build
 ```
 
