@@ -8,11 +8,15 @@ from functools import lru_cache
 from fastapi import FastAPI
 from fastapi.responses import HTMLResponse
 
+from klipperiwc.api import status_router
+
 
 @lru_cache(maxsize=1)
 def create_app() -> FastAPI:
     """Create and configure the FastAPI application instance."""
     app = FastAPI(title="KlipperIWC", description="Klipper Integration Web Console")
+
+    app.include_router(status_router)
 
     @app.get("/")
     async def healthcheck() -> dict[str, str]:

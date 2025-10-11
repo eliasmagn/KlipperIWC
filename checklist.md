@@ -5,10 +5,10 @@
 - [x] Basis-FastAPI-Anwendung initialisieren
 - [x] Deploy-Skripte für Produktion und Entwicklung bereitstellen
 - [x] Docker-Image für containerisierte Ausführung definieren
+- [x] API-Spezifikation und Pydantic-Modelle für Druckerstatus, Temperaturen und aktive Jobs erstellen
 
 ## Offene Schritte Richtung Produktivbetrieb
 
-- [ ] API-Spezifikation und Pydantic-Modelle für Druckerstatus, Temperaturen und aktive Jobs erstellen
 - [ ] Klipper-Polling-Client bzw. Event-Receiver implementieren und als Service-Layer kapseln
 - [ ] Persistente Statushistorie via SQLite inklusive Migrationen und Retention-Strategie aufbauen
 - [ ] Websocket-Gateway zur Verteilung der Status-Updates an UI-Clients entwickeln
