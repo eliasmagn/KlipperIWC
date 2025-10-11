@@ -4,16 +4,18 @@
 - [x] Projektgrundstruktur und FastAPI-Basisdienst erstellen
 - [x] Deployment-Skripte und Docker-Unterstützung bereitstellen
 - [x] Board-Designer-Prototyp für Pin-Annotationen veröffentlichen
-- [ ] Endpunkte für Druckerstatus, Temperaturverläufe und Jobs implementieren
+- [ ] API-Spezifikation, Pydantic-Modelle und Klipper-Service-Layer für Status-/Jobdaten bereitstellen
+- [ ] Persistente Statushistorie (SQLite) mit Migrationen und Aufbewahrungslogik implementieren
 
 ## Phase 2 – Beobachtung und Steuerung
-- [ ] Websocket-Streaming für Echtzeit-Updates integrieren
+- [ ] Websocket-Streaming für Echtzeit-Updates inklusive Gateway und Autorisierung integrieren
+- [ ] Dashboard-Layout mit Navigation, Live-Widgets und Temperatur-/Jobvisualisierungen entwickeln
 - [ ] Steuerbefehle (Start/Stop/Notaus) mit Sicherheitsmechanismen versehen
 - [ ] Alarm- und Benachrichtigungssystem für kritische Ereignisse hinzufügen
 
 ## Phase 3 – Hardware- und Board-Definitionen
 - [ ] JSON-Schema und Versionsverwaltung für Board-Definitionen etablieren
-- [ ] Upload-Workflow für Board-Bilder und Beschreibungen ergänzen
+- [ ] Upload-Workflow für Board-Bilder inkl. Storage-Adapter und Moderation ergänzen
 - [ ] Validierungslogik gegen MCU- und Pin-Datenbanken implementieren
 - [ ] Öffentliche Bibliothek mit Board-Definitionen und Suchfunktion bereitstellen
 - [ ] Vorbereitung für GitHub-zu-UI-Synchronisation der Definitionen treffen
