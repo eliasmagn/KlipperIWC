@@ -2,19 +2,53 @@
 
 from __future__ import annotations
 
+import asyncio
+import logging
 import os
+from contextlib import suppress
+from datetime import datetime, timedelta, timezone
 from functools import lru_cache
 
 from fastapi import FastAPI
 from fastapi.responses import HTMLResponse
 
 from klipperiwc.api import status_router
+from klipperiwc.db import Base, engine
+from klipperiwc.services import purge_history_before
+
+logger = logging.getLogger(__name__)
 
 
 @lru_cache(maxsize=1)
 def create_app() -> FastAPI:
     """Create and configure the FastAPI application instance."""
     app = FastAPI(title="KlipperIWC", description="Klipper Integration Web Console")
+
+    Base.metadata.create_all(engine)
+
+    retention_days = max(0, int(os.getenv("STATUS_HISTORY_RETENTION_DAYS", "30")))
+    cleanup_interval = max(60, int(os.getenv("STATUS_HISTORY_CLEANUP_INTERVAL_SECONDS", "3600")))
+
+    async def _cleanup_loop() -> None:
+        while True:
+            cutoff = datetime.now(timezone.utc) - timedelta(days=retention_days)
+            try:
+                await asyncio.to_thread(purge_history_before, cutoff)
+            except Exception as exc:  # pragma: no cover - defensive logging
+                logger.exception("Failed to purge history: %s", exc)
+            await asyncio.sleep(cleanup_interval)
+
+    @app.on_event("startup")
+    async def _startup_cleanup_task() -> None:
+        app.state.history_cleanup_task = asyncio.create_task(_cleanup_loop())
+
+    @app.on_event("shutdown")
+    async def _shutdown_cleanup_task() -> None:
+        task: asyncio.Task | None = getattr(app.state, "history_cleanup_task", None)
+        if task is not None:
+            task.cancel()
+            with suppress(asyncio.CancelledError):
+                await task
 
     app.include_router(status_router)
 

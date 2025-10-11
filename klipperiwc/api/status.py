@@ -5,8 +5,10 @@ from __future__ import annotations
 from datetime import datetime, timedelta, timezone
 
 from fastapi import APIRouter
+from fastapi.concurrency import run_in_threadpool
 
 from klipperiwc.models import JobSummary, PrinterStatus, TemperatureReading
+from klipperiwc.services import record_status_snapshot
 
 router = APIRouter(prefix="/api", tags=["status"])
 
@@ -74,7 +76,7 @@ async def get_printer_status() -> PrinterStatus:
 
     now = datetime.now(timezone.utc)
     active_job, queued_jobs = _demo_jobs(now)
-    return PrinterStatus(
+    status = PrinterStatus(
         state="printing",
         message="Druck läuft stabil",
         uptime_seconds=4 * 60 * 60 + 32 * 60,
@@ -82,6 +84,8 @@ async def get_printer_status() -> PrinterStatus:
         queued_jobs=queued_jobs,
         temperatures=_demo_temperatures(now),
     )
+    await run_in_threadpool(record_status_snapshot, status)
+    return status
 
 
 @router.get("/jobs", response_model=list[JobSummary])

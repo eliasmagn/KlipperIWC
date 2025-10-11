@@ -76,10 +76,14 @@ docker run -p 8000:8000 --env APP_ENV=production klipperiwc
 ```
 klipperiwc/          # FastAPI-Anwendung
 ├── __init__.py
-├── db/              # SQLAlchemy-Engine & Session-Handling
+├── app.py
+├── api/             # HTTP-Endpunkte (FastAPI Router)
+├── db/              # SQLAlchemy-Engine, Session-Handling und Modelle
 │   ├── __init__.py
+│   ├── models.py
 │   └── session.py
-└── app.py
+├── repositories/    # CRUD-Helfer für persistente Daten
+└── services/        # Service-Layer für Geschäftslogik
 requirements.txt     # Python-Abhängigkeiten
 deploy.sh            # Produktionsdeployment
 deploy_dev.sh        # Entwicklungssetup
@@ -92,13 +96,29 @@ Dockerfile           # Container-Build
 
 Die Anwendung stellt derzeit drei schreibgeschützte Endpunkte bereit, über die sich ein
 Frontend mit Statusdaten versorgen kann. Solange noch keine Anbindung an einen realen
-Klipper-Service existiert, liefern die Endpunkte repräsentative Beispielwerte.
+Klipper-Service existiert, liefern die Endpunkte repräsentative Beispielwerte. Bei jedem
+Abruf wird der Status zusätzlich in einer Historientabelle gespeichert, sodass spätere
+Visualisierungen auf die aufgezeichneten Messwerte zugreifen können.
 
 | Methode | Pfad               | Beschreibung                                      |
 | ------- | ------------------ | ------------------------------------------------- |
 | GET     | `/api/status`      | Aggregierter Druckerstatus inkl. aktiver und wartender Jobs |
 | GET     | `/api/jobs`        | Liste aus aktivem Druckauftrag und Warteschlange |
 | GET     | `/api/temperatures`| Letzte Temperaturwerte für Hotend, Heizbett etc. |
+
+### Persistente Statushistorie & Aufbewahrung
+
+Die Tabellen `status_history`, `temperature_history` und `job_history` speichern jede
+eingehende Statusmeldung mitsamt Einzelmessungen. Ein Hintergrundtask entfernt Altdaten
+in regelmäßigen Abständen. Die Konfiguration erfolgt über Umgebungsvariablen:
+
+- `STATUS_HISTORY_RETENTION_DAYS` (Standard: `30`): Wie viele Tage Historie maximal
+  aufbewahrt werden.
+- `STATUS_HISTORY_CLEANUP_INTERVAL_SECONDS` (Standard: `3600`): Wie häufig der
+  Bereinigungstask ausgeführt wird.
+
+Der Task wird beim Start des FastAPI-Servers aktiviert und läuft, solange der Dienst
+aktiv ist.
 
 Die Antworten basieren auf Pydantic-Modellen unter `klipperiwc/models/status.py` und
 lassen sich dadurch leicht erweitern oder zur Schema-Dokumentation exportieren.
