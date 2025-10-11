@@ -8,13 +8,13 @@
 
 ## Offene Schritte Richtung Produktivbetrieb
 
-- [ ] API-Endpunkte für Klipper-Status implementieren
-- [ ] Frontend zur Visualisierung der Druckerinformationen erstellen
-- [ ] CI-Pipeline mit automatisierten Tests und Linting hinzufügen
-- [ ] Board-Designer-Daten als JSON-Schema persistieren und versionieren
-- [ ] Upload- und Verwaltungslogik für Board-Bilder integrieren
-- [ ] Validierung der Pin-Benennung gegen MCU-Datenbank implementieren
-- [ ] Übersicht über vorhandene Board-Definitionen im UI anzeigen
-- [ ] Websocket-Kanal für Echtzeit-Statusmeldungen aufbauen
-- [ ] Onboarding-Assistent für bislang nicht unterstützte Boards entwickeln
-- [ ] Release- und Versions-Workflow (Tags, Changelog, Container-Builds) etablieren
+- [ ] API-Spezifikation und Pydantic-Modelle für Druckerstatus, Temperaturen und aktive Jobs erstellen
+- [ ] Klipper-Polling-Client bzw. Event-Receiver implementieren und als Service-Layer kapseln
+- [ ] Persistente Statushistorie via SQLite inklusive Migrationen und Retention-Strategie aufbauen
+- [ ] Websocket-Gateway zur Verteilung der Status-Updates an UI-Clients entwickeln
+- [ ] Dashboard-Layout im Webfrontend mit Navigation und Grundseiten strukturieren
+- [ ] Live-Widgets für Temperaturkurven und Jobfortschritt mit Websocket-Daten verknüpfen
+- [ ] JSON-Schema für Board-Definitionen finalisieren und Versionsverwaltung im Repository etablieren
+- [ ] Upload-Workflow für Board-Grafiken samt S3-/Dateisystem-Storage und Moderationsschritt implementieren
+- [ ] Validierungslogik für Pin-Namen gegen MCU-Datenbank ergänzen und mit Unit-Tests absichern
+- [ ] CI/CD-Pipeline mit Linting, Tests und automatischem Container-Build & Tagging aufsetzen

@@ -59,7 +59,7 @@ Dockerfile           # Container-Build
 
 ## Weiterführende Schritte
 
-Siehe `roadmap.md` für geplante Erweiterungen und `checklist.md` für den aktuellen Arbeitsfortschritt.
+Siehe `roadmap.md` für geplante Erweiterungen und `checklist.md` für den aktuellen Arbeitsfortschritt. Der aktuelle Fokus liegt auf der Definition der Status-API, der Integration eines Klipper-Service-Layers und dem Aufbau einer kleinen Statushistorie, um den Weg in Richtung produktiver Einsatz zu ebnen.
 
 ## Interaktiver Board-Designer (Prototyp)
 
