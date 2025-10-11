@@ -4,6 +4,8 @@ KlipperIWC ist eine FastAPI-basierte Backend-Anwendung, die als Grundlage für e
 
 > **Hinweis:** Eine Benutzerverwaltung bzw. ein Login ist derzeit nicht vorgesehen und wird erst in einer späteren Phase ergänzt.
 
+Neue Board- oder Druckerdefinitionen werden aktuell über Pull Requests im GitHub-Repository gepflegt. Sobald eine Authentifizierung verfügbar ist, sollen Anwender fehlende Hardware direkt in der Weboberfläche ergänzen können. Als Übergangslösung existiert bereits eine visuelle Oberfläche, um Pins, Stecker und MCU-Pins zu annotieren.
+
 ## Voraussetzungen
 
 - Python 3.11 oder neuer
@@ -58,3 +60,7 @@ Dockerfile           # Container-Build
 ## Weiterführende Schritte
 
 Siehe `roadmap.md` für geplante Erweiterungen und `checklist.md` für den aktuellen Arbeitsfortschritt.
+
+## Interaktiver Board-Designer (Prototyp)
+
+Der Prototyp für die Board-Visualisierung ist unter `http://localhost:8000/board-designer` verfügbar, sobald der Server läuft. Auf der Zeichenfläche lassen sich Rechtecke und Kreise platzieren, um Steckverbinder oder Pin-Gruppen hervorzuheben. Anschließend können individuelle Labels vergeben werden, die in der Seitenleiste als Referenz erscheinen. Die erzeugten Markierungen dienen als Grundlage für künftige Board-Definitionen, die weiterhin über GitHub versioniert werden.
