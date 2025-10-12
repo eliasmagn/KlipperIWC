@@ -8,6 +8,7 @@ from fastapi import APIRouter
 from fastapi.concurrency import run_in_threadpool
 
 from klipperiwc.models import JobSummary, PrinterStatus, TemperatureReading
+from klipperiwc.websocket import status_broadcaster
 from klipperiwc.services import record_status_snapshot
 
 router = APIRouter(prefix="/api", tags=["status"])
@@ -85,6 +86,7 @@ async def get_printer_status() -> PrinterStatus:
         temperatures=_demo_temperatures(now),
     )
     await run_in_threadpool(record_status_snapshot, status)
+    await status_broadcaster.publish(status)
     return status
 
 

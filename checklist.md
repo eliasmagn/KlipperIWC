@@ -12,7 +12,7 @@
 ## Offene Schritte Richtung Produktivbetrieb
 
 - [ ] Klipper-Polling-Client bzw. Event-Receiver implementieren und als Service-Layer kapseln
-- [ ] Websocket-Gateway zur Verteilung der Status-Updates an UI-Clients entwickeln
+- [x] Websocket-Gateway zur Verteilung der Status-Updates an UI-Clients entwickeln
 - [ ] Dashboard-Layout im Webfrontend mit Navigation und Grundseiten strukturieren
 - [ ] Live-Widgets für Temperaturkurven und Jobfortschritt mit Websocket-Daten verknüpfen
 - [ ] JSON-Schema für Board-Definitionen finalisieren und Versionsverwaltung im Repository etablieren

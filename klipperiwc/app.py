@@ -15,6 +15,7 @@ from fastapi.responses import HTMLResponse
 from klipperiwc.api import status_router
 from klipperiwc.db import Base, engine
 from klipperiwc.services import purge_history_before
+from klipperiwc.websocket import router as websocket_router
 
 logger = logging.getLogger(__name__)
 
@@ -51,6 +52,7 @@ def create_app() -> FastAPI:
                 await task
 
     app.include_router(status_router)
+    app.include_router(websocket_router)
 
     @app.get("/")
     async def healthcheck() -> dict[str, str]:
