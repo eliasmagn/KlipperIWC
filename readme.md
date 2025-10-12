@@ -83,7 +83,8 @@ klipperiwc/          # FastAPI-Anwendung
 │   ├── models.py
 │   └── session.py
 ├── repositories/    # CRUD-Helfer für persistente Daten
-└── services/        # Service-Layer für Geschäftslogik
+├── services/        # Service-Layer für Geschäftslogik
+└── websocket/       # Websocket-Gateway für Status-Streaming
 requirements.txt     # Python-Abhängigkeiten
 deploy.sh            # Produktionsdeployment
 deploy_dev.sh        # Entwicklungssetup
@@ -98,7 +99,9 @@ Die Anwendung stellt derzeit drei schreibgeschützte Endpunkte bereit, über die
 Frontend mit Statusdaten versorgen kann. Solange noch keine Anbindung an einen realen
 Klipper-Service existiert, liefern die Endpunkte repräsentative Beispielwerte. Bei jedem
 Abruf wird der Status zusätzlich in einer Historientabelle gespeichert, sodass spätere
-Visualisierungen auf die aufgezeichneten Messwerte zugreifen können.
+Visualisierungen auf die aufgezeichneten Messwerte zugreifen können. Parallel steht ein
+Websocket-Kanal bereit, der neue Statusmeldungen automatisch an verbundene Clients
+weiterleitet.
 
 | Methode | Pfad               | Beschreibung                                      |
 | ------- | ------------------ | ------------------------------------------------- |
@@ -122,6 +125,32 @@ aktiv ist.
 
 Die Antworten basieren auf Pydantic-Modellen unter `klipperiwc/models/status.py` und
 lassen sich dadurch leicht erweitern oder zur Schema-Dokumentation exportieren.
+
+## Websocket-Streaming
+
+Für Live-Updates steht ein Websocket-Endpunkt unter `ws://<host>:<port>/ws/status`
+bereit. Nach erfolgreicher Verbindung sendet der Server automatisch neue Statusmeldungen,
+sobald sie über die HTTP-API erzeugt oder von zukünftigen Backends eingespielt werden.
+Jede Nachricht folgt dem Schema:
+
+```json
+{
+  "type": "status",
+  "payload": {
+    "state": "printing",
+    "message": "...",
+    "uptime_seconds": 123,
+    "active_job": { ... },
+    "queued_jobs": [ ... ],
+    "temperatures": [ ... ]
+  }
+}
+```
+
+Die Verbindung ist aktuell offen zugänglich; Platzhalter für Authentifizierung und
+Rate-Limits sind bereits im Gateway hinterlegt und werden in Phase 2 mit echter Logik
+hinterlegt. Clients sollten Verbindungsabbrüche abfangen und bei Bedarf automatisch
+reconnecten.
 
 ## Weiterführende Schritte
 
