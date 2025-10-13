@@ -95,10 +95,10 @@ Dockerfile           # Container-Build
 
 ## HTTP-API
 
-Die Anwendung stellt derzeit drei schreibgeschützte Endpunkte bereit, über die sich ein
-Frontend mit Statusdaten versorgen kann. Solange noch keine Anbindung an einen realen
-Klipper-Service existiert, liefern die Endpunkte repräsentative Beispielwerte. Bei jedem
-Abruf wird der Status zusätzlich in einer Historientabelle gespeichert, sodass spätere
+Die Anwendung stellt Status-Endpunkte, einen Upload-Service für Board-Grafiken und ein
+Moderations-API bereit. Solange noch keine Anbindung an einen realen Klipper-Service
+existiert, liefern die Status-Endpunkte repräsentative Beispielwerte. Bei jedem Abruf
+wird der Status zusätzlich in einer Historientabelle gespeichert, sodass spätere
 Visualisierungen auf die aufgezeichneten Messwerte zugreifen können. Parallel steht ein
 Websocket-Kanal bereit, der neue Statusmeldungen automatisch an verbundene Clients
 weiterleitet.
@@ -108,6 +108,11 @@ weiterleitet.
 | GET     | `/api/status`      | Aggregierter Druckerstatus inkl. aktiver und wartender Jobs |
 | GET     | `/api/jobs`        | Liste aus aktivem Druckauftrag und Warteschlange |
 | GET     | `/api/temperatures`| Letzte Temperaturwerte für Hotend, Heizbett etc. |
+| POST    | `/api/board-assets/` | Lädt Board-Grafiken samt Metadaten hoch (Upload-Token erforderlich) |
+| PATCH   | `/api/board-assets/{id}` | Aktualisiert Metadaten eines Assets (Upload-Token erforderlich) |
+| GET     | `/api/board-assets/` | Listet Assets (standardmäßig nur freigegebene) |
+| GET     | `/api/board-assets/moderation/pending` | Liefert Moderations-Warteschlange (Moderator-Token erforderlich) |
+| PATCH   | `/api/board-assets/{id}/moderation` | Trifft Moderationsentscheidung (Moderator-Token erforderlich) |
 
 ### Persistente Statushistorie & Aufbewahrung
 
@@ -123,8 +128,51 @@ in regelmäßigen Abständen. Die Konfiguration erfolgt über Umgebungsvariablen
 Der Task wird beim Start des FastAPI-Servers aktiviert und läuft, solange der Dienst
 aktiv ist.
 
-Die Antworten basieren auf Pydantic-Modellen unter `klipperiwc/models/status.py` und
-lassen sich dadurch leicht erweitern oder zur Schema-Dokumentation exportieren.
+Die Antworten basieren auf Pydantic-Modellen unter `klipperiwc/models/status.py` bzw.
+`klipperiwc/models/board_assets.py` und lassen sich dadurch leicht erweitern oder zur
+Schema-Dokumentation exportieren.
+
+## Board-Asset Upload & Moderation
+
+Uploads erfolgen über `/api/board-assets/` mit `multipart/form-data`. Pflichtfeld ist die
+Datei (`file`), optionale Formularfelder sind `title`, `description`, `visibility`
+(`private`/`public`) und `uploaded_by`. Der Header `X-Board-Assets-Key` muss mit der
+Umgebungsvariablen `BOARD_ASSET_UPLOAD_TOKEN` übereinstimmen. Für Moderationsendpunkte
+(`GET /api/board-assets/moderation/pending`, `PATCH /api/board-assets/{id}/moderation`)
+wird der Header `X-Board-Assets-Moderator` gegen `BOARD_ASSET_MODERATION_TOKEN`
+geprüft.
+
+Beispiel-Upload mit `curl`:
+
+```bash
+curl -X POST "http://localhost:8000/api/board-assets/" \
+  -H "X-Board-Assets-Key: $BOARD_ASSET_UPLOAD_TOKEN" \
+  -F "file=@./assets/board.svg" \
+  -F "title=Voron Toolhead" \
+  -F "visibility=private"
+```
+
+### Storage-Konfiguration
+
+Der Storage-Layer unterstützt lokales Dateisystem sowie S3-kompatible Backends.
+Konfiguration über Umgebungsvariablen:
+
+| Variable | Beschreibung |
+| -------- | ------------ |
+| `BOARD_ASSET_STORAGE_BACKEND` | `local` (Standard) oder `s3` |
+| `BOARD_ASSET_LOCAL_PATH` | Ablageort für lokale Speicherung (Standard: `./var/board-assets`) |
+| `BOARD_ASSET_LOCAL_PUBLIC_URL` | Optionaler Basis-URL-Präfix für generierte Links |
+| `BOARD_ASSET_S3_BUCKET` | Bucket-Name für S3-Uploads |
+| `BOARD_ASSET_S3_REGION` | Region des Buckets (optional, z. B. `eu-central-1`) |
+| `BOARD_ASSET_S3_ENDPOINT` | Optionaler Endpoint für S3-kompatible Dienste |
+| `BOARD_ASSET_S3_PUBLIC_URL` | Optionaler Basis-Link für ausgelieferte Assets |
+| `BOARD_ASSET_MAX_BYTES` | Maximale Dateigröße in Bytes (Standard: 20 MB) |
+| `BOARD_ASSET_UPLOAD_TOKEN` | Token für Upload- und Metadatenänderungen |
+| `BOARD_ASSET_MODERATION_TOKEN` | Token für Moderations-Endpunkte |
+
+Jeder Upload erzeugt einen Datensatz in `board_assets` sowie eine Historie in
+`board_asset_moderation_events`. Assets starten im Status `pending` und müssen über den
+Moderationsendpunkt freigegeben werden, bevor sie in Standardlisten erscheinen.
 
 ## Websocket-Streaming
 

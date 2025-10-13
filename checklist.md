@@ -16,6 +16,7 @@
 - [ ] Dashboard-Layout im Webfrontend mit Navigation und Grundseiten strukturieren
 - [ ] Live-Widgets für Temperaturkurven und Jobfortschritt mit Websocket-Daten verknüpfen
 - [ ] JSON-Schema für Board-Definitionen finalisieren und Versionsverwaltung im Repository etablieren
-- [ ] Upload-Workflow für Board-Grafiken samt S3-/Dateisystem-Storage und Moderationsschritt implementieren
+- [x] Upload-Workflow für Board-Grafiken samt S3-/Dateisystem-Storage und Moderationsschritt implementieren
+- [ ] Automatisierte Moderations-Benachrichtigungen (E-Mail/Webhook) integrieren
 - [ ] Validierungslogik für Pin-Namen gegen MCU-Datenbank ergänzen und mit Unit-Tests absichern
 - [ ] CI/CD-Pipeline mit Linting, Tests und automatischem Container-Build & Tagging aufsetzen

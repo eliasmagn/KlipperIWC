@@ -12,7 +12,7 @@ from functools import lru_cache
 from fastapi import FastAPI
 from fastapi.responses import HTMLResponse
 
-from klipperiwc.api import status_router
+from klipperiwc.api import board_assets_router, status_router
 from klipperiwc.db import Base, engine
 from klipperiwc.services import purge_history_before
 from klipperiwc.websocket import router as websocket_router
@@ -52,6 +52,7 @@ def create_app() -> FastAPI:
                 await task
 
     app.include_router(status_router)
+    app.include_router(board_assets_router)
     app.include_router(websocket_router)
 
     @app.get("/")
