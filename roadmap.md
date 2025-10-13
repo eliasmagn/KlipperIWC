@@ -1,39 +1,28 @@
 # Roadmap
 
-## Phase 1 – Basisdienst (aktuell)
-- [x] Projektgrundstruktur und FastAPI-Basisdienst erstellen
-- [x] Deployment-Skripte und Docker-Unterstützung bereitstellen
-- [x] Board-Designer-Prototyp für Pin-Annotationen veröffentlichen
-- [x] Datenbankbasis mit SQLite und Alembic vorbereiten
-- [x] API-Spezifikation und Pydantic-Modelle für Status-/Jobdaten bereitstellen
-- [x] Persistente Statushistorie (SQLite) inklusive Service-Layer und konfigurierbarer Aufbewahrungslogik (`STATUS_HISTORY_RETENTION_DAYS`) implementieren
-- [ ] Klipper-Service-Layer für Status-/Jobdaten mit realem Backend anbinden
+## Phase 1 – Konfigurationsbasis (abgeschlossen)
+- [x] FastAPI-Dienst mit Konfigurationsendpunkten aufsetzen
+- [x] Browser-UI für Preset- und Komponenten-Auswahl bereitstellen
+- [x] Presets, Komponenten und Generator-Logik modellieren
+- [x] Automatisierte Tests und Deploy-Skripte aktualisieren
 
-## Phase 2 – Beobachtung und Steuerung
-- [x] Websocket-Streaming für Echtzeit-Updates inklusive Gateway und Autorisierung integrieren (Auth & Rate-Limits folgen)
-- [ ] Dashboard-Layout mit Navigation, Live-Widgets und Temperatur-/Jobvisualisierungen entwickeln
-- [ ] Steuerbefehle (Start/Stop/Notaus) mit Sicherheitsmechanismen versehen
-- [ ] Alarm- und Benachrichtigungssystem für kritische Ereignisse hinzufügen
+## Phase 2 – Komfortfunktionen (aktuell)
+- [ ] Download der generierten `printer.cfg` anbieten
+- [ ] Auswahlzustand im Browser speichern (LocalStorage)
+- [ ] Kontextuelle Hilfetexte und Tooltips pro Komponente ergänzen
+- [ ] Validierung der Parameter-Overrides mit Fehlermeldungen
 
-## Phase 3 – Hardware- und Board-Definitionen
-- [ ] JSON-Schema und Versionsverwaltung für Board-Definitionen etablieren
-- [x] Upload-Workflow für Board-Bilder inkl. Storage-Adapter und Moderation ergänzen
-- [ ] Moderations-Dashboard mit Benachrichtigungskette entwerfen
-- [ ] Validierungslogik gegen MCU- und Pin-Datenbanken implementieren
-- [ ] Öffentliche Bibliothek mit Board-Definitionen und Suchfunktion bereitstellen
-- [ ] Vorbereitung für GitHub-zu-UI-Synchronisation der Definitionen treffen
+## Phase 3 – Preset-Erweiterung
+- [ ] Weitere Drucker-Presets (Prusa, RatRig, Voron V0, etc.) hinterlegen
+- [ ] Komponentenbibliothek um Treiber, Sensoren und Heizbett-Varianten erweitern
+- [ ] Struktur für Community-Beiträge definieren (Vorlagen, Contribution-Guide)
 
-## Phase 4 – Benutzeroberfläche
-- [ ] Web-Frontend mit Dashboard, Verlaufsgrafiken und Konfigurationsseiten entwickeln
-- [ ] Responsive Layout und dunkler Modus
-- [ ] Internationalisierung der Oberfläche vorbereiten
+## Phase 4 – Zusammenarbeit & Export
+- [ ] Teilen von Konfigurationen via URL-Parameter oder JSON-Export ermöglichen
+- [ ] Import-Funktion für bestehende `printer.cfg` (Analyse der Sektionen)
+- [ ] Export als ZIP mit `printer.cfg` und zusätzlicher Dokumentation
 
-## Phase 5 – Qualitätssicherung
-- [ ] Automatisierte Tests (Unit, Integration) einführen
-- [ ] Linting und Formatierung automatisieren
-- [ ] CI/CD-Pipeline mit Deployment auf Testumgebung konfigurieren
-
-## Phase 6 – Erweiterte Sicherheit und Benutzerverwaltung (später)
-- [ ] Zugriffskonzepte und Benutzerrollen definieren
-- [ ] Login- und Session-Management implementieren
-- [ ] Erweiterte Audit- und Logging-Funktionen bereitstellen
+## Phase 5 – Integrationen
+- [ ] Optionale Anbindung an Klipper-Instanzen zur direkten Übertragung prüfen
+- [ ] Plug-in-Schnittstelle für Hersteller-spezifische Komponenten entwerfen
+- [ ] Telemetrie über anonyme Nutzungsstatistiken (opt-in) evaluieren

@@ -1,6 +1,5 @@
 """API routers for KlipperIWC."""
 
-from .board_assets import router as board_assets_router
-from .status import router as status_router
+from .configurator import router as configurator_router
 
-__all__ = ["status_router", "board_assets_router"]
+__all__ = ["configurator_router"]
