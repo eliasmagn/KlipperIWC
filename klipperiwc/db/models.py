@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from datetime import datetime
+from enum import Enum
 from typing import Optional
 
 from sqlalchemy import Boolean, DateTime, Float, ForeignKey, Integer, String, Text, func
@@ -14,6 +15,10 @@ __all__ = [
     "StatusHistory",
     "TemperatureHistory",
     "JobHistory",
+    "BoardAsset",
+    "BoardAssetModerationEvent",
+    "AssetModerationStatus",
+    "AssetVisibility",
 ]
 
 
@@ -115,3 +120,76 @@ class JobHistory(Base, TimestampMixin):
 
     def __repr__(self) -> str:  # pragma: no cover - repr utility
         return f"JobHistory(id={self.id!r}, job_identifier={self.job_identifier!r}, status={self.status_value!r})"
+
+
+class AssetModerationStatus(str, Enum):
+    """Possible moderation states for uploaded assets."""
+
+    PENDING = "pending"
+    APPROVED = "approved"
+    REJECTED = "rejected"
+
+
+class AssetVisibility(str, Enum):
+    """Supported visibility values for board assets."""
+
+    PRIVATE = "private"
+    PUBLIC = "public"
+
+
+class BoardAsset(Base, TimestampMixin):
+    """Stored board designs and associated metadata."""
+
+    __tablename__ = "board_assets"
+
+    id: Mapped[str] = mapped_column(String(36), primary_key=True)
+    title: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
+    description: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    original_filename: Mapped[str] = mapped_column(String(255), nullable=False)
+    content_type: Mapped[Optional[str]] = mapped_column(String(128), nullable=True)
+    file_size: Mapped[int] = mapped_column(Integer, nullable=False)
+    checksum_sha256: Mapped[str] = mapped_column(String(64), nullable=False, unique=True)
+    storage_backend: Mapped[str] = mapped_column(String(32), nullable=False)
+    storage_path: Mapped[str] = mapped_column(String(512), nullable=False)
+    storage_uri: Mapped[Optional[str]] = mapped_column(String(512), nullable=True)
+    uploaded_by: Mapped[Optional[str]] = mapped_column(String(128), nullable=True, index=True)
+    visibility: Mapped[str] = mapped_column(String(16), default=AssetVisibility.PRIVATE.value, nullable=False, index=True)
+    moderation_status: Mapped[str] = mapped_column(
+        String(16),
+        default=AssetModerationStatus.PENDING.value,
+        nullable=False,
+        index=True,
+    )
+    moderation_notes: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    reviewed_by: Mapped[Optional[str]] = mapped_column(String(128), nullable=True)
+    reviewed_at: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True), nullable=True)
+
+    moderation_events: Mapped[list["BoardAssetModerationEvent"]] = relationship(
+        "BoardAssetModerationEvent",
+        back_populates="asset",
+        cascade="all, delete-orphan",
+        passive_deletes=True,
+    )
+
+    def __repr__(self) -> str:  # pragma: no cover - repr utility
+        return f"BoardAsset(id={self.id!r}, filename={self.original_filename!r}, status={self.moderation_status!r})"
+
+
+class BoardAssetModerationEvent(Base, TimestampMixin):
+    """Historical moderation decisions for an asset."""
+
+    __tablename__ = "board_asset_moderation_events"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    asset_id: Mapped[str] = mapped_column(
+        ForeignKey("board_assets.id", ondelete="CASCADE"), nullable=False, index=True
+    )
+    status: Mapped[str] = mapped_column(String(16), nullable=False, index=True)
+    reviewer: Mapped[Optional[str]] = mapped_column(String(128), nullable=True)
+    notes: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    processed_at: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True), nullable=True)
+
+    asset: Mapped[BoardAsset] = relationship("BoardAsset", back_populates="moderation_events")
+
+    def __repr__(self) -> str:  # pragma: no cover - repr utility
+        return f"BoardAssetModerationEvent(id={self.id!r}, asset_id={self.asset_id!r}, status={self.status!r})"
