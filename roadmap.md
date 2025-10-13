@@ -7,6 +7,7 @@
 - [x] Datenbankbasis mit SQLite und Alembic vorbereiten
 - [x] API-Spezifikation und Pydantic-Modelle für Status-/Jobdaten bereitstellen
 - [x] Persistente Statushistorie (SQLite) inklusive Service-Layer und konfigurierbarer Aufbewahrungslogik (`STATUS_HISTORY_RETENTION_DAYS`) implementieren
+- [x] Dashboard-Metrikservice und API-Routen für aggregierte Kennzahlen veröffentlichen
 - [ ] Klipper-Service-Layer für Status-/Jobdaten mit realem Backend anbinden
 
 ## Phase 2 – Beobachtung und Steuerung
