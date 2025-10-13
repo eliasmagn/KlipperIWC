@@ -13,7 +13,7 @@ if [ ! -d "$VENV_PATH" ]; then
 fi
 
 source "$VENV_PATH/bin/activate"
-echo "Installing Python dependencies (inklusive SQLAlchemy und Alembic)..."
+echo "Installing Python dependencies..."
 python -m pip install --upgrade pip wheel
 python -m pip install -r "$PROJECT_ROOT/requirements.txt"
 
@@ -33,7 +33,7 @@ if [ -f "$PID_FILE" ] && kill -0 "$(cat "$PID_FILE")" 2>/dev/null; then
 fi
 
 echo "Starting KlipperIWC in production mode..."
-nohup "$VENV_PATH/bin/python" -m klipperiwc.app >>"$LOG_DIR/app.log" 2>&1 &
+nohup "$VENV_PATH/bin/uvicorn" klipperiwc.app:create_app --factory --host "$HOST" --port "$PORT" --log-level "$LOG_LEVEL" >>"$LOG_DIR/app.log" 2>&1 &
 echo $! > "$PID_FILE"
 
 echo "Application started with PID $(cat "$PID_FILE"). Logs: $LOG_DIR/app.log"

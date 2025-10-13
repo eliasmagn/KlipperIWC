@@ -1,9 +1,25 @@
 # KlipperIWC Konzept
 
-KlipperIWC ist eine schlanke Weboberfläche, die Statusinformationen und Steuerbefehle für eine Klipper-basierte 3D-Druckerinstallation bereitstellt. Die Anwendung stellt einen kleinen FastAPI-Service zur Verfügung, der neben einer HTTP-API auch Websocket-basierte Live-Updates ausliefert und perspektivisch um Integrationen in bestehende Drucker-Workflows erweitert wird. Benutzerverwaltung und Login sind bewusst nicht Teil des aktuellen Umfangs und werden erst in einer späteren Ausbaustufe berücksichtigt. Ziel ist eine wartbare, erweiterbare und für verschiedene Installationsziele (Bare Metal, virtuelle Maschine, Container) leicht deploybare Lösung.
+KlipperIWC ist eine browserbasierte Oberfläche, mit der Anwender vollständige
+Klipper-Konfigurationsdateien für ihre 3D-Drucker per Maus zusammenstellen
+können. Der Fokus liegt auf einem geführten Workflow: Nutzer wählen einen
+passenden Drucker-Preset aus, entscheiden sich für Komponenten wie Toolhead,
+Controller-Board oder Z-Probe und ergänzen bei Bedarf eigene Makros. Aus diesen
+Informationen erzeugt die Anwendung eine valide `printer.cfg`, die anschließend
+heruntergeladen oder in bestehende Installationen übernommen werden kann.
 
-Neue Board- und Druckerdefinitionen entstehen zunächst über Beiträge im GitHub-Repository. In einer späteren Phase mit Login-System sollen Anwender fehlende Hardware direkt während der Konfiguration ergänzen können. Als Zwischenschritt steht bereits eine interaktive Board-Designer-Seite zur Verfügung, auf der Pins, Stecker und MCU-Signale mit Rechtecken oder Kreisen markiert und beschriftet werden können. Diese Vorarbeit erleichtert das spätere Überführen der Daten in den produktiven Workflow.
+Die Anwendung besteht aus einem kleinen FastAPI-Backend, das vorbereitete
+Hardware-Presets ausliefert und aus den getroffenen Auswahloptionen eine
+Konfigurationsdatei zusammensetzt. Eine React- oder Vue-Anwendung ist nicht
+nötig: Das Frontend wird als leichtgewichtige HTML/JS-Seite direkt durch FastAPI
+ausgeliefert. Ziel ist eine schlanke Codebasis, die auf kleinen Systemen läuft
+und sich in bestehende Klipper-Installationen integrieren lässt. Persistente
+Speicher oder langlaufende Hintergrundprozesse sind bewusst nicht Teil des
+Konzepts; stattdessen stehen Erweiterbarkeit und Transparenz der generierten
+Konfiguration im Vordergrund.
 
-Für die Statuskommunikation existieren aktuell eine lesende HTTP-API (`/api/status`, `/api/jobs`, `/api/temperatures`) sowie ein Websocket-Gateway (`/ws/status`), die strukturierte Demo-Daten liefern und als Fundament für die Echtzeit-Anbindung dienen. Die entsprechenden Pydantic-Modelle bilden das Domain-Modell ab und können bei Bedarf unkompliziert erweitert werden. Eingehende Statuspakete werden zudem persistiert: Ein dedizierter Service-Layer legt Status-, Temperatur- und Job-Historien in SQLite ab, damit spätere Visualisierungen auf echte Verlaufsdaten zugreifen können. Ein periodischer Hintergrundjob sorgt dafür, dass Altdaten anhand einer konfigurierbaren Aufbewahrungsfrist automatisch bereinigt werden. Platzhalter für Authentifizierung und Rate-Limits erlauben es, Sicherheitsanforderungen in einer Folgestufe einzubauen, ohne den bestehenden Datenfluss zu verändern.
-
-Ein neuer Upload- und Moderations-Workflow ermöglicht es, Board-Grafiken zentral zu speichern. Über `/api/board-assets` nehmen Uploads die Grafikdateien samt Metadaten entgegen, berechnen Prüfsummen und persistieren die Dateien über einen austauschbaren Storage-Layer (lokales Dateisystem oder S3-kompatible Buckets). Die zugehörigen Datenbanktabellen hinterlegen Sichtbarkeit, Reviewer-Informationen und eine Moderationshistorie, sodass eingereichte Beiträge erst nach Freigabe öffentlich sichtbar sind. Service-Funktionen kapseln die Speicherung, Konsistenzprüfungen und Zugriffskontrollen per API-Token, wodurch sich spätere Integrationen in UI- oder Automatisierungs-Workflows vereinfachen.
+Neue Drucker- und Komponentenprofile werden zentral im Repository gepflegt. Die
+Struktur ist so angelegt, dass in einer späteren Ausbaustufe Community-Beiträge
+über eine komfortable UI möglich sind. Für Anwender entsteht so eine
+Komfortlösung, die zeitaufwendiges Copy & Paste aus Dokumentationen ersetzt und
+Fehler in manuellen Konfigurationen vermeidet.
