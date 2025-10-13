@@ -10,11 +10,19 @@ from .board_assets import (
     set_board_asset_moderation,
     update_board_asset_metadata,
 )
-from .status import record_status_snapshot, purge_history_before
+from .dashboard_metrics import (
+    get_dashboard_overview,
+    get_job_metrics,
+    get_temperature_summary,
+)
+from .status import purge_history_before, record_status_snapshot
 
 __all__ = [
     "record_status_snapshot",
     "purge_history_before",
+    "get_dashboard_overview",
+    "get_temperature_summary",
+    "get_job_metrics",
     "create_board_asset",
     "update_board_asset_metadata",
     "list_board_assets",

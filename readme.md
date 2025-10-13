@@ -108,11 +108,127 @@ weiterleitet.
 | GET     | `/api/status`      | Aggregierter Druckerstatus inkl. aktiver und wartender Jobs |
 | GET     | `/api/jobs`        | Liste aus aktivem Druckauftrag und Warteschlange |
 | GET     | `/api/temperatures`| Letzte Temperaturwerte für Hotend, Heizbett etc. |
+| GET     | `/api/dashboard/overview` | Verdichteter Status-Snapshot inkl. Verlaufspunkten |
+| GET     | `/api/dashboard/temperatures` | Statistiken pro Temperaturkanal (min/avg/max, aktueller Wert) |
+| GET     | `/api/dashboard/jobs` | Zusammenfassung der zuletzt beobachteten Druckaufträge |
 | POST    | `/api/board-assets/` | Lädt Board-Grafiken samt Metadaten hoch (Upload-Token erforderlich) |
 | PATCH   | `/api/board-assets/{id}` | Aktualisiert Metadaten eines Assets (Upload-Token erforderlich) |
 | GET     | `/api/board-assets/` | Listet Assets (standardmäßig nur freigegebene) |
 | GET     | `/api/board-assets/moderation/pending` | Liefert Moderations-Warteschlange (Moderator-Token erforderlich) |
 | PATCH   | `/api/board-assets/{id}/moderation` | Trifft Moderationsentscheidung (Moderator-Token erforderlich) |
+
+### Dashboard-Metriken aus der Historie
+
+Die neuen Dashboard-Endpunkte greifen auf die persistente Historie zu und liefern
+kompakte JSON-Strukturen für Frontend-Widgets. Damit lassen sich Diagramme oder
+KPI-Kacheln ohne zusätzliche Transformationen aufbauen.
+
+**`GET /api/dashboard/overview`**
+
+Optionale Query-Parameter:
+
+- `progress_points` (Standard `20`, min. `1`, max. `200`): Anzahl Verlaufspunkte für den
+  Fortschritts-Chart.
+
+Beispielantwort:
+
+```json
+{
+  "updated_at": "2024-04-15T12:35:00+00:00",
+  "state": "printing",
+  "message": "Druck läuft stabil",
+  "uptime_seconds": 16320,
+  "active_job": {
+    "job_identifier": "job-20240415-01",
+    "name": "Voron_Mount_v6.gcode",
+    "progress": 0.42,
+    "status": "running",
+    "started_at": "2024-04-15T12:17:00+00:00",
+    "estimated_completion": "2024-04-15T13:00:00+00:00",
+    "is_active": true,
+    "last_seen_at": "2024-04-15T12:35:00+00:00"
+  },
+  "queued_jobs": {
+    "count": 2,
+    "entries": [
+      {
+        "job_identifier": "job-20240415-02",
+        "name": "Calibration_Cube_20mm.gcode",
+        "progress": 0.0,
+        "status": "queued",
+        "started_at": null,
+        "estimated_completion": null,
+        "is_active": false,
+        "last_seen_at": "2024-04-15T12:35:00+00:00"
+      }
+    ]
+  },
+  "history": {
+    "progress": [
+      {"recorded_at": "2024-04-15T12:30:00+00:00", "progress": 0.38},
+      {"recorded_at": "2024-04-15T12:35:00+00:00", "progress": 0.42}
+    ]
+  }
+}
+```
+
+**`GET /api/dashboard/temperatures`**
+
+Liefert die jeweils neuesten Messwerte sowie min/avg/max je Komponente.
+
+```json
+{
+  "updated_at": "2024-04-15T12:35:00+00:00",
+  "components": [
+    {
+      "component": "hotend",
+      "latest": {
+        "actual": 205.3,
+        "target": 210.0,
+        "timestamp": "2024-04-15T12:35:00+00:00"
+      },
+      "statistics": {
+        "samples": 24,
+        "min_actual": 198.6,
+        "max_actual": 207.4,
+        "avg_actual": 203.8
+      }
+    }
+  ]
+}
+```
+
+**`GET /api/dashboard/jobs`**
+
+Optionale Query-Parameter:
+
+- `limit` (Standard `5`, min. `1`, max. `50`): Anzahl der zurückgelieferten Jobs.
+
+Die Antwort beinhaltet für jeden Job den zuletzt beobachteten Zustand sowie eine
+Statusverteilung für schnelle KPIs.
+
+```json
+{
+  "updated_at": "2024-04-15T12:35:00+00:00",
+  "recent": [
+    {
+      "job_identifier": "job-20240415-01",
+      "name": "Voron_Mount_v6.gcode",
+      "progress": 0.42,
+      "status": "running",
+      "started_at": "2024-04-15T12:17:00+00:00",
+      "estimated_completion": "2024-04-15T13:00:00+00:00",
+      "is_active": true,
+      "last_seen_at": "2024-04-15T12:35:00+00:00"
+    }
+  ],
+  "status_totals": {
+    "running": 1,
+    "queued": 2,
+    "completed": 0
+  }
+}
+```
 
 ### Persistente Statushistorie & Aufbewahrung
 
