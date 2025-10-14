@@ -11,6 +11,9 @@
 - [x] Dashboard-API für aggregierte Kennzahlen (Temperaturen, Jobs, Fortschritt) bereitstellen
 - [x] JSON-Schema für Board-Definitionen samt Validierungs-Workflow und API-Endpunkten dokumentieren
 - [x] Zugriffskontrolle für Board-Asset-Uploads, -Listen und Moderationswarteschlange über API-Tokens absichern
+- [x] Landingpage mit Verlinkung auf Board- und Drucker-Designer erstellen
+- [x] Persistente Tabellen sowie API-Endpunkte für Board- und Druckerdefinitionen anlegen
+- [x] Konzeptionellen Drucker-Designer als Mockup zur Navigation vorbereiten
 
 ## Offene Schritte Richtung Produktivbetrieb
 
@@ -22,3 +25,5 @@
 - [ ] Automatisierte Moderations-Benachrichtigungen (E-Mail/Webhook) integrieren
 - [ ] Validierungslogik für Pin-Namen gegen MCU-Datenbank ergänzen und mit Unit-Tests absichern
 - [ ] CI/CD-Pipeline mit Linting, Tests und automatischem Container-Build & Tagging aufsetzen
+- [ ] Benutzerkonten mit Freigabemodellen für Definitionen implementieren
+- [ ] Konfigurations-Generator für kombinierte Board-/Druckerprofile entwickeln

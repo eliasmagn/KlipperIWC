@@ -16,6 +16,7 @@ from klipperiwc.api import (
     board_assets_router,
     boards_router,
     dashboard_router,
+    definitions_router,
     status_router,
 )
 from klipperiwc.db import Base, engine
@@ -60,12 +61,260 @@ def create_app() -> FastAPI:
     app.include_router(board_assets_router)
     app.include_router(dashboard_router)
     app.include_router(boards_router)
+    app.include_router(definitions_router)
     app.include_router(websocket_router)
 
-    @app.get("/")
+    @app.get("/healthz")
     async def healthcheck() -> dict[str, str]:
         """Return a basic healthcheck payload."""
         return {"status": "ok"}
+
+    @app.get("/", response_class=HTMLResponse)
+    async def landing_page() -> str:
+        """Serve a lightweight landing page that links the available designers."""
+
+        return """
+        <!DOCTYPE html>
+        <html lang=\"en\">
+        <head>
+            <meta charset=\"utf-8\" />
+            <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" />
+            <title>KlipperIWC – Definition Studio</title>
+            <style>
+                :root {
+                    color-scheme: dark;
+                    font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+                    background: radial-gradient(circle at top, #1e3a8a, #0f172a 55%);
+                    color: #e2e8f0;
+                }
+
+                body {
+                    margin: 0;
+                    min-height: 100vh;
+                    display: flex;
+                    flex-direction: column;
+                    background: linear-gradient(180deg, rgba(15, 23, 42, 0.95), rgba(2, 6, 23, 0.98));
+                }
+
+                header {
+                    padding: 3.5rem 1.5rem 2.5rem;
+                    text-align: center;
+                }
+
+                header h1 {
+                    margin: 0;
+                    font-size: clamp(2.1rem, 4vw, 3.3rem);
+                    letter-spacing: -0.03em;
+                }
+
+                header p {
+                    margin: 1rem auto 0;
+                    max-width: 720px;
+                    font-size: 1.05rem;
+                    color: rgba(226, 232, 240, 0.85);
+                    line-height: 1.6;
+                }
+
+                .actions {
+                    margin-top: 2rem;
+                    display: flex;
+                    justify-content: center;
+                    gap: 1rem;
+                    flex-wrap: wrap;
+                }
+
+                .actions a {
+                    display: inline-flex;
+                    align-items: center;
+                    gap: 0.5rem;
+                    padding: 0.85rem 1.6rem;
+                    border-radius: 999px;
+                    font-weight: 600;
+                    text-decoration: none;
+                    color: #0f172a;
+                    background: linear-gradient(135deg, #38bdf8, #22d3ee);
+                    box-shadow: 0 12px 30px rgba(8, 145, 178, 0.28);
+                    transition: transform 0.2s ease, box-shadow 0.2s ease;
+                }
+
+                .actions a.secondary {
+                    background: rgba(226, 232, 240, 0.1);
+                    color: #e2e8f0;
+                    box-shadow: none;
+                }
+
+                .actions a:hover {
+                    transform: translateY(-2px);
+                    box-shadow: 0 18px 36px rgba(56, 189, 248, 0.32);
+                }
+
+                main {
+                    flex: 1;
+                    padding: 0 1.5rem 4rem;
+                    display: grid;
+                    gap: 2rem;
+                    max-width: 1080px;
+                    margin: 0 auto;
+                }
+
+                .card-grid {
+                    display: grid;
+                    gap: 1.5rem;
+                    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+                }
+
+                .card {
+                    padding: 1.8rem;
+                    border-radius: 1.2rem;
+                    background: rgba(15, 23, 42, 0.7);
+                    border: 1px solid rgba(148, 163, 184, 0.2);
+                    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05), 0 18px 40px rgba(2, 132, 199, 0.18);
+                    display: flex;
+                    flex-direction: column;
+                    gap: 0.8rem;
+                }
+
+                .card h2 {
+                    margin: 0;
+                    font-size: 1.35rem;
+                }
+
+                .card p {
+                    margin: 0;
+                    color: rgba(226, 232, 240, 0.85);
+                    line-height: 1.55;
+                }
+
+                .card ul {
+                    margin: 0.5rem 0 0;
+                    padding-left: 1.2rem;
+                    color: rgba(148, 163, 184, 0.95);
+                }
+
+                .card a {
+                    margin-top: auto;
+                    color: #38bdf8;
+                    text-decoration: none;
+                    font-weight: 600;
+                }
+
+                .card a:hover {
+                    text-decoration: underline;
+                }
+
+                section h3 {
+                    margin: 0 0 0.8rem;
+                    font-size: 1.1rem;
+                    letter-spacing: 0.08em;
+                    text-transform: uppercase;
+                    color: rgba(148, 163, 184, 0.75);
+                }
+
+                footer {
+                    padding: 2rem 1.5rem;
+                    text-align: center;
+                    color: rgba(148, 163, 184, 0.75);
+                    font-size: 0.9rem;
+                }
+
+                @media (max-width: 720px) {
+                    header {
+                        padding: 2.8rem 1rem 2rem;
+                    }
+
+                    main {
+                        padding: 0 1rem 3rem;
+                    }
+                }
+            </style>
+        </head>
+        <body>
+            <header>
+                <h1>KlipperIWC Definition Studio</h1>
+                <p>
+                    Erstelle wiederverwendbare Board- und Druckerdefinitionen als Grundlage für individuelle
+                    <code>klipper.conf</code>-Konfigurationen. Die Designer liefern angereicherte Visualisierungen,
+                    die dauerhaft in der Datenbank abgelegt werden und später vom Konfigurations-Generator
+                    bezogen werden können.
+                </p>
+                <div class=\"actions\">
+                    <a href=\"/board-designer\">Board-Designer öffnen →</a>
+                    <a class=\"secondary\" href=\"/printer-designer\">Drucker-Designer entdecken</a>
+                </div>
+            </header>
+
+            <main>
+                <section>
+                    <h3>Designer-Übersicht</h3>
+                    <div class=\"card-grid\">
+                        <article class=\"card\">
+                            <h2>Board-Designer</h2>
+                            <p>Annotiere Pins, Anschlüsse und Zusatzressourcen auf Basis hochgeladener Bilder.</p>
+                            <ul>
+                                <li>Layer für Signal-, Strom- und Kommunikationspfade</li>
+                                <li>Erzeuge klickbare Pin-Definitionen samt Zusatznotizen</li>
+                                <li>Exportiere die Struktur als JSON für die Registry</li>
+                            </ul>
+                            <a href=\"/board-designer\">Zum Board-Designer</a>
+                        </article>
+                        <article class=\"card\">
+                            <h2>Drucker-Designer</h2>
+                            <p>Skizziere Achsen, Extruder, Sensoren und Elektronik in einer visuellen Ansicht.</p>
+                            <ul>
+                                <li>Mehrere Kinematik-Profile für CoreXY, Delta &amp; Kartesisch</li>
+                                <li>Zuweisung von Controllern, Endstops und Zusatzmodulen</li>
+                                <li>Speichere Varianten für Multi-Board-Setups</li>
+                            </ul>
+                            <a href=\"/printer-designer\">Zum Drucker-Designer</a>
+                        </article>
+                        <article class=\"card\">
+                            <h2>Konfigurations-Generator</h2>
+                            <p>Stelle Board- und Druckerdefinitionen zusammen, um konkrete Profile abzuleiten.</p>
+                            <ul>
+                                <li>Vorlagen für typische Hotends, Extruder und Peripherie</li>
+                                <li>Generiert vollständige <code>printer.cfg</code>-Dateien</li>
+                                <li>Versioniere Ergebnisse pro Projekt oder Benutzergruppe</li>
+                            </ul>
+                            <a href=\"#\">Konfigurator (in Planung)</a>
+                        </article>
+                    </div>
+                </section>
+
+                <section>
+                    <h3>Dauerhafte Ablage</h3>
+                    <div class=\"card\">
+                        <p>
+                            Jede Definition wird inkl. Metadaten, Vorschaubild und JSON-Datenstruktur dauerhaft gespeichert.
+                            Über die neue API können Frontends oder Integrationen Definitionen anlegen, aktualisieren und
+                            abrufen. Die Dokumente lassen sich optional freigeben, sobald eine Benutzerverwaltung hinzugefügt ist.
+                        </p>
+                        <ul>
+                            <li><code>POST /api/definitions/boards</code> und <code>/printers</code> zum Anlegen</li>
+                            <li><code>PUT /api/definitions/&lt;typ&gt;/{slug}</code> für Aktualisierungen</li>
+                            <li><code>GET /api/definitions/&lt;typ&gt;</code> für globale Listen oder eigene Sammlungen</li>
+                        </ul>
+                    </div>
+                </section>
+
+                <section>
+                    <h3>Ausblick</h3>
+                    <div class=\"card\">
+                        <p>
+                            Als nächstes folgen Accounts mit freigabe-basiertem Teilen, suchbare Bibliotheken und ein
+                            Konfigurations-Assistent, der Board- und Druckerdefinitionen kombiniert. Klipper selbst wird nicht
+                            direkt gesteuert – stattdessen erzeugen wir geprüfte Konfigurationsdateien, die sicher importiert
+                            werden können.
+                        </p>
+                    </div>
+                </section>
+            </main>
+
+            <footer>
+                © KlipperIWC – Visual Definitions for custom printer setups
+            </footer>
+        </body>
+        </html>
+        """
 
     @app.get("/board-designer", response_class=HTMLResponse)
     async def board_designer() -> str:
@@ -100,6 +349,22 @@ def create_app() -> FastAPI:
                     border-bottom: 1px solid rgba(148, 163, 184, 0.3);
                     background: rgba(15, 23, 42, 0.9);
                     backdrop-filter: blur(12px);
+                }
+
+                header nav {
+                    display: flex;
+                    gap: 1rem;
+                    margin-bottom: 0.8rem;
+                }
+
+                header nav a {
+                    color: #38bdf8;
+                    text-decoration: none;
+                    font-weight: 600;
+                }
+
+                header nav a:hover {
+                    text-decoration: underline;
                 }
 
                 header h1 {
@@ -229,6 +494,10 @@ def create_app() -> FastAPI:
         </head>
         <body>
             <header>
+                <nav>
+                    <a href=\"/\">← Landingpage</a>
+                    <a href=\"/printer-designer\">Drucker-Designer</a>
+                </nav>
                 <h1>Board Designer Prototype</h1>
                 <p>Create annotated board overlays before the user-generated workflow is available.</p>
             </header>
@@ -491,6 +760,244 @@ def create_app() -> FastAPI:
                     currentShape = null;
                 });
             </script>
+        </body>
+        </html>
+        """
+
+    @app.get("/printer-designer", response_class=HTMLResponse)
+    async def printer_designer() -> str:
+        """Return a conceptual printer designer mockup."""
+
+        return """
+        <!DOCTYPE html>
+        <html lang=\"en\">
+        <head>
+            <meta charset=\"utf-8\" />
+            <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" />
+            <title>KlipperIWC – Printer Designer</title>
+            <style>
+                :root {
+                    color-scheme: dark;
+                    font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+                    background: #020617;
+                    color: #f8fafc;
+                }
+
+                body {
+                    margin: 0;
+                    min-height: 100vh;
+                    display: flex;
+                    flex-direction: column;
+                    background: radial-gradient(circle at top right, rgba(37, 99, 235, 0.4), rgba(2, 6, 23, 0.95));
+                }
+
+                header {
+                    padding: 1.5rem 2rem 1rem;
+                    border-bottom: 1px solid rgba(148, 163, 184, 0.22);
+                    background: rgba(15, 23, 42, 0.82);
+                    backdrop-filter: blur(10px);
+                }
+
+                header nav {
+                    display: flex;
+                    gap: 1rem;
+                    margin-bottom: 0.75rem;
+                }
+
+                header nav a {
+                    color: #38bdf8;
+                    text-decoration: none;
+                    font-weight: 600;
+                }
+
+                header nav a:hover {
+                    text-decoration: underline;
+                }
+
+                header h1 {
+                    margin: 0;
+                    font-size: 1.9rem;
+                }
+
+                header p {
+                    margin: 0.5rem 0 0;
+                    color: rgba(226, 232, 240, 0.8);
+                    max-width: 720px;
+                }
+
+                main {
+                    flex: 1;
+                    display: grid;
+                    grid-template-columns: minmax(320px, 360px) 1fr;
+                    gap: 1.5rem;
+                    padding: 1.5rem 2rem 2.5rem;
+                }
+
+                aside,
+                section {
+                    background: rgba(15, 23, 42, 0.82);
+                    border: 1px solid rgba(148, 163, 184, 0.18);
+                    border-radius: 1.1rem;
+                    box-shadow: 0 16px 40px rgba(15, 23, 42, 0.35);
+                }
+
+                aside {
+                    padding: 1.5rem;
+                    display: flex;
+                    flex-direction: column;
+                    gap: 1.1rem;
+                }
+
+                section {
+                    padding: 1.5rem;
+                    display: grid;
+                    gap: 1.5rem;
+                    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+                }
+
+                h2 {
+                    margin: 0;
+                    font-size: 1.2rem;
+                }
+
+                .step {
+                    border-radius: 0.9rem;
+                    padding: 1rem 1.2rem;
+                    background: rgba(30, 41, 59, 0.85);
+                    border: 1px solid rgba(59, 130, 246, 0.2);
+                }
+
+                .step strong {
+                    display: block;
+                    margin-bottom: 0.35rem;
+                    color: #38bdf8;
+                }
+
+                .canvas-preview {
+                    border-radius: 1rem;
+                    background: linear-gradient(145deg, rgba(30, 64, 175, 0.45), rgba(15, 118, 110, 0.4));
+                    border: 1px solid rgba(148, 163, 184, 0.25);
+                    padding: 1.5rem;
+                    display: grid;
+                    gap: 1rem;
+                }
+
+                .canvas-preview h3 {
+                    margin: 0;
+                    font-size: 1.1rem;
+                }
+
+                .grid {
+                    display: grid;
+                    gap: 1rem;
+                    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                }
+
+                .tile {
+                    border-radius: 0.8rem;
+                    padding: 0.9rem;
+                    background: rgba(15, 23, 42, 0.75);
+                    border: 1px solid rgba(148, 163, 184, 0.18);
+                }
+
+                .tile h4 {
+                    margin: 0 0 0.4rem;
+                    font-size: 1rem;
+                    color: #f1f5f9;
+                }
+
+                .tile p {
+                    margin: 0;
+                    font-size: 0.9rem;
+                    color: rgba(148, 163, 184, 0.92);
+                }
+
+                footer {
+                    padding: 1.5rem 2rem 2rem;
+                    text-align: center;
+                    color: rgba(148, 163, 184, 0.75);
+                    font-size: 0.9rem;
+                }
+
+                @media (max-width: 960px) {
+                    main {
+                        grid-template-columns: 1fr;
+                    }
+
+                    header {
+                        padding: 1.4rem 1.5rem;
+                    }
+
+                    main {
+                        padding: 1.5rem;
+                    }
+                }
+            </style>
+        </head>
+        <body>
+            <header>
+                <nav>
+                    <a href=\"/\">← Landingpage</a>
+                    <a href=\"/board-designer\">Board-Designer</a>
+                </nav>
+                <h1>Printer Designer Concept</h1>
+                <p>
+                    Plane Achsen, Extruder, Sensoren und Steuerungen in einer zentralen Ansicht. Die resultierende
+                    Definition dient als Grundlage für spätere Konfigurationsvorlagen und Multi-Board-Setups.
+                </p>
+            </header>
+            <main>
+                <aside>
+                    <h2>Workflow</h2>
+                    <div class=\"step\">
+                        <strong>1. Kinematik wählen</strong>
+                        <span>CoreXY, Kartesisch, Delta oder Individual. Passt Viewport und Achsen automatisch an.</span>
+                    </div>
+                    <div class=\"step\">
+                        <strong>2. Baugruppe platzieren</strong>
+                        <span>Extruder, Werkzeugköpfe, Endstops und Sensoren werden als Drag&amp;Drop-Module positioniert.</span>
+                    </div>
+                    <div class=\"step\">
+                        <strong>3. Elektronik zuordnen</strong>
+                        <span>Board-Definitionen verbinden Achsen, Motoren, Heater und Sensoren mit konkreten Pins.</span>
+                    </div>
+                    <div class=\"step\">
+                        <strong>4. Varianten speichern</strong>
+                        <span>Setups für Mehrkopf- oder Mehrboard-Systeme lassen sich als Versionen sichern.</span>
+                    </div>
+                </aside>
+                <section>
+                    <div class=\"canvas-preview\">
+                        <h3>Visuelle Vorschau</h3>
+                        <p>
+                            Die Zeichenfläche kombiniert eine 2D-Projektionsansicht mit Layern für Achsen, Bewegungswege
+                            und elektronische Komponenten. Marker können direkt mit Board-Pins oder Sensorkanälen verknüpft
+                            werden und tauchen anschließend im JSON-Export auf.
+                        </p>
+                        <div class=\"grid\">
+                            <div class=\"tile\">
+                                <h4>Achsenmodell</h4>
+                                <p>Dimensionen, Verfahrwege und Limits für X/Y/Z sowie optionale A/B/C-Achsen.</p>
+                            </div>
+                            <div class=\"tile\">
+                                <h4>Extrusionssystem</h4>
+                                <p>Hotends, Extruder, Filamentsensoren und Nozzle-Profil werden hinterlegt.</p>
+                            </div>
+                            <div class=\"tile\">
+                                <h4>Elektronik</h4>
+                                <p>Boards, Erweiterungen, Netzteile und Sicherheitssensoren je nach Aufbau.</p>
+                            </div>
+                            <div class=\"tile\">
+                                <h4>Bewegungsprofile</h4>
+                                <p>Beschleunigungen, Ruckbegrenzungen und automatische Vorschläge für Klipper-Makros.</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </main>
+            <footer>
+                Die gespeicherte Druckerdefinition kann gemeinsam mit Board-Definitionen im Konfigurator verwendet werden.
+            </footer>
         </body>
         </html>
         """

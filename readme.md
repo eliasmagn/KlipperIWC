@@ -4,7 +4,7 @@ KlipperIWC ist eine FastAPI-basierte Backend-Anwendung, die als Grundlage für e
 
 > **Hinweis:** Eine Benutzerverwaltung bzw. ein Login ist derzeit nicht vorgesehen und wird erst in einer späteren Phase ergänzt.
 
-Neue Board- oder Druckerdefinitionen werden aktuell über Pull Requests im GitHub-Repository gepflegt. Sobald eine Authentifizierung verfügbar ist, sollen Anwender fehlende Hardware direkt in der Weboberfläche ergänzen können. Als Übergangslösung existiert bereits eine visuelle Oberfläche, um Pins, Stecker und MCU-Pins zu annotieren.
+Neue Board- oder Druckerdefinitionen werden aktuell über Pull Requests im GitHub-Repository gepflegt. Sobald eine Authentifizierung verfügbar ist, sollen Anwender fehlende Hardware direkt in der Weboberfläche ergänzen können. Die Landingpage (`/`) verlinkt bereits auf den Board-Designer sowie ein konzeptionelles Printer-Designer-Mockup. Beide erzeugen angereicherte JSON-Dokumente, die über neue REST-Endpunkte dauerhaft gespeichert werden können.
 
 ## Voraussetzungen
 
@@ -93,6 +93,14 @@ alembic/             # Datenbankmigrationen
 Dockerfile           # Container-Build
 ```
 
+## Designer & Definition Registry
+
+- **Landingpage (`/`)** – bündelt Einstiegspunkte in Board- und Drucker-Designer und erklärt den geplanten Konfigurations-Generator.
+- **Board-Designer (`/board-designer`)** – erlaubt das Annotieren von Pins, Steckern und Signalen auf hochgeladenen Bildern.
+- **Printer-Designer (`/printer-designer`)** – stellt ein Mockup bereit, um Achsen, Extruder und Elektronik konzeptionell zu planen.
+- **Persistente Registry** – neue Tabellen `board_definition_documents` und `printer_definition_documents` speichern Designer-Ergebnisse inklusive Metadaten und Vorschaubild-Links.
+- **REST-API** – über `/api/definitions/boards` und `/api/definitions/printers` lassen sich Definitionen anlegen, abrufen und aktualisieren.
+
 ## HTTP-API
 
 Die Anwendung stellt Status-Endpunkte, einen Upload-Service für Board-Grafiken und ein
@@ -116,6 +124,12 @@ weiterleitet.
 | GET     | `/api/board-assets/` | Listet Assets (standardmäßig nur freigegebene) |
 | GET     | `/api/board-assets/moderation/pending` | Liefert Moderations-Warteschlange (Moderator-Token erforderlich) |
 | PATCH   | `/api/board-assets/{id}/moderation` | Trifft Moderationsentscheidung (Moderator-Token erforderlich) |
+| GET     | `/api/definitions/boards` | Listet gespeicherte Board-Definitionen inkl. Metadaten |
+| POST    | `/api/definitions/boards` | Persistiert eine neue Board-Definition (JSON aus dem Designer) |
+| PUT     | `/api/definitions/boards/{slug}` | Aktualisiert Namen, Beschreibung oder Daten einer Board-Definition |
+| GET     | `/api/definitions/printers` | Listet gespeicherte Drucker-Definitionen |
+| POST    | `/api/definitions/printers` | Legt eine neue Drucker-Definition an |
+| PUT     | `/api/definitions/printers/{slug}` | Aktualisiert eine vorhandene Drucker-Definition |
 | GET     | `/api/boards/definitions` | Listet alle gültigen Board-Definitionen inkl. Metadaten |
 | POST    | `/api/boards/definitions/validate` | Führt eine vollständige Schema-Validierung aller Definitionen aus |
 | GET     | `/api/boards/versions` | Aggregiert verfügbare Revisionen pro Board-Identifier |
