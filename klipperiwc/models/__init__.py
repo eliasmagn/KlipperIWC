@@ -9,12 +9,32 @@ from .board_assets import (
     BoardAssetUpdate,
     ModerationStatus as BoardAssetModerationStatus,
 )
+from .boards import (
+    BoardDefinition,
+    BoardDefinitionSummary,
+    BoardMetadata,
+    BoardSchemaMetadata,
+    BoardValidationResult,
+    BoardVersionSummary,
+    BoardConnectorDefinition,
+    BoardPinDefinition,
+    BoardResource,
+)
 from .status import JobSummary, PrinterStatus, TemperatureReading
 
 __all__ = [
     "JobSummary",
     "PrinterStatus",
     "TemperatureReading",
+    "BoardDefinition",
+    "BoardMetadata",
+    "BoardConnectorDefinition",
+    "BoardPinDefinition",
+    "BoardResource",
+    "BoardDefinitionSummary",
+    "BoardVersionSummary",
+    "BoardValidationResult",
+    "BoardSchemaMetadata",
     "BoardAssetCreate",
     "BoardAssetUpdate",
     "BoardAssetResponse",

@@ -9,6 +9,7 @@
 - [x] API-Spezifikation und Pydantic-Modelle für Druckerstatus, Temperaturen und aktive Jobs erstellen
 - [x] Persistente Statushistorie in SQLite mit Service-Layer und automatischem Bereinigungstask aufbauen (Retention via `STATUS_HISTORY_RETENTION_DAYS` konfigurierbar)
 - [x] Dashboard-API für aggregierte Kennzahlen (Temperaturen, Jobs, Fortschritt) bereitstellen
+- [x] JSON-Schema für Board-Definitionen samt Validierungs-Workflow und API-Endpunkten dokumentieren
 
 ## Offene Schritte Richtung Produktivbetrieb
 
@@ -16,7 +17,6 @@
 - [x] Websocket-Gateway zur Verteilung der Status-Updates an UI-Clients entwickeln
 - [ ] Dashboard-Layout im Webfrontend mit Navigation und Grundseiten strukturieren
 - [ ] Live-Widgets für Temperaturkurven und Jobfortschritt mit Dashboard-/Websocket-Daten verknüpfen
-- [ ] JSON-Schema für Board-Definitionen finalisieren und Versionsverwaltung im Repository etablieren
 - [x] Upload-Workflow für Board-Grafiken samt S3-/Dateisystem-Storage und Moderationsschritt implementieren
 - [ ] Automatisierte Moderations-Benachrichtigungen (E-Mail/Webhook) integrieren
 - [ ] Validierungslogik für Pin-Namen gegen MCU-Datenbank ergänzen und mit Unit-Tests absichern
