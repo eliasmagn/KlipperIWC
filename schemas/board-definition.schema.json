@@ -1,0 +1,218 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://klipperiwc.dev/schemas/board-definition.schema.json",
+  "title": "KlipperIWC board definition",
+  "description": "Schema describing connectors, pins and metadata for KlipperIWC board definitions.",
+  "x-klipperiwc-version": "1.0.0",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "description": "Semantic version of the board definition format implemented by this document. Must match a version supported by the registry.",
+      "type": "string",
+      "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-[0-9A-Za-z-.]+)?(?:\\+[0-9A-Za-z-.]+)?$"
+    },
+    "metadata": {
+      "$ref": "#/$defs/metadata"
+    },
+    "connectors": {
+      "type": "array",
+      "description": "List of physical or logical connectors exposed by the board.",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/connector"
+      }
+    },
+    "resources": {
+      "type": "array",
+      "description": "Optional references to supplementary resources such as datasheets or CAD files.",
+      "items": {
+        "$ref": "#/$defs/resource"
+      }
+    }
+  },
+  "required": [
+    "schema_version",
+    "metadata",
+    "connectors"
+  ],
+  "$defs": {
+    "metadata": {
+      "type": "object",
+      "description": "General metadata describing the board itself.",
+      "additionalProperties": false,
+      "properties": {
+        "identifier": {
+          "description": "Stable identifier used to reference the board within KlipperIWC.",
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_.-]+$"
+        },
+        "name": {
+          "description": "Human readable board name.",
+          "type": "string",
+          "minLength": 1
+        },
+        "manufacturer": {
+          "description": "Name of the manufacturer or maintainer of the board.",
+          "type": "string",
+          "minLength": 1
+        },
+        "revision": {
+          "description": "Board hardware revision or firmware compatibility tag.",
+          "type": "string",
+          "minLength": 1
+        },
+        "summary": {
+          "description": "Short abstract describing the board.",
+          "type": "string"
+        },
+        "documentation_url": {
+          "description": "Link to online documentation for the board.",
+          "type": "string",
+          "format": "uri"
+        },
+        "tags": {
+          "type": "array",
+          "description": "Free-form tags that help categorise the board.",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "uniqueItems": true
+        }
+      },
+      "required": [
+        "identifier",
+        "name",
+        "manufacturer",
+        "revision"
+      ]
+    },
+    "connector": {
+      "type": "object",
+      "description": "Connector with one or more pins.",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "description": "Local identifier of the connector (e.g. J1, P2).",
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_.-]+$"
+        },
+        "name": {
+          "description": "Display name of the connector.",
+          "type": "string",
+          "minLength": 1
+        },
+        "type": {
+          "description": "Form factor or function of the connector (header, socket, testpad, ...).",
+          "type": "string",
+          "minLength": 1
+        },
+        "orientation": {
+          "description": "Optional orientation hint such as top/bottom/left/right.",
+          "type": "string"
+        },
+        "description": {
+          "description": "Optional free-form description of the connector location or purpose.",
+          "type": "string"
+        },
+        "pins": {
+          "type": "array",
+          "minItems": 1,
+          "description": "Ordered list of pins that belong to the connector.",
+          "items": {
+            "$ref": "#/$defs/pin"
+          }
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "type",
+        "pins"
+      ]
+    },
+    "pin": {
+      "type": "object",
+      "description": "Details of an individual connector pin.",
+      "additionalProperties": false,
+      "properties": {
+        "number": {
+          "description": "Position or index of the pin within the connector.",
+          "type": "integer",
+          "minimum": 1
+        },
+        "signal": {
+          "description": "Primary signal or function exposed by the pin.",
+          "type": "string",
+          "minLength": 1
+        },
+        "name": {
+          "description": "Human readable label for the pin.",
+          "type": "string"
+        },
+        "io": {
+          "description": "Electrical role of the pin (e.g. input, output, power).",
+          "type": "string",
+          "enum": [
+            "input",
+            "output",
+            "inout",
+            "power",
+            "ground",
+            "nc",
+            "test"
+          ]
+        },
+        "voltage": {
+          "description": "Nominal voltage level or range (free-form).",
+          "type": "string"
+        },
+        "notes": {
+          "description": "Free-form notes or constraints.",
+          "type": "string"
+        },
+        "aliases": {
+          "type": "array",
+          "description": "Alternative labels that may be printed on the silkscreen.",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "uniqueItems": true
+        }
+      },
+      "required": [
+        "number",
+        "signal"
+      ]
+    },
+    "resource": {
+      "type": "object",
+      "description": "Reference to an external resource related to the board.",
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "description": "Kind of the resource (datasheet, schematic, cad, photo, ...).",
+          "type": "string",
+          "minLength": 1
+        },
+        "name": {
+          "description": "Human readable label for the resource.",
+          "type": "string",
+          "minLength": 1
+        },
+        "uri": {
+          "description": "Link or path to the resource.",
+          "type": "string",
+          "format": "uri"
+        }
+      },
+      "required": [
+        "type",
+        "name",
+        "uri"
+      ]
+    }
+  }
+}

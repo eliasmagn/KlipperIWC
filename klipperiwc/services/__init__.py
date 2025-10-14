@@ -10,6 +10,14 @@ from .board_assets import (
     set_board_asset_moderation,
     update_board_asset_metadata,
 )
+from .board_registry import (
+    BoardRegistryError,
+    get_schema_metadata,
+    list_board_definitions,
+    list_board_versions,
+    validate_all_board_definitions,
+    validate_board_definition_file,
+)
 from .dashboard_metrics import (
     get_dashboard_overview,
     get_job_metrics,
@@ -31,4 +39,10 @@ __all__ = [
     "AssetModerationStatus",
     "AssetVisibility",
     "AssetAlreadyExistsError",
+    "list_board_definitions",
+    "list_board_versions",
+    "validate_board_definition_file",
+    "validate_all_board_definitions",
+    "get_schema_metadata",
+    "BoardRegistryError",
 ]

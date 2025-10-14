@@ -17,7 +17,8 @@
 - [ ] Alarm- und Benachrichtigungssystem für kritische Ereignisse hinzufügen
 
 ## Phase 3 – Hardware- und Board-Definitionen
-- [ ] JSON-Schema und Versionsverwaltung für Board-Definitionen etablieren
+- [x] JSON-Schema und Versionsverwaltung für Board-Definitionen etablieren
+- [x] API-Endpunkte zum Listen, Validieren und Aggregieren von Board-Revisionen bereitstellen
 - [x] Upload-Workflow für Board-Bilder inkl. Storage-Adapter und Moderation ergänzen
 - [x] API-Token-gestützte Moderationsfreigabe und Sichtbarkeitsfilter für Board-Assets etablieren
 - [ ] Moderations-Dashboard mit Benachrichtigungskette entwerfen

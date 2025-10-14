@@ -116,6 +116,10 @@ weiterleitet.
 | GET     | `/api/board-assets/` | Listet Assets (standardmäßig nur freigegebene) |
 | GET     | `/api/board-assets/moderation/pending` | Liefert Moderations-Warteschlange (Moderator-Token erforderlich) |
 | PATCH   | `/api/board-assets/{id}/moderation` | Trifft Moderationsentscheidung (Moderator-Token erforderlich) |
+| GET     | `/api/boards/definitions` | Listet alle gültigen Board-Definitionen inkl. Metadaten |
+| POST    | `/api/boards/definitions/validate` | Führt eine vollständige Schema-Validierung aller Definitionen aus |
+| GET     | `/api/boards/versions` | Aggregiert verfügbare Revisionen pro Board-Identifier |
+| GET     | `/api/boards/schema` | Liefert Schema-Version und Speicherort der erwarteten Definition |
 
 Zusätzliche Zustände (`pending`, `rejected`) können ausschließlich mit gültigem Upload- oder Moderator-Token abgefragt werden.
 
@@ -319,6 +323,41 @@ Konfiguration über Umgebungsvariablen:
 Jeder Upload erzeugt einen Datensatz in `board_assets` sowie eine Historie in
 `board_asset_moderation_events`. Assets starten im Status `pending` und müssen über den
 Moderationsendpunkt freigegeben werden, bevor sie in Standardlisten erscheinen.
+
+## Board-Definitionen versionieren & prüfen
+
+Hardware-Definitionen werden als JSON-Dateien im Verzeichnis `board-definitions/`
+versioniert. Das Schema `schemas/board-definition.schema.json` dokumentiert Pflichtfelder
+für Metadaten (`identifier`, `name`, `manufacturer`, `revision`), Steckverbinder (`id`,
+`name`, `type`, `pins`) sowie Pins (`number`, `signal`). Über den Schlüssel
+`x-klipperiwc-version` ist ersichtlich, welche `schema_version` gültige Definitionen
+verwenden müssen. Die Pfade können über die Umgebungsvariablen
+`BOARD_DEFINITION_ROOT` (Standard: `./board-definitions`) und
+`BOARD_DEFINITION_SCHEMA` (Standard: `./schemas/board-definition.schema.json`) angepasst
+werden.
+
+**Empfohlener Workflow:**
+
+1. Unter `http://localhost:8000/board-designer` Steckverbinder markieren und Pins
+   benennen. Die Markierungen dienen als Vorlage für die JSON-Definition.
+2. Eine Datei `<identifier>/<revision>.json` im Registry-Ordner anlegen und anhand des
+   Schemas ausfüllen.
+3. Über `GET /api/boards/schema` prüfen, welche Schema-Version aktuell erwartet wird.
+4. Mit `POST /api/boards/definitions/validate` sämtliche Definitionen validieren. Die
+   Antwort enthält pro Datei Validierungsfehler und bei Erfolg eine komprimierte
+   Zusammenfassung.
+5. Mit `GET /api/boards/definitions` bzw. `GET /api/boards/versions` lassen sich
+   resultierende Metadaten und verfügbare Revisionen automatisiert konsumieren.
+
+Beispielaufruf für die Validierung:
+
+```bash
+curl -X POST "http://localhost:8000/api/boards/definitions/validate" | jq
+```
+
+Die Pydantic-Modelle unter `klipperiwc/models/boards.py` erlauben es, Definitionen in
+Python-Diensten weiterzuverwenden. Die API reagiert automatisch auf neue Dateien,
+solange sie im konfigurierten Registry-Verzeichnis abgelegt werden.
 
 ## Websocket-Streaming
 
