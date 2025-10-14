@@ -20,6 +20,7 @@ from .boards import (
     BoardPinDefinition,
     BoardResource,
 )
+from .definitions import DefinitionCreate, DefinitionResponse, DefinitionUpdate
 from .status import JobSummary, PrinterStatus, TemperatureReading
 
 __all__ = [
@@ -42,4 +43,7 @@ __all__ = [
     "BoardAssetModerationEvent",
     "BoardAssetModerationStatus",
     "BoardAssetVisibility",
+    "DefinitionCreate",
+    "DefinitionUpdate",
+    "DefinitionResponse",
 ]

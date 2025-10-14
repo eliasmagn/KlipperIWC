@@ -5,8 +5,9 @@ from __future__ import annotations
 from datetime import datetime
 from enum import Enum
 from typing import Optional
+from uuid import uuid4
 
-from sqlalchemy import Boolean, DateTime, Float, ForeignKey, Integer, String, Text, func
+from sqlalchemy import Boolean, DateTime, Float, ForeignKey, Integer, JSON, String, Text, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from . import Base
@@ -19,6 +20,8 @@ __all__ = [
     "BoardAssetModerationEvent",
     "AssetModerationStatus",
     "AssetVisibility",
+    "BoardDefinitionDocument",
+    "PrinterDefinitionDocument",
 ]
 
 
@@ -193,3 +196,29 @@ class BoardAssetModerationEvent(Base, TimestampMixin):
 
     def __repr__(self) -> str:  # pragma: no cover - repr utility
         return f"BoardAssetModerationEvent(id={self.id!r}, asset_id={self.asset_id!r}, status={self.status!r})"
+
+
+class DefinitionDocumentMixin(TimestampMixin):
+    """Common columns for stored board and printer definitions."""
+
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=lambda: str(uuid4()))
+    slug: Mapped[str] = mapped_column(String(128), unique=True, nullable=False, index=True)
+    name: Mapped[str] = mapped_column(String(255), nullable=False)
+    description: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    preview_image_uri: Mapped[Optional[str]] = mapped_column(String(512), nullable=True)
+    data: Mapped[dict] = mapped_column(JSON, nullable=False, default=dict)
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False
+    )
+
+
+class BoardDefinitionDocument(DefinitionDocumentMixin, Base):
+    """Persisted board definition document authored in the designer."""
+
+    __tablename__ = "board_definition_documents"
+
+
+class PrinterDefinitionDocument(DefinitionDocumentMixin, Base):
+    """Persisted printer definition document authored in the designer."""
+
+    __tablename__ = "printer_definition_documents"

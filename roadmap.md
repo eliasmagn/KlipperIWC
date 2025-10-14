@@ -21,13 +21,17 @@
 - [x] API-Endpunkte zum Listen, Validieren und Aggregieren von Board-Revisionen bereitstellen
 - [x] Upload-Workflow für Board-Bilder inkl. Storage-Adapter und Moderation ergänzen
 - [x] API-Token-gestützte Moderationsfreigabe und Sichtbarkeitsfilter für Board-Assets etablieren
+- [x] Persistente Registry-Tabellen und CRUD-API für Board- und Druckerdefinitionen schaffen
 - [ ] Moderations-Dashboard mit Benachrichtigungskette entwerfen
 - [ ] Validierungslogik gegen MCU- und Pin-Datenbanken implementieren
 - [ ] Öffentliche Bibliothek mit Board-Definitionen und Suchfunktion bereitstellen
 - [ ] Vorbereitung für GitHub-zu-UI-Synchronisation der Definitionen treffen
 
 ## Phase 4 – Benutzeroberfläche
+- [x] Landingpage mit Einstieg in Board- und Drucker-Designer bereitstellen
+- [x] Drucker-Designer mit Upload-, Markierungs- und Maßwerkzeugen bereitstellen
 - [ ] Web-Frontend mit Dashboard, Verlaufsgrafiken und Konfigurationsseiten entwickeln
+- [ ] Bearbeitungsfunktionen (Bewegen/Löschen) in Board- und Drucker-Designer ergänzen
 - [ ] Responsive Layout und dunkler Modus
 - [ ] Internationalisierung der Oberfläche vorbereiten
 
@@ -40,3 +44,4 @@
 - [ ] Zugriffskonzepte und Benutzerrollen definieren
 - [ ] Login- und Session-Management implementieren
 - [ ] Erweiterte Audit- und Logging-Funktionen bereitstellen
+- [ ] Freigabe-Workflows und Einladungen für gemeinsam genutzte Definitionen entwickeln
