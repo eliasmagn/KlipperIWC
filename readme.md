@@ -95,8 +95,8 @@ Dockerfile           # Container-Build
 
 ## HTTP-API
 
-Die Anwendung stellt Status-Endpunkte, einen Upload-Service für Board-Grafiken und ein
-Moderations-API bereit. Solange noch keine Anbindung an einen realen Klipper-Service
+Die Anwendung stellt Status-Endpunkte, einen Upload-Service für Board-Grafiken, ein
+Moderations-API sowie erste Steuerbefehle bereit. Solange noch keine Anbindung an einen realen Klipper-Service
 existiert, liefern die Status-Endpunkte repräsentative Beispielwerte. Bei jedem Abruf
 wird der Status zusätzlich in einer Historientabelle gespeichert, sodass spätere
 Visualisierungen auf die aufgezeichneten Messwerte zugreifen können. Parallel steht ein
@@ -111,11 +111,31 @@ weiterleitet.
 | GET     | `/api/dashboard/overview` | Verdichteter Status-Snapshot inkl. Verlaufspunkten |
 | GET     | `/api/dashboard/temperatures` | Statistiken pro Temperaturkanal (min/avg/max, aktueller Wert) |
 | GET     | `/api/dashboard/jobs` | Zusammenfassung der zuletzt beobachteten Druckaufträge |
+| POST    | `/api/control/start` | Startet einen Druckauftrag (Header `X-Control-Token` erforderlich) |
+| POST    | `/api/control/stop` | Stoppt den aktuellen Druckauftrag (Header `X-Control-Token` erforderlich) |
+| POST    | `/api/control/pause` | Pausiert den aktuellen Druckauftrag (Header `X-Control-Token` erforderlich) |
+| POST    | `/api/control/emergency-stop` | Führt einen Not-Aus aus (Header `X-Control-Token` erforderlich) |
 | POST    | `/api/board-assets/` | Lädt Board-Grafiken samt Metadaten hoch (Upload-Token erforderlich) |
 | PATCH   | `/api/board-assets/{id}` | Aktualisiert Metadaten eines Assets (Upload-Token erforderlich) |
 | GET     | `/api/board-assets/` | Listet Assets (standardmäßig nur freigegebene) |
 | GET     | `/api/board-assets/moderation/pending` | Liefert Moderations-Warteschlange (Moderator-Token erforderlich) |
 | PATCH   | `/api/board-assets/{id}/moderation` | Trifft Moderationsentscheidung (Moderator-Token erforderlich) |
+
+### Steuerbefehle und Sicherheitsmechanismen
+
+Die Steuer-API leitet Befehle wie Start, Stop, Pause und Not-Aus an eine konfigurierte
+Klipper-Instanz weiter. Um unautorisierte Zugriffe zu verhindern, erwartet jeder
+Aufruf der `/api/control/*`-Routen den Header `X-Control-Token`. Gültige Tokens werden
+über die Umgebungsvariable `CONTROL_ACCESS_TOKENS` (kommagetrennt) gesetzt.
+Optional lässt sich die ausstellende IP-Adresse über `CONTROL_ACCESS_WHITELIST`
+eingrenzen. Ohne konfiguriertes Token wird beim Start eine Warnung geloggt und die
+Endpunkte bleiben ungeschützt.
+
+Der Zugriff auf die Klipper-API wird über `KLIPPER_API_BASE_URL` gesteuert. Weitere
+Optionen sind `KLIPPER_API_KEY` (API-Key Header), `KLIPPER_API_TIMEOUT` (Sekunden) sowie
+`KLIPPER_API_VERIFY_SSL` ("true"/"false" oder Pfad zu einem Zertifikat). Optional kann
+der Request-Body ein `confirm_token` (Pydantic-Model) tragen, das direkt an Klipper
+weitergereicht wird und zur Abbildung mehrstufiger Freigaben dient.
 
 ### Dashboard-Metriken aus der Historie
 

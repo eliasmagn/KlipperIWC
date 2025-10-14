@@ -15,6 +15,11 @@ from .dashboard_metrics import (
     get_job_metrics,
     get_temperature_summary,
 )
+from .control import (
+    ControlServiceError,
+    KlipperControlService,
+    get_control_service,
+)
 from .status import purge_history_before, record_status_snapshot
 
 __all__ = [
@@ -31,4 +36,7 @@ __all__ = [
     "AssetModerationStatus",
     "AssetVisibility",
     "AssetAlreadyExistsError",
+    "KlipperControlService",
+    "ControlServiceError",
+    "get_control_service",
 ]

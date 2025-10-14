@@ -9,6 +9,7 @@
 - [x] API-Spezifikation und Pydantic-Modelle für Druckerstatus, Temperaturen und aktive Jobs erstellen
 - [x] Persistente Statushistorie in SQLite mit Service-Layer und automatischem Bereinigungstask aufbauen (Retention via `STATUS_HISTORY_RETENTION_DAYS` konfigurierbar)
 - [x] Dashboard-API für aggregierte Kennzahlen (Temperaturen, Jobs, Fortschritt) bereitstellen
+- [x] Steuer-Endpunkte für Start/Stop/Pause/Not-Aus inklusive Token- und IP-Whitelist-Absicherung veröffentlichen
 
 ## Offene Schritte Richtung Produktivbetrieb
 

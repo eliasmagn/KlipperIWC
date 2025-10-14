@@ -13,7 +13,7 @@
 ## Phase 2 – Beobachtung und Steuerung
 - [x] Websocket-Streaming für Echtzeit-Updates inklusive Gateway und Autorisierung integrieren (Auth & Rate-Limits folgen)
 - [ ] Dashboard-Layout mit Navigation, Live-Widgets und Temperatur-/Jobvisualisierungen entwickeln
-- [ ] Steuerbefehle (Start/Stop/Notaus) mit Sicherheitsmechanismen versehen
+ - [x] Steuerbefehle (Start/Stop/Notaus) mit Sicherheitsmechanismen versehen
 - [ ] Alarm- und Benachrichtigungssystem für kritische Ereignisse hinzufügen
 
 ## Phase 3 – Hardware- und Board-Definitionen

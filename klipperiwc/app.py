@@ -9,10 +9,15 @@ from contextlib import suppress
 from datetime import datetime, timedelta, timezone
 from functools import lru_cache
 
-from fastapi import FastAPI
+from fastapi import Depends, FastAPI, Header, HTTPException, Request, status
 from fastapi.responses import HTMLResponse
 
-from klipperiwc.api import board_assets_router, dashboard_router, status_router
+from klipperiwc.api import (
+    board_assets_router,
+    control_router,
+    dashboard_router,
+    status_router,
+)
 from klipperiwc.db import Base, engine
 from klipperiwc.services import purge_history_before
 from klipperiwc.websocket import router as websocket_router
@@ -51,9 +56,53 @@ def create_app() -> FastAPI:
             with suppress(asyncio.CancelledError):
                 await task
 
+    control_tokens = {
+        token.strip()
+        for token in os.getenv("CONTROL_ACCESS_TOKENS", "").split(",")
+        if token.strip()
+    }
+    control_whitelist = {
+        host.strip()
+        for host in os.getenv("CONTROL_ACCESS_WHITELIST", "").split(",")
+        if host.strip()
+    }
+
+    if not control_tokens:
+        logger.warning(
+            "Control endpoints are exposed without token protection. Set CONTROL_ACCESS_TOKENS to secure them."
+        )
+
+    class ControlAccessGuard:
+        """Dependency that enforces token and optional IP filtering for control endpoints."""
+
+        def __init__(self) -> None:
+            self._tokens = control_tokens
+            self._whitelist = control_whitelist
+
+        async def __call__(
+            self,
+            request: Request,
+            control_token: str | None = Header(None, alias="X-Control-Token"),
+        ) -> None:
+            client_host = request.client.host if request.client else None
+            if self._whitelist and client_host not in self._whitelist:
+                raise HTTPException(
+                    status_code=status.HTTP_403_FORBIDDEN,
+                    detail="Client is not permitted to issue control commands",
+                )
+
+            if self._tokens and (control_token not in self._tokens):
+                raise HTTPException(
+                    status_code=status.HTTP_401_UNAUTHORIZED,
+                    detail="Missing or invalid control token",
+                )
+
+    guard_dependency = Depends(ControlAccessGuard())
+
     app.include_router(status_router)
     app.include_router(board_assets_router)
     app.include_router(dashboard_router)
+    app.include_router(control_router, dependencies=[guard_dependency])
     app.include_router(websocket_router)
 
     @app.get("/")
