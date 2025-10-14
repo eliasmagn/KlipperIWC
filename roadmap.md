@@ -29,8 +29,9 @@
 
 ## Phase 4 – Benutzeroberfläche
 - [x] Landingpage mit Einstieg in Board- und Drucker-Designer bereitstellen
-- [x] Drucker-Designer als interaktives Mockup für spätere Funktionen skizzieren
+- [x] Drucker-Designer mit Upload-, Markierungs- und Maßwerkzeugen bereitstellen
 - [ ] Web-Frontend mit Dashboard, Verlaufsgrafiken und Konfigurationsseiten entwickeln
+- [ ] Bearbeitungsfunktionen (Bewegen/Löschen) in Board- und Drucker-Designer ergänzen
 - [ ] Responsive Layout und dunkler Modus
 - [ ] Internationalisierung der Oberfläche vorbereiten
 

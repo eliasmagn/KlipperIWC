@@ -766,7 +766,7 @@ def create_app() -> FastAPI:
 
     @app.get("/printer-designer", response_class=HTMLResponse)
     async def printer_designer() -> str:
-        """Return a conceptual printer designer mockup."""
+        """Return an interactive printer designer similar to the board designer."""
 
         return """
         <!DOCTYPE html>
@@ -779,8 +779,8 @@ def create_app() -> FastAPI:
                 :root {
                     color-scheme: dark;
                     font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-                    background: #020617;
-                    color: #f8fafc;
+                    background: #0f172a;
+                    color: #e2e8f0;
                 }
 
                 body {
@@ -788,20 +788,20 @@ def create_app() -> FastAPI:
                     min-height: 100vh;
                     display: flex;
                     flex-direction: column;
-                    background: radial-gradient(circle at top right, rgba(37, 99, 235, 0.4), rgba(2, 6, 23, 0.95));
+                    background: radial-gradient(circle at top right, rgba(59, 130, 246, 0.35), rgba(15, 23, 42, 0.94));
                 }
 
                 header {
-                    padding: 1.5rem 2rem 1rem;
-                    border-bottom: 1px solid rgba(148, 163, 184, 0.22);
-                    background: rgba(15, 23, 42, 0.82);
-                    backdrop-filter: blur(10px);
+                    padding: 1.6rem 2rem 1.2rem;
+                    border-bottom: 1px solid rgba(148, 163, 184, 0.3);
+                    background: rgba(15, 23, 42, 0.86);
+                    backdrop-filter: blur(16px);
                 }
 
                 header nav {
                     display: flex;
                     gap: 1rem;
-                    margin-bottom: 0.75rem;
+                    margin-bottom: 0.8rem;
                 }
 
                 header nav a {
@@ -816,120 +816,215 @@ def create_app() -> FastAPI:
 
                 header h1 {
                     margin: 0;
-                    font-size: 1.9rem;
+                    font-size: clamp(1.8rem, 3vw, 2.3rem);
                 }
 
                 header p {
-                    margin: 0.5rem 0 0;
-                    color: rgba(226, 232, 240, 0.8);
-                    max-width: 720px;
+                    margin: 0.4rem 0 0;
+                    max-width: 820px;
+                    color: rgba(226, 232, 240, 0.78);
+                    line-height: 1.6;
                 }
 
-                main {
+                .layout {
                     flex: 1;
                     display: grid;
                     grid-template-columns: minmax(320px, 360px) 1fr;
-                    gap: 1.5rem;
-                    padding: 1.5rem 2rem 2.5rem;
-                }
-
-                aside,
-                section {
-                    background: rgba(15, 23, 42, 0.82);
-                    border: 1px solid rgba(148, 163, 184, 0.18);
-                    border-radius: 1.1rem;
-                    box-shadow: 0 16px 40px rgba(15, 23, 42, 0.35);
+                    gap: 1.6rem;
+                    padding: 1.8rem 2rem 2.4rem;
                 }
 
                 aside {
-                    padding: 1.5rem;
                     display: flex;
                     flex-direction: column;
-                    gap: 1.1rem;
-                }
-
-                section {
+                    gap: 1.4rem;
+                    border-radius: 1.2rem;
+                    border: 1px solid rgba(148, 163, 184, 0.22);
+                    background: rgba(15, 23, 42, 0.88);
                     padding: 1.5rem;
-                    display: grid;
-                    gap: 1.5rem;
-                    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+                    box-shadow: 0 24px 48px rgba(15, 23, 42, 0.45);
                 }
 
-                h2 {
-                    margin: 0;
+                aside h2 {
+                    margin: 0 0 0.6rem;
                     font-size: 1.2rem;
-                }
-
-                .step {
-                    border-radius: 0.9rem;
-                    padding: 1rem 1.2rem;
-                    background: rgba(30, 41, 59, 0.85);
-                    border: 1px solid rgba(59, 130, 246, 0.2);
-                }
-
-                .step strong {
-                    display: block;
-                    margin-bottom: 0.35rem;
-                    color: #38bdf8;
-                }
-
-                .canvas-preview {
-                    border-radius: 1rem;
-                    background: linear-gradient(145deg, rgba(30, 64, 175, 0.45), rgba(15, 118, 110, 0.4));
-                    border: 1px solid rgba(148, 163, 184, 0.25);
-                    padding: 1.5rem;
-                    display: grid;
-                    gap: 1rem;
-                }
-
-                .canvas-preview h3 {
-                    margin: 0;
-                    font-size: 1.1rem;
-                }
-
-                .grid {
-                    display: grid;
-                    gap: 1rem;
-                    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-                }
-
-                .tile {
-                    border-radius: 0.8rem;
-                    padding: 0.9rem;
-                    background: rgba(15, 23, 42, 0.75);
-                    border: 1px solid rgba(148, 163, 184, 0.18);
-                }
-
-                .tile h4 {
-                    margin: 0 0 0.4rem;
-                    font-size: 1rem;
                     color: #f1f5f9;
                 }
 
-                .tile p {
+                .control-group {
+                    display: grid;
+                    gap: 0.75rem;
+                }
+
+                .control {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 0.45rem;
+                    background: rgba(30, 41, 59, 0.75);
+                    border: 1px solid rgba(148, 163, 184, 0.2);
+                    border-radius: 0.85rem;
+                    padding: 0.9rem 1rem;
+                }
+
+                .control label {
+                    font-size: 0.85rem;
+                    text-transform: uppercase;
+                    letter-spacing: 0.05em;
+                    color: rgba(226, 232, 240, 0.72);
+                }
+
+                .control input,
+                .control select {
+                    background: rgba(15, 23, 42, 0.6);
+                    color: #e2e8f0;
+                    border: 1px solid rgba(148, 163, 184, 0.35);
+                    border-radius: 0.6rem;
+                    padding: 0.5rem 0.75rem;
+                    font-size: 0.95rem;
+                }
+
+                .control input[type="color"] {
+                    padding: 0.25rem;
+                    height: 2.2rem;
+                }
+
+                .toolbar {
+                    display: flex;
+                    flex-wrap: wrap;
+                    gap: 0.6rem;
+                }
+
+                button {
+                    background: rgba(30, 41, 59, 0.75);
+                    color: #e2e8f0;
+                    border: 1px solid rgba(148, 163, 184, 0.35);
+                    border-radius: 0.6rem;
+                    padding: 0.5rem 0.95rem;
+                    font-size: 0.95rem;
+                    cursor: pointer;
+                    transition: transform 0.12s ease, border-color 0.2s ease;
+                }
+
+                button:hover {
+                    transform: translateY(-1px);
+                    border-color: #38bdf8;
+                }
+
+                button.active {
+                    border-color: #38bdf8;
+                    box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.3);
+                }
+
+                .hint {
+                    font-size: 0.85rem;
+                    color: rgba(148, 163, 184, 0.78);
+                    line-height: 1.5;
+                }
+
+                .shape-list {
+                    display: grid;
+                    gap: 0.8rem;
+                    max-height: 30vh;
+                    overflow: auto;
+                    padding-right: 0.2rem;
+                }
+
+                .shape-entry {
+                    border-radius: 0.8rem;
+                    border: 1px solid rgba(148, 163, 184, 0.2);
+                    background: rgba(30, 41, 59, 0.7);
+                    padding: 0.75rem 0.85rem;
+                    display: grid;
+                    gap: 0.35rem;
+                }
+
+                .shape-entry header {
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: baseline;
+                    gap: 0.5rem;
+                }
+
+                .shape-entry h3 {
                     margin: 0;
-                    font-size: 0.9rem;
-                    color: rgba(148, 163, 184, 0.92);
+                    font-size: 1rem;
+                    color: #f8fafc;
                 }
 
-                footer {
-                    padding: 1.5rem 2rem 2rem;
-                    text-align: center;
+                .shape-entry span {
+                    font-size: 0.75rem;
+                    letter-spacing: 0.05em;
+                    text-transform: uppercase;
                     color: rgba(148, 163, 184, 0.75);
-                    font-size: 0.9rem;
                 }
 
-                @media (max-width: 960px) {
-                    main {
+                .shape-entry dl {
+                    display: grid;
+                    grid-template-columns: max-content 1fr;
+                    gap: 0.35rem 0.6rem;
+                    margin: 0;
+                }
+
+                .shape-entry dt {
+                    font-size: 0.78rem;
+                    color: rgba(148, 163, 184, 0.8);
+                }
+
+                .shape-entry dd {
+                    margin: 0;
+                    font-size: 0.85rem;
+                    color: rgba(226, 232, 240, 0.88);
+                }
+
+                .canvas-shell {
+                    border-radius: 1.2rem;
+                    border: 1px solid rgba(148, 163, 184, 0.25);
+                    background: radial-gradient(circle at top, rgba(30, 64, 175, 0.24), rgba(15, 23, 42, 0.9));
+                    min-height: 70vh;
+                    position: relative;
+                    overflow: hidden;
+                }
+
+                svg {
+                    width: 100%;
+                    height: 100%;
+                    display: block;
+                    background: repeating-linear-gradient(0deg, rgba(148, 163, 184, 0.08) 0, rgba(148, 163, 184, 0.08) 1px, transparent 1px, transparent 32px),
+                        repeating-linear-gradient(90deg, rgba(148, 163, 184, 0.08) 0, rgba(148, 163, 184, 0.08) 1px, transparent 1px, transparent 32px);
+                }
+
+                image {
+                    pointer-events: none;
+                }
+
+                .shape-label {
+                    fill: #f8fafc;
+                    font-size: 13px;
+                    text-shadow: 0 1px 2px rgba(15, 23, 42, 0.85);
+                    pointer-events: none;
+                }
+
+                .dimension-label {
+                    font-size: 11px;
+                    fill: rgba(226, 232, 240, 0.9);
+                }
+
+                .rotational.disabled {
+                    opacity: 0.4;
+                }
+
+                @media (max-width: 980px) {
+                    .layout {
                         grid-template-columns: 1fr;
-                    }
-
-                    header {
-                        padding: 1.4rem 1.5rem;
-                    }
-
-                    main {
                         padding: 1.5rem;
+                    }
+
+                    aside {
+                        max-height: none;
+                    }
+
+                    .shape-list {
+                        max-height: none;
                     }
                 }
             </style>
@@ -940,64 +1035,450 @@ def create_app() -> FastAPI:
                     <a href=\"/\">← Landingpage</a>
                     <a href=\"/board-designer\">Board-Designer</a>
                 </nav>
-                <h1>Printer Designer Concept</h1>
+                <h1>Printer Designer Studio</h1>
                 <p>
-                    Plane Achsen, Extruder, Sensoren und Steuerungen in einer zentralen Ansicht. Die resultierende
-                    Definition dient als Grundlage für spätere Konfigurationsvorlagen und Multi-Board-Setups.
+                    Lade ein Foto oder Rendering deines Aufbaus hoch, markiere Extruder, Motoren, Sensoren und Lüfter und ergänze
+                    Maße sowie Rotationsdistanzen. Die erstellte Visualisierung bildet die Grundlage für wiederverwendbare
+                    Druckerdefinitionen im geplanten Konfigurator.
                 </p>
             </header>
-            <main>
+            <div class=\"layout\">
                 <aside>
-                    <h2>Workflow</h2>
-                    <div class=\"step\">
-                        <strong>1. Kinematik wählen</strong>
-                        <span>CoreXY, Kartesisch, Delta oder Individual. Passt Viewport und Achsen automatisch an.</span>
-                    </div>
-                    <div class=\"step\">
-                        <strong>2. Baugruppe platzieren</strong>
-                        <span>Extruder, Werkzeugköpfe, Endstops und Sensoren werden als Drag&amp;Drop-Module positioniert.</span>
-                    </div>
-                    <div class=\"step\">
-                        <strong>3. Elektronik zuordnen</strong>
-                        <span>Board-Definitionen verbinden Achsen, Motoren, Heater und Sensoren mit konkreten Pins.</span>
-                    </div>
-                    <div class=\"step\">
-                        <strong>4. Varianten speichern</strong>
-                        <span>Setups für Mehrkopf- oder Mehrboard-Systeme lassen sich als Versionen sichern.</span>
-                    </div>
-                </aside>
-                <section>
-                    <div class=\"canvas-preview\">
-                        <h3>Visuelle Vorschau</h3>
-                        <p>
-                            Die Zeichenfläche kombiniert eine 2D-Projektionsansicht mit Layern für Achsen, Bewegungswege
-                            und elektronische Komponenten. Marker können direkt mit Board-Pins oder Sensorkanälen verknüpft
-                            werden und tauchen anschließend im JSON-Export auf.
-                        </p>
-                        <div class=\"grid\">
-                            <div class=\"tile\">
-                                <h4>Achsenmodell</h4>
-                                <p>Dimensionen, Verfahrwege und Limits für X/Y/Z sowie optionale A/B/C-Achsen.</p>
+                    <div class=\"control-group\">
+                        <div class=\"control\">
+                            <label for=\"backgroundUpload\">Hintergrundgrafik</label>
+                            <input id=\"backgroundUpload\" type=\"file\" accept=\"image/*\" />
+                            <p class=\"hint\">Unterstützt PNG, JPG und SVG. Das Bild legt die Dimension der Zeichenfläche fest.</p>
+                        </div>
+                        <div class=\"control\">
+                            <label for=\"componentType\">Komponententyp</label>
+                            <select id=\"componentType\">
+                                <option value=\"switch\">Endstop / Schalter</option>
+                                <option value=\"extruder\">Extruder / Hotend</option>
+                                <option value=\"stepper\" selected>Stepper-Motor</option>
+                                <option value=\"lead_screw\">Lead Screw / Z-Antrieb</option>
+                                <option value=\"sensor\">Sensor</option>
+                                <option value=\"fan\">Lüfter</option>
+                                <option value=\"custom\">Benutzerdefiniert</option>
+                            </select>
+                        </div>
+                        <div class=\"control rotational\">
+                            <label for=\"rotationalDistance\">Rotationsdistanz (mm)</label>
+                            <input id=\"rotationalDistance\" type=\"number\" step=\"0.01\" placeholder=\"z. B. 32.0\" />
+                            <p class=\"hint\">Wird für Stepper- und Lead-Screw-Markierungen übernommen.</p>
+                        </div>
+                        <div class=\"control\">
+                            <label for=\"highlightColor\">Farbe</label>
+                            <input id=\"highlightColor\" type=\"color\" value=\"#22c55e\" />
+                        </div>
+                        <div class=\"control\">
+                            <label>Werkzeuge</label>
+                            <div class=\"toolbar\">
+                                <button id=\"rectTool\" type=\"button\">Rechteck</button>
+                                <button id=\"circleTool\" type=\"button\">Kreis</button>
+                                <button id=\"arrowTool\" type=\"button\">Maßpfeil</button>
+                                <button id=\"panTool\" type=\"button\">Verschieben</button>
                             </div>
-                            <div class=\"tile\">
-                                <h4>Extrusionssystem</h4>
-                                <p>Hotends, Extruder, Filamentsensoren und Nozzle-Profil werden hinterlegt.</p>
-                            </div>
-                            <div class=\"tile\">
-                                <h4>Elektronik</h4>
-                                <p>Boards, Erweiterungen, Netzteile und Sicherheitssensoren je nach Aufbau.</p>
-                            </div>
-                            <div class=\"tile\">
-                                <h4>Bewegungsprofile</h4>
-                                <p>Beschleunigungen, Ruckbegrenzungen und automatische Vorschläge für Klipper-Makros.</p>
-                            </div>
+                            <p class=\"hint\">Zeichne mit zwei Klicks. Pfeile benötigen Start- und Endpunkt sowie ein Maß. Vorgeschlagene Maße orientieren sich an Pixeln, eigene mm-Angaben können eingetragen werden.</p>
                         </div>
                     </div>
-                </section>
-            </main>
-            <footer>
-                Die gespeicherte Druckerdefinition kann gemeinsam mit Board-Definitionen im Konfigurator verwendet werden.
-            </footer>
+                    <div>
+                        <h2>Markierungen</h2>
+                        <div id=\"printerShapeList\" class=\"shape-list\"></div>
+                    </div>
+                </aside>
+                <main>
+                    <div class=\"canvas-shell\">
+                        <svg id=\"printerCanvas\" viewBox=\"0 0 1280 720\" role=\"img\" aria-label=\"Printer designer canvas\">
+                            <defs>
+                                <marker id=\"arrowhead-end\" markerWidth=\"10\" markerHeight=\"10\" refX=\"6\" refY=\"3\" orient=\"auto\" markerUnits=\"strokeWidth\">
+                                    <path d=\"M0,0 L6,3 L0,6 z\" fill=\"currentColor\"></path>
+                                </marker>
+                                <marker id=\"arrowhead-start\" markerWidth=\"10\" markerHeight=\"10\" refX=\"4\" refY=\"3\" orient=\"auto-start-reverse\" markerUnits=\"strokeWidth\">
+                                    <path d=\"M0,0 L6,3 L0,6 z\" fill=\"currentColor\"></path>
+                                </marker>
+                            </defs>
+                            <image id=\"backgroundImage\" x=\"0\" y=\"0\" width=\"1280\" height=\"720\" preserveAspectRatio=\"xMidYMid meet\"></image>
+                        </svg>
+                    </div>
+                </main>
+            </div>
+            <script>
+                const printerCanvas = document.getElementById('printerCanvas');
+                const backgroundImage = document.getElementById('backgroundImage');
+                const backgroundUpload = document.getElementById('backgroundUpload');
+                const rectTool = document.getElementById('rectTool');
+                const circleTool = document.getElementById('circleTool');
+                const arrowTool = document.getElementById('arrowTool');
+                const panTool = document.getElementById('panTool');
+                const componentTypeSelect = document.getElementById('componentType');
+                const rotationalDistanceInput = document.getElementById('rotationalDistance');
+                const highlightColorInput = document.getElementById('highlightColor');
+                const shapeList = document.getElementById('printerShapeList');
+
+                const defaultPalette = {
+                    switch: '#f97316',
+                    extruder: '#ef4444',
+                    stepper: '#22c55e',
+                    lead_screw: '#0ea5e9',
+                    sensor: '#a855f7',
+                    fan: '#38bdf8',
+                    custom: '#fbbf24'
+                };
+
+                const componentLabels = {
+                    switch: 'Endstop / Schalter',
+                    extruder: 'Extruder / Hotend',
+                    stepper: 'Stepper-Motor',
+                    lead_screw: 'Lead Screw / Z-Antrieb',
+                    sensor: 'Sensor',
+                    fan: 'Lüfter',
+                    custom: 'Benutzerdefiniert'
+                };
+
+                let activeTool = 'rect';
+                let drawing = false;
+                let startPoint = { x: 0, y: 0 };
+                let currentShape = null;
+                let viewBox = { x: 0, y: 0, width: 1280, height: 720 };
+                let panStart = null;
+
+                function setActiveTool(tool) {
+                    activeTool = tool;
+                    [rectTool, circleTool, arrowTool, panTool].forEach((button) => {
+                        button.classList.toggle('active', button.dataset.tool === tool);
+                    });
+                    if (tool === 'pan') {
+                        printerCanvas.style.cursor = 'grab';
+                    } else {
+                        printerCanvas.style.cursor = 'crosshair';
+                    }
+                }
+
+                function svgCursor(event) {
+                    const point = printerCanvas.createSVGPoint();
+                    point.x = event.offsetX;
+                    point.y = event.offsetY;
+                    const ctm = printerCanvas.getScreenCTM();
+                    if (!ctm) {
+                        return null;
+                    }
+                    return point.matrixTransform(ctm.inverse());
+                }
+
+                function createShapeId() {
+                    return `printer-shape-${Math.random().toString(36).slice(2, 10)}`;
+                }
+
+                function createTextElement(x, y, text, extraClass) {
+                    const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                    label.setAttribute('x', x);
+                    label.setAttribute('y', y);
+                    label.setAttribute('class', extraClass ? `shape-label ${extraClass}` : 'shape-label');
+                    label.setAttribute('text-anchor', 'middle');
+                    label.setAttribute('dominant-baseline', 'middle');
+                    label.textContent = text;
+                    return label;
+                }
+
+                function addShapeEntry(details) {
+                    const wrapper = document.createElement('article');
+                    wrapper.className = 'shape-entry';
+                    wrapper.dataset.shapeId = details.id;
+                    wrapper.innerHTML = `
+                        <header>
+                            <h3>${details.label}</h3>
+                            <span>${componentLabels[details.componentType] ?? details.componentType}</span>
+                        </header>
+                        <dl>
+                            <dt>Geometrie</dt>
+                            <dd>${details.geometry}</dd>
+                            <dt>Farbe</dt>
+                            <dd>${details.color}</dd>
+                            <dt>Maß / Notiz</dt>
+                            <dd>${details.dimension || '—'}</dd>
+                            <dt>Typ</dt>
+                            <dd>${details.shapeType}</dd>
+                            ${details.rotationalDistance ? `<dt>Rotationsdistanz</dt><dd>${details.rotationalDistance} mm</dd>` : ''}
+                        </dl>
+                    `;
+                    shapeList.appendChild(wrapper);
+                }
+
+                function updateRotationalVisibility() {
+                    const needsRotation = ['stepper', 'lead_screw'].includes(componentTypeSelect.value);
+                    rotationalDistanceInput.disabled = !needsRotation;
+                    rotationalDistanceInput.parentElement.classList.toggle('disabled', !needsRotation);
+                    if (!needsRotation) {
+                        rotationalDistanceInput.value = '';
+                    }
+                    if (!highlightColorInput.dataset.userChanged) {
+                        const defaultColor = defaultPalette[componentTypeSelect.value] || '#38bdf8';
+                        highlightColorInput.value = defaultColor;
+                    }
+                }
+
+                componentTypeSelect.addEventListener('change', updateRotationalVisibility);
+                highlightColorInput.addEventListener('input', () => {
+                    highlightColorInput.dataset.userChanged = 'true';
+                });
+                updateRotationalVisibility();
+
+                backgroundUpload.addEventListener('change', (event) => {
+                    const file = event.target.files && event.target.files[0];
+                    if (!file) {
+                        return;
+                    }
+                    const reader = new FileReader();
+                    reader.onload = (loadEvent) => {
+                        const dataUrl = loadEvent.target?.result;
+                        if (typeof dataUrl !== 'string') {
+                            return;
+                        }
+                        const img = new Image();
+                        img.onload = () => {
+                            const width = img.naturalWidth || img.width || 1280;
+                            const height = img.naturalHeight || img.height || 720;
+                            backgroundImage.setAttribute('href', dataUrl);
+                            backgroundImage.setAttribute('width', width);
+                            backgroundImage.setAttribute('height', height);
+                            viewBox = { x: 0, y: 0, width, height };
+                            printerCanvas.setAttribute('viewBox', `0 0 ${width} ${height}`);
+                        };
+                        img.src = dataUrl;
+                    };
+                    reader.readAsDataURL(file);
+                });
+
+                rectTool.dataset.tool = 'rect';
+                circleTool.dataset.tool = 'circle';
+                arrowTool.dataset.tool = 'arrow';
+                panTool.dataset.tool = 'pan';
+
+                [rectTool, circleTool, arrowTool, panTool].forEach((button) => {
+                    button.addEventListener('click', () => {
+                        setActiveTool(button.dataset.tool);
+                    });
+                });
+
+                setActiveTool('rect');
+
+                printerCanvas.addEventListener('mousedown', (event) => {
+                    const cursorPoint = svgCursor(event);
+                    if (!cursorPoint) {
+                        return;
+                    }
+
+                    if (activeTool === 'pan') {
+                        panStart = { x: cursorPoint.x, y: cursorPoint.y, viewBox: { ...viewBox } };
+                        printerCanvas.style.cursor = 'grabbing';
+                        return;
+                    }
+
+                    drawing = true;
+                    startPoint = { x: cursorPoint.x, y: cursorPoint.y };
+                    const color = highlightColorInput.value;
+
+                    if (activeTool === 'rect') {
+                        currentShape = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+                        currentShape.setAttribute('x', startPoint.x);
+                        currentShape.setAttribute('y', startPoint.y);
+                        currentShape.setAttribute('width', 1);
+                        currentShape.setAttribute('height', 1);
+                        currentShape.setAttribute('rx', 10);
+                        currentShape.setAttribute('fill', `${color}33`);
+                        currentShape.setAttribute('stroke', color);
+                        currentShape.setAttribute('stroke-width', 2.2);
+                        printerCanvas.appendChild(currentShape);
+                    } else if (activeTool === 'circle') {
+                        currentShape = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                        currentShape.setAttribute('cx', startPoint.x);
+                        currentShape.setAttribute('cy', startPoint.y);
+                        currentShape.setAttribute('r', 1);
+                        currentShape.setAttribute('fill', `${color}33`);
+                        currentShape.setAttribute('stroke', color);
+                        currentShape.setAttribute('stroke-width', 2.2);
+                        printerCanvas.appendChild(currentShape);
+                    } else if (activeTool === 'arrow') {
+                        currentShape = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+                        currentShape.setAttribute('x1', startPoint.x);
+                        currentShape.setAttribute('y1', startPoint.y);
+                        currentShape.setAttribute('x2', startPoint.x);
+                        currentShape.setAttribute('y2', startPoint.y);
+                        currentShape.setAttribute('stroke', color);
+                        currentShape.setAttribute('stroke-width', 3);
+                        currentShape.setAttribute('stroke-linecap', 'round');
+                        currentShape.setAttribute('marker-end', 'url(#arrowhead-end)');
+                        currentShape.setAttribute('marker-start', 'url(#arrowhead-start)');
+                        currentShape.style.setProperty('color', color);
+                        printerCanvas.appendChild(currentShape);
+                    }
+                });
+
+                printerCanvas.addEventListener('mousemove', (event) => {
+                    const cursorPoint = svgCursor(event);
+                    if (!cursorPoint) {
+                        return;
+                    }
+
+                    if (panStart && activeTool === 'pan') {
+                        const dx = cursorPoint.x - panStart.x;
+                        const dy = cursorPoint.y - panStart.y;
+                        viewBox.x = panStart.viewBox.x - dx;
+                        viewBox.y = panStart.viewBox.y - dy;
+                        printerCanvas.setAttribute('viewBox', `${viewBox.x} ${viewBox.y} ${viewBox.width} ${viewBox.height}`);
+                        return;
+                    }
+
+                    if (!drawing || !currentShape) {
+                        return;
+                    }
+
+                    if (activeTool === 'rect') {
+                        const width = cursorPoint.x - startPoint.x;
+                        const height = cursorPoint.y - startPoint.y;
+                        currentShape.setAttribute('x', Math.min(startPoint.x, cursorPoint.x));
+                        currentShape.setAttribute('y', Math.min(startPoint.y, cursorPoint.y));
+                        currentShape.setAttribute('width', Math.abs(width));
+                        currentShape.setAttribute('height', Math.abs(height));
+                    } else if (activeTool === 'circle') {
+                        const dx = cursorPoint.x - startPoint.x;
+                        const dy = cursorPoint.y - startPoint.y;
+                        const radius = Math.sqrt(dx * dx + dy * dy);
+                        currentShape.setAttribute('r', radius);
+                    } else if (activeTool === 'arrow') {
+                        currentShape.setAttribute('x2', cursorPoint.x);
+                        currentShape.setAttribute('y2', cursorPoint.y);
+                    }
+                });
+
+                window.addEventListener('mouseup', () => {
+                    if (panStart) {
+                        panStart = null;
+                        printerCanvas.style.cursor = 'grab';
+                        return;
+                    }
+
+                    if (!drawing || !currentShape) {
+                        return;
+                    }
+
+                    drawing = false;
+
+                    const componentType = componentTypeSelect.value;
+                    const color = highlightColorInput.value;
+                    const labelDefault = componentLabels[componentType]?.split(' ')[0] || 'Komponente';
+                    const rawLabel = prompt('Komponentenbezeichnung', labelDefault);
+                    const trimmedLabel = rawLabel ? rawLabel.trim() : '';
+                    if (!trimmedLabel) {
+                        currentShape.remove();
+                        currentShape = null;
+                        return;
+                    }
+
+                    let rotationalDistance = null;
+                    if (['stepper', 'lead_screw'].includes(componentType)) {
+                        const presetDistance = rotationalDistanceInput.value.trim();
+                        if (presetDistance) {
+                            rotationalDistance = presetDistance;
+                        } else {
+                            const promptDistance = prompt('Rotationsdistanz (mm pro Umdrehung)', '');
+                            if (promptDistance && promptDistance.trim()) {
+                                rotationalDistance = promptDistance.trim();
+                            }
+                        }
+                    }
+
+                    let geometry = '';
+                    let dimensionSuggestion = '';
+                    let labelPosition = null;
+                    let dimensionPosition = null;
+
+                    if (activeTool === 'rect') {
+                        const x = parseFloat(currentShape.getAttribute('x'));
+                        const y = parseFloat(currentShape.getAttribute('y'));
+                        const width = parseFloat(currentShape.getAttribute('width'));
+                        const height = parseFloat(currentShape.getAttribute('height'));
+                        if (width < 8 || height < 8) {
+                            currentShape.remove();
+                            currentShape = null;
+                            return;
+                        }
+                        geometry = `x:${x.toFixed(1)}, y:${y.toFixed(1)}, w:${width.toFixed(1)}, h:${height.toFixed(1)}`;
+                        dimensionSuggestion = `${width.toFixed(1)} × ${height.toFixed(1)} px`;
+                        labelPosition = { x: x + width / 2, y: y + height / 2 };
+                        dimensionPosition = { x: labelPosition.x, y: labelPosition.y + 18 };
+                    } else if (activeTool === 'circle') {
+                        const cx = parseFloat(currentShape.getAttribute('cx'));
+                        const cy = parseFloat(currentShape.getAttribute('cy'));
+                        const radius = parseFloat(currentShape.getAttribute('r'));
+                        if (radius < 6) {
+                            currentShape.remove();
+                            currentShape = null;
+                            return;
+                        }
+                        geometry = `cx:${cx.toFixed(1)}, cy:${cy.toFixed(1)}, r:${radius.toFixed(1)}`;
+                        dimensionSuggestion = `Ø ${(radius * 2).toFixed(1)} px`;
+                        labelPosition = { x: cx, y: cy };
+                        dimensionPosition = { x: cx, y: cy + radius + 14 };
+                    } else if (activeTool === 'arrow') {
+                        const x1 = parseFloat(currentShape.getAttribute('x1'));
+                        const y1 = parseFloat(currentShape.getAttribute('y1'));
+                        const x2 = parseFloat(currentShape.getAttribute('x2'));
+                        const y2 = parseFloat(currentShape.getAttribute('y2'));
+                        const dx = x2 - x1;
+                        const dy = y2 - y1;
+                        const length = Math.sqrt(dx * dx + dy * dy);
+                        if (length < 12) {
+                            currentShape.remove();
+                            currentShape = null;
+                            return;
+                        }
+                        const midX = x1 + dx / 2;
+                        const midY = y1 + dy / 2;
+                        geometry = `(${x1.toFixed(1)},${y1.toFixed(1)}) → (${x2.toFixed(1)},${y2.toFixed(1)})`;
+                        dimensionSuggestion = `${length.toFixed(1)} px`;
+                        labelPosition = { x: midX, y: midY - 10 };
+                        dimensionPosition = { x: midX, y: midY + 10 };
+                    }
+
+                    const dimensionPrompt = prompt('Maß oder Notiz (optional)', dimensionSuggestion);
+                    let dimensionNotes = dimensionPrompt ? dimensionPrompt.trim() : '';
+                    if (activeTool === 'arrow' && !dimensionNotes) {
+                        dimensionNotes = dimensionSuggestion;
+                    }
+                    if (activeTool === 'arrow' && !dimensionNotes) {
+                        currentShape.remove();
+                        currentShape = null;
+                        return;
+                    }
+
+                    const shapeId = createShapeId();
+                    currentShape.dataset.shapeId = shapeId;
+
+                    if (labelPosition) {
+                        const labelElement = createTextElement(labelPosition.x, labelPosition.y, trimmedLabel);
+                        printerCanvas.appendChild(labelElement);
+                    }
+                    if (dimensionNotes && dimensionPosition) {
+                        const dimensionElement = createTextElement(dimensionPosition.x, dimensionPosition.y, dimensionNotes, 'dimension-label');
+                        printerCanvas.appendChild(dimensionElement);
+                    }
+
+                    addShapeEntry({
+                        id: shapeId,
+                        label: trimmedLabel,
+                        componentType,
+                        color,
+                        dimension: dimensionNotes,
+                        shapeType: activeTool === 'arrow' ? 'Maßpfeil' : activeTool === 'rect' ? 'Rechteck' : 'Kreis',
+                        geometry,
+                        rotationalDistance: rotationalDistance || null
+                    });
+
+                    currentShape = null;
+                });
+            </script>
         </body>
         </html>
         """
