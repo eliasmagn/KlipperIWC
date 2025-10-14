@@ -110,12 +110,19 @@ async def create_board_asset(
     return asset
 
 
-def list_board_assets(session: Session, *, status: str | None = None) -> list[BoardAsset]:
-    """Return assets filtered by moderation status if provided."""
+def list_board_assets(
+    session: Session,
+    *,
+    status: str | None = None,
+    visibility: str | None = None,
+) -> list[BoardAsset]:
+    """Return assets filtered by moderation status and visibility if provided."""
 
     stmt = select(BoardAsset).order_by(BoardAsset.created_at.desc())
     if status:
         stmt = stmt.where(BoardAsset.moderation_status == status)
+    if visibility:
+        stmt = stmt.where(BoardAsset.visibility == visibility)
     return list(session.execute(stmt).scalars().all())
 
 

@@ -117,6 +117,36 @@ weiterleitet.
 | GET     | `/api/board-assets/moderation/pending` | Liefert Moderations-Warteschlange (Moderator-Token erforderlich) |
 | PATCH   | `/api/board-assets/{id}/moderation` | Trifft Moderationsentscheidung (Moderator-Token erforderlich) |
 
+Zusätzliche Zustände (`pending`, `rejected`) können ausschließlich mit gültigem Upload- oder Moderator-Token abgefragt werden.
+
+### Board-Asset-Upload & Moderation
+
+Uploads und Moderationsentscheidungen werden über zwei API-Tokens abgesichert:
+
+- `BOARD_ASSET_UPLOAD_TOKEN`: berechtigt zum Hochladen neuer Assets sowie zum Bearbeiten von Metadaten.
+- `BOARD_ASSET_MODERATION_TOKEN`: erlaubt das Einsehen der Moderationswarteschlange und das Freigeben/Ablehnen von Assets.
+
+Für die Ablage stehen zwei Storage-Backends zur Verfügung:
+
+| Backend | Erforderliche Variablen | Beschreibung |
+| ------- | ---------------------- | ------------ |
+| `local` (Standard) | `BOARD_ASSET_LOCAL_PATH` (Pfad, Standard `./var/board-assets`), optional `BOARD_ASSET_LOCAL_PUBLIC_URL` | Speichert Dateien im lokalen Dateisystem. Eine Public-URL erzeugt Downloadlinks. |
+| `s3` | `BOARD_ASSET_S3_BUCKET`, optional `BOARD_ASSET_S3_REGION`, `BOARD_ASSET_S3_PUBLIC_URL`, `BOARD_ASSET_S3_ENDPOINT` | Lädt Assets in ein S3-kompatibles Object-Storage. |
+
+Beispielupload via `curl` (lokales Backend):
+
+```bash
+export BOARD_ASSET_UPLOAD_TOKEN="mein-upload-token"
+
+curl -X POST \
+  -H "X-Board-Assets-Key: ${BOARD_ASSET_UPLOAD_TOKEN}" \
+  -F "file=@/pfad/zur/grafik.svg" \
+  -F "title=Voron Stealthburner" \
+  http://localhost:8000/api/board-assets/
+```
+
+Die öffentliche `GET /api/board-assets/`-Route liefert ausschließlich genehmigte, als `public` markierte Assets. Mit Upload- oder Moderator-Token lassen sich zusätzliche Moderationszustände über den Parameter `status_filter` einsehen.
+
 ### Dashboard-Metriken aus der Historie
 
 Die neuen Dashboard-Endpunkte greifen auf die persistente Historie zu und liefern

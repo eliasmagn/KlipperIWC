@@ -19,6 +19,7 @@
 ## Phase 3 – Hardware- und Board-Definitionen
 - [ ] JSON-Schema und Versionsverwaltung für Board-Definitionen etablieren
 - [x] Upload-Workflow für Board-Bilder inkl. Storage-Adapter und Moderation ergänzen
+- [x] API-Token-gestützte Moderationsfreigabe und Sichtbarkeitsfilter für Board-Assets etablieren
 - [ ] Moderations-Dashboard mit Benachrichtigungskette entwerfen
 - [ ] Validierungslogik gegen MCU- und Pin-Datenbanken implementieren
 - [ ] Öffentliche Bibliothek mit Board-Definitionen und Suchfunktion bereitstellen

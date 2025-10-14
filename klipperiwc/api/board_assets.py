@@ -19,6 +19,7 @@ from klipperiwc.models import (
 from klipperiwc.services.board_assets import (
     AssetAlreadyExistsError,
     AssetModerationStatus,
+    AssetVisibility,
     create_board_asset,
     list_board_assets,
     list_pending_moderation,
@@ -102,11 +103,33 @@ async def upload_board_asset(
 async def list_assets(
     status_filter: BoardAssetModerationStatus | None = None,
     session: Session = Depends(get_session),
+    access_token: str | None = Header(None, alias="X-Board-Assets-Key"),
+    moderator_token: str | None = Header(None, alias="X-Board-Assets-Moderator"),
 ) -> list[BoardAssetResponse]:
-    """List board assets filtered by moderation status."""
+    """List board assets with access control for unpublished entries."""
+
+    authorized = False
+    if moderator_token:
+        _require_token(moderator_token, "BOARD_ASSET_MODERATION_TOKEN")
+        authorized = True
+    elif access_token:
+        _require_token(access_token, "BOARD_ASSET_UPLOAD_TOKEN")
+        authorized = True
 
     status_value = status_filter.value if status_filter else None
-    assets = list_board_assets(session, status=status_value)
+    visibility_filter: str | None = None
+
+    if not authorized:
+        visibility_filter = AssetVisibility.PUBLIC.value
+        if status_value is None:
+            status_value = AssetModerationStatus.APPROVED.value
+        elif status_filter is not None and status_filter != BoardAssetModerationStatus.APPROVED:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Listing assets in this moderation state requires authentication.",
+            )
+
+    assets = list_board_assets(session, status=status_value, visibility=visibility_filter)
     return [_map_response(asset) for asset in assets]
 
 
