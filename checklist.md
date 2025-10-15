@@ -14,6 +14,7 @@
 - [x] Landingpage mit Verlinkung auf Board- und Drucker-Designer erstellen
 - [x] Persistente Tabellen sowie API-Endpunkte für Board- und Druckerdefinitionen anlegen
 - [x] Drucker-Designer mit Bild-Upload, Annotationen und Maßpfeilen implementieren
+- [x] Cursor-Koordinaten im Board- und Drucker-Designer an die ViewBox-Skalierung anpassen
 
 ## Offene Schritte Richtung Produktivbetrieb
 

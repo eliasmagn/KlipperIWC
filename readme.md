@@ -97,7 +97,7 @@ Dockerfile           # Container-Build
 
 - **Landingpage (`/`)** – bündelt Einstiegspunkte in Board- und Drucker-Designer und erklärt den geplanten Konfigurations-Generator.
 - **Board-Designer (`/board-designer`)** – erlaubt das Annotieren von Pins, Steckern und Signalen auf hochgeladenen Bildern.
-- **Printer-Designer (`/printer-designer`)** – erlaubt Bild-Uploads, markiert Extruder, Schalter, Sensoren, Lüfter oder Stepper mit Rechtecken, Kreisen und Maßpfeilen und erfasst Rotationsdistanzen für Antriebe.
+- **Printer-Designer (`/printer-designer`)** – erlaubt Bild-Uploads, markiert Extruder, Schalter, Sensoren, Lüfter oder Stepper mit Rechtecken, Kreisen und Maßpfeilen und erfasst Rotationsdistanzen für Antriebe. Die Werkzeuge rechnen Maus- und Touch-Positionen auf die aktuelle ViewBox um, sodass Overlays exakt der Cursorbewegung folgen.
 - **Persistente Registry** – neue Tabellen `board_definition_documents` und `printer_definition_documents` speichern Designer-Ergebnisse inklusive Metadaten und Vorschaubild-Links.
 - **REST-API** – über `/api/definitions/boards` und `/api/definitions/printers` lassen sich Definitionen anlegen, abrufen und aktualisieren.
 
