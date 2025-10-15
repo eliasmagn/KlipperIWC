@@ -30,6 +30,7 @@
 ## Phase 4 – Benutzeroberfläche
 - [x] Landingpage mit Einstieg in Board- und Drucker-Designer bereitstellen
 - [x] Drucker-Designer mit Upload-, Markierungs- und Maßwerkzeugen bereitstellen
+- [x] 3D-CAD-Ansichten mit STEP-Import und Markerunterstützung in Board- und Drucker-Designer integrieren
 - [ ] Web-Frontend mit Dashboard, Verlaufsgrafiken und Konfigurationsseiten entwickeln
 - [ ] Bearbeitungsfunktionen (Bewegen/Löschen) in Board- und Drucker-Designer ergänzen
 - [ ] Responsive Layout und dunkler Modus

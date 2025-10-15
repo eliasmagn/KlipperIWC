@@ -96,8 +96,8 @@ Dockerfile           # Container-Build
 ## Designer & Definition Registry
 
 - **Landingpage (`/`)** – bündelt Einstiegspunkte in Board- und Drucker-Designer und erklärt den geplanten Konfigurations-Generator.
-- **Board-Designer (`/board-designer`)** – erlaubt das Annotieren von Pins, Steckern und Signalen auf hochgeladenen Bildern.
-- **Printer-Designer (`/printer-designer`)** – erlaubt Bild-Uploads, markiert Extruder, Schalter, Sensoren, Lüfter oder Stepper mit Rechtecken, Kreisen und Maßpfeilen und erfasst Rotationsdistanzen für Antriebe.
+- **Board-Designer (`/board-designer`)** – erlaubt das Annotieren von Pins, Steckern und Signalen auf hochgeladenen Bildern und bietet zusätzlich einen STEP-Viewer, um Baugruppen in 3D zu markieren.
+- **Printer-Designer (`/printer-designer`)** – erlaubt Bild-Uploads, markiert Extruder, Schalter, Sensoren, Lüfter oder Stepper mit Rechtecken, Kreisen und Maßpfeilen, erfasst Rotationsdistanzen für Antriebe und ergänzt einen interaktiven 3D-CAD-Modus für STEP-Dateien.
 - **Persistente Registry** – neue Tabellen `board_definition_documents` und `printer_definition_documents` speichern Designer-Ergebnisse inklusive Metadaten und Vorschaubild-Links.
 - **REST-API** – über `/api/definitions/boards` und `/api/definitions/printers` lassen sich Definitionen anlegen, abrufen und aktualisieren.
 
@@ -405,4 +405,8 @@ Siehe `roadmap.md` für geplante Erweiterungen und `checklist.md` für den aktue
 
 ## Interaktiver Board-Designer (Prototyp)
 
-Der Prototyp für die Board-Visualisierung ist unter `http://localhost:8000/board-designer` verfügbar, sobald der Server läuft. Auf der Zeichenfläche lassen sich Rechtecke und Kreise platzieren, um Steckverbinder oder Pin-Gruppen hervorzuheben. Anschließend können individuelle Labels vergeben werden, die in der Seitenleiste als Referenz erscheinen. Die erzeugten Markierungen dienen als Grundlage für künftige Board-Definitionen, die weiterhin über GitHub versioniert werden.
+Der Prototyp für die Board-Visualisierung ist unter `http://localhost:8000/board-designer` verfügbar, sobald der Server läuft. Auf der Zeichenfläche lassen sich Rechtecke und Kreise platzieren, um Steckverbinder oder Pin-Gruppen hervorzuheben. Anschließend können individuelle Labels vergeben werden, die in der Seitenleiste als Referenz erscheinen. Ergänzend steht ein 3D-Viewer bereit, der STEP-Dateien lädt, per Orbit-Steuerung inspiziert und Marker im Raum positioniert. Die erzeugten Markierungen dienen als Grundlage für künftige Board-Definitionen, die weiterhin über GitHub versioniert werden.
+
+## Interaktiver Printer-Designer (Prototyp)
+
+Der Drucker-Designer unter `http://localhost:8000/printer-designer` kombiniert eine Bild-basierte Arbeitsfläche mit geometrischen Werkzeugen und einen 3D-CAD-Modus. Rechtecke, Kreise und Maßpfeile markieren Extruder, Motoren oder Sensoren auf dem hochgeladenen Plan; ergänzend kann ein STEP-Modell des Rahmens geladen werden. Über den integrierten Viewer lassen sich Perspektive und Zoom frei steuern, Marker für Führungen, Riemen, Kabelbäume oder Sensorik setzen und anschließend gemeinsam mit den 2D-Einträgen verwalten. So entsteht eine vollständige, räumlich verortete Dokumentation des Aufbaus.
