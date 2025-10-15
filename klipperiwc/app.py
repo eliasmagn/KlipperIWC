@@ -466,6 +466,156 @@ def create_app() -> FastAPI:
                     font-size: 0.85rem;
                 }
 
+                .cad-panel {
+                    display: grid;
+                    gap: 1rem;
+                    margin-top: 1.5rem;
+                    padding: 1.5rem;
+                    border-radius: 1rem;
+                    border: 1px solid rgba(148, 163, 184, 0.25);
+                    background: rgba(15, 23, 42, 0.82);
+                    box-shadow: 0 24px 48px rgba(15, 23, 42, 0.55);
+                }
+
+                .cad-panel header {
+                    display: grid;
+                    gap: 0.4rem;
+                }
+
+                .cad-panel h2 {
+                    margin: 0;
+                    font-size: 1.25rem;
+                    color: #f1f5f9;
+                }
+
+                .cad-panel p {
+                    margin: 0;
+                    font-size: 0.9rem;
+                    color: rgba(148, 163, 184, 0.85);
+                    line-height: 1.5;
+                }
+
+                .cad-toolbox {
+                    display: grid;
+                    gap: 0.75rem;
+                }
+
+                .cad-toolbox .row {
+                    display: flex;
+                    flex-wrap: wrap;
+                    gap: 0.75rem;
+                }
+
+                .cad-toolbox label {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 0.4rem;
+                    font-size: 0.85rem;
+                    color: rgba(226, 232, 240, 0.85);
+                }
+
+                .cad-toolbox input[type="file"] {
+                    padding: 0.45rem;
+                    background: rgba(30, 41, 59, 0.72);
+                    border: 1px dashed rgba(56, 189, 248, 0.35);
+                    border-radius: 0.6rem;
+                    color: #e2e8f0;
+                    cursor: pointer;
+                }
+
+                .cad-toolbox input[type="text"],
+                .cad-toolbox select {
+                    background: rgba(30, 41, 59, 0.65);
+                    border: 1px solid rgba(148, 163, 184, 0.35);
+                    border-radius: 0.6rem;
+                    padding: 0.5rem 0.75rem;
+                    color: #e2e8f0;
+                    font-size: 0.95rem;
+                }
+
+                .cad-toolbox button {
+                    background: rgba(30, 41, 59, 0.78);
+                    border: 1px solid rgba(148, 163, 184, 0.35);
+                    border-radius: 0.6rem;
+                    padding: 0.5rem 0.9rem;
+                    color: #e2e8f0;
+                    font-weight: 600;
+                    cursor: pointer;
+                    transition: transform 0.12s ease, border-color 0.2s ease;
+                }
+
+                .cad-toolbox button:hover,
+                .cad-toolbox button.active {
+                    transform: translateY(-1px);
+                    border-color: #38bdf8;
+                    box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.25);
+                }
+
+                .cad-status {
+                    font-size: 0.85rem;
+                    color: rgba(148, 163, 184, 0.85);
+                }
+
+                .cad-status[data-state="error"] {
+                    color: #fca5a5;
+                }
+
+                .cad-status[data-state="loading"] {
+                    color: #fbbf24;
+                }
+
+                .cad-viewer {
+                    position: relative;
+                    min-height: 420px;
+                    border-radius: 0.9rem;
+                    border: 1px solid rgba(148, 163, 184, 0.2);
+                    background: radial-gradient(circle at top, rgba(30, 41, 59, 0.9), rgba(15, 23, 42, 0.95));
+                    overflow: hidden;
+                }
+
+                .cad-viewer.drag-active {
+                    border-color: #38bdf8;
+                    box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.35);
+                }
+
+                .cad-annotation-list {
+                    display: grid;
+                    gap: 0.6rem;
+                }
+
+                .cad-annotation-entry {
+                    display: grid;
+                    gap: 0.35rem;
+                    padding: 0.75rem;
+                    border-radius: 0.8rem;
+                    border: 1px solid rgba(148, 163, 184, 0.25);
+                    background: rgba(30, 41, 59, 0.72);
+                }
+
+                .cad-annotation-entry header {
+                    display: flex;
+                    justify-content: space-between;
+                    gap: 0.5rem;
+                    align-items: baseline;
+                }
+
+                .cad-annotation-entry h3 {
+                    margin: 0;
+                    font-size: 1rem;
+                    color: #f8fafc;
+                }
+
+                .cad-annotation-entry span {
+                    font-size: 0.75rem;
+                    letter-spacing: 0.05em;
+                    text-transform: uppercase;
+                    color: rgba(56, 189, 248, 0.8);
+                }
+
+                .cad-annotation-entry button {
+                    justify-self: start;
+                }
+
                 .hint {
                     font-size: 0.85rem;
                     color: #94a3b8;
@@ -521,6 +671,55 @@ def create_app() -> FastAPI:
                 <div class=\"canvas-shell\">
                     <svg id=\"boardCanvas\" viewBox=\"0 0 1280 720\" role=\"img\" aria-label=\"Board designer canvas\"></svg>
                 </div>
+                <section class=\"cad-panel\">
+                    <header>
+                        <h2>3D CAD Explorer</h2>
+                        <p>
+                            Lade eine STEP-Datei, um dein Board in 3D zu inspizieren, Komponenten zu markieren und die Perspektive
+                            frei zu bewegen. Ziehe die Datei per Drag &amp; Drop oder nutze den Dateiauswahldialog.
+                        </p>
+                    </header>
+                    <div class=\"cad-toolbox\">
+                        <div class=\"row\">
+                            <label>
+                                STEP-Datei laden
+                                <input id=\"boardCadFile\" type=\"file\" accept=\".step,.stp,model/step\" />
+                            </label>
+                            <label>
+                                Marker-Kategorie
+                                <select id=\"boardCadCategory\">
+                                    <option value=\"device\">Gerät / Modul</option>
+                                    <option value=\"rails\">Führungen &amp; Rails</option>
+                                    <option value=\"belts\">Riemen &amp; Antriebe</option>
+                                    <option value=\"cables\">Kabel &amp; Looms</option>
+                                    <option value=\"sensors\">Sensoren</option>
+                                    <option value=\"other\">Sonstige</option>
+                                </select>
+                            </label>
+                            <label>
+                                Marker-Beschriftung
+                                <input id=\"boardCadLabel\" type=\"text\" placeholder=\"z. B. X-Limit-Switch\" />
+                            </label>
+                        </div>
+                        <div class=\"row\">
+                            <button id=\"boardCadMarkerMode\" type=\"button\">Marker platzieren</button>
+                            <button id=\"boardCadResetView\" type=\"button\">Kamera zurücksetzen</button>
+                            <button id=\"boardCadClearMarkers\" type=\"button\">Marker entfernen</button>
+                        </div>
+                        <p class=\"cad-status\" id=\"boardCadStatus\" aria-live=\"polite\">
+                            Keine STEP-Datei geladen. Ziehe eine Datei auf die Ansicht oder verwende den Button.
+                        </p>
+                        <p class=\"hint\">
+                            Tipp: Im Marker-Modus mit einem Klick Punkte setzen. Außerhalb des Modus lässt sich das Modell per
+                            Linksklick drehen, mit Rechtsklick verschieben und mit dem Mausrad zoomen.
+                        </p>
+                    </div>
+                    <div class=\"cad-viewer\" id=\"boardCadViewport\" tabindex=\"0\" aria-label=\"Interaktive 3D-Ansicht des Boards\"></div>
+                    <section>
+                        <h3>3D-Markierungen</h3>
+                        <div id=\"boardCadAnnotationList\" class=\"cad-annotation-list\"></div>
+                    </section>
+                </section>
             </main>
 
             <script>
@@ -772,6 +971,556 @@ def create_app() -> FastAPI:
                     currentShape = null;
                 });
             </script>
+        <script src="https://raw.githubusercontent.com/mrdoob/three.js/r160/build/three.min.js"></script>
+        <script src="https://raw.githubusercontent.com/kovacsv/occt-import-js/master/dist/occt-import-js.js"></script>
+        <script>
+            (function () {
+                const viewport = document.getElementById('boardCadViewport');
+                const statusElement = document.getElementById('boardCadStatus');
+                if (!viewport) {
+                    return;
+                }
+            
+                if (typeof THREE === 'undefined') {
+                    if (statusElement) {
+                        statusElement.textContent = '3D-Viewer konnte nicht initialisiert werden (THREE.js nicht verfügbar).';
+                        statusElement.dataset.state = 'error';
+                    }
+                    return;
+                }
+            
+                const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+                renderer.setPixelRatio(window.devicePixelRatio || 1);
+                renderer.setSize(viewport.clientWidth, viewport.clientHeight, false);
+                renderer.outputEncoding = THREE.sRGBEncoding;
+                viewport.appendChild(renderer.domElement);
+            
+                const scene = new THREE.Scene();
+                scene.background = new THREE.Color(0x0f172a);
+            
+                const grid = new THREE.GridHelper(800, 40, 0x1f2937, 0x1f2937);
+                if (Array.isArray(grid.material)) {
+                    grid.material.forEach((material) => {
+                        material.opacity = 0.25;
+                        material.transparent = true;
+                    });
+                } else {
+                    grid.material.opacity = 0.25;
+                    grid.material.transparent = true;
+                }
+                scene.add(grid);
+            
+                const ambient = new THREE.HemisphereLight(0xf1f5f9, 0x0f172a, 0.9);
+                const directional = new THREE.DirectionalLight(0xffffff, 0.75);
+                directional.position.set(200, 320, 260);
+                scene.add(ambient);
+                scene.add(directional);
+            
+                const camera = new THREE.PerspectiveCamera(50, Math.max(viewport.clientWidth / Math.max(viewport.clientHeight, 1), 1), 0.1, 10000);
+                camera.position.set(320, 220, 320);
+                camera.lookAt(0, 0, 0);
+            
+                const raycaster = new THREE.Raycaster();
+                const pointer = new THREE.Vector2();
+            
+                const annotationList = document.getElementById('boardCadAnnotationList');
+                const fileInput = document.getElementById('boardCadFile');
+                const categorySelect = document.getElementById('boardCadCategory');
+                const labelInput = document.getElementById('boardCadLabel');
+                const markerToggle = document.getElementById('boardCadMarkerMode');
+                const resetViewButton = document.getElementById('boardCadResetView');
+                const clearMarkersButton = document.getElementById('boardCadClearMarkers');
+            
+                const categoryPalette = {
+                    device: '#38bdf8',
+                    rails: '#22d3ee',
+                    belts: '#f97316',
+                    cables: '#facc15',
+                    sensors: '#a855f7',
+                    other: '#94a3b8'
+                };
+            
+                const categoryLabels = {
+                    device: 'Gerät / Modul',
+                    rails: 'Führungen & Rails',
+                    belts: 'Riemen & Antriebe',
+                    cables: 'Kabel & Looms',
+                    sensors: 'Sensor',
+                    other: 'Sonstige'
+                };
+            
+                let markerMode = false;
+                let currentModel = null;
+                let modelScale = 300;
+                const annotations = [];
+            
+                const occtPromise = typeof occtimportjs === 'function' ? occtimportjs() : Promise.resolve(null);
+            
+                function updateStatus(message, state) {
+                    if (!statusElement) {
+                        return;
+                    }
+                    statusElement.textContent = message;
+                    if (state) {
+                        statusElement.dataset.state = state;
+                    } else {
+                        statusElement.removeAttribute('data-state');
+                    }
+                }
+            
+                updateStatus('Keine STEP-Datei geladen. Ziehe eine Datei auf die Ansicht oder verwende den Button.', null);
+            
+                function createSimpleOrbitControls(camera, domElement, options) {
+                    const shouldHandlePointer = options && options.shouldHandlePointer ? options.shouldHandlePointer : () => true;
+                    const state = {
+                        pointerId: null,
+                        rotating: false,
+                        panning: false,
+                        lastPosition: new THREE.Vector2(),
+                        spherical: new THREE.Spherical(),
+                        target: new THREE.Vector3()
+                    };
+                    const tempVec = new THREE.Vector3();
+                    const xAxis = new THREE.Vector3();
+                    const yAxis = new THREE.Vector3();
+            
+                    function syncSpherical() {
+                        tempVec.copy(camera.position).sub(state.target);
+                        state.spherical.setFromVector3(tempVec);
+                    }
+            
+                    function apply() {
+                        tempVec.setFromSpherical(state.spherical);
+                        camera.position.copy(state.target).add(tempVec);
+                        camera.lookAt(state.target);
+                    }
+            
+                    syncSpherical();
+                    apply();
+            
+                    function onPointerDown(event) {
+                        if (!shouldHandlePointer(event)) {
+                            return;
+                        }
+                        domElement.setPointerCapture(event.pointerId);
+                        state.pointerId = event.pointerId;
+                        state.lastPosition.set(event.clientX, event.clientY);
+                        if (event.button === 2 || event.button === 1 || event.shiftKey) {
+                            state.panning = true;
+                            domElement.style.cursor = 'move';
+                        } else {
+                            state.rotating = true;
+                            domElement.style.cursor = 'grabbing';
+                        }
+                    }
+            
+                    function onPointerMove(event) {
+                        if (state.pointerId !== event.pointerId) {
+                            return;
+                        }
+                        const deltaX = event.clientX - state.lastPosition.x;
+                        const deltaY = event.clientY - state.lastPosition.y;
+                        state.lastPosition.set(event.clientX, event.clientY);
+                        if (state.rotating) {
+                            const rotateSpeed = 0.005;
+                            state.spherical.theta -= deltaX * rotateSpeed;
+                            state.spherical.phi -= deltaY * rotateSpeed;
+                            state.spherical.phi = Math.max(0.1, Math.min(Math.PI - 0.1, state.spherical.phi));
+                            apply();
+                        } else if (state.panning) {
+                            camera.updateMatrixWorld();
+                            const panSpeed = 0.0015 * state.spherical.radius;
+                            const panX = -deltaX * panSpeed;
+                            const panY = deltaY * panSpeed;
+                            xAxis.setFromMatrixColumn(camera.matrixWorld, 0);
+                            yAxis.setFromMatrixColumn(camera.matrixWorld, 1);
+                            state.target.addScaledVector(xAxis, panX);
+                            state.target.addScaledVector(yAxis, panY);
+                            apply();
+                        }
+                    }
+            
+                    function onPointerUp(event) {
+                        if (state.pointerId !== event.pointerId) {
+                            return;
+                        }
+                        domElement.releasePointerCapture(event.pointerId);
+                        state.rotating = false;
+                        state.panning = false;
+                        domElement.style.cursor = markerMode ? 'crosshair' : 'grab';
+                        state.pointerId = null;
+                    }
+            
+                    function onWheel(event) {
+                        event.preventDefault();
+                        const delta = event.deltaY;
+                        const factor = 1 + Math.min(Math.abs(delta) * 0.0015, 0.25);
+                        if (delta > 0) {
+                            state.spherical.radius *= factor;
+                        } else {
+                            state.spherical.radius /= factor;
+                        }
+                        state.spherical.radius = Math.max(5, Math.min(5000, state.spherical.radius));
+                        apply();
+                    }
+            
+                    domElement.addEventListener('pointerdown', onPointerDown);
+                    domElement.addEventListener('pointermove', onPointerMove);
+                    domElement.addEventListener('pointerup', onPointerUp);
+                    domElement.addEventListener('pointercancel', onPointerUp);
+                    domElement.addEventListener('wheel', onWheel, { passive: false });
+            
+                    return {
+                        setTarget(target) {
+                            state.target.copy(target);
+                            syncSpherical();
+                            apply();
+                        },
+                        setRadius(distance) {
+                            state.spherical.radius = Math.max(5, distance);
+                            apply();
+                        },
+                        refresh() {
+                            syncSpherical();
+                            apply();
+                        }
+                    };
+                }
+            
+                const controls = createSimpleOrbitControls(camera, renderer.domElement, {
+                    shouldHandlePointer(event) {
+                        return !(markerMode && event.button === 0);
+                    }
+                });
+            
+                controls.setTarget(new THREE.Vector3(0, 0, 0));
+                controls.setRadius(480);
+            
+                function resizeRenderer() {
+                    const width = viewport.clientWidth;
+                    const height = Math.max(viewport.clientHeight, 1);
+                    renderer.setSize(width, height, false);
+                    camera.aspect = width / height;
+                    camera.updateProjectionMatrix();
+                }
+            
+                window.addEventListener('resize', resizeRenderer);
+                if (window.ResizeObserver) {
+                    new ResizeObserver(resizeRenderer).observe(viewport);
+                }
+            
+                function clearAnnotations() {
+                    while (annotations.length) {
+                        const annotation = annotations.pop();
+                        scene.remove(annotation.object3d);
+                    }
+                    if (annotationList) {
+                        annotationList.innerHTML = '';
+                    }
+                }
+            
+                function setMarkerMode(enabled) {
+                    markerMode = enabled;
+                    if (markerToggle) {
+                        markerToggle.classList.toggle('active', enabled);
+                        markerToggle.textContent = enabled ? 'Marker-Modus aktiv' : 'Marker platzieren';
+                    }
+                    renderer.domElement.style.cursor = enabled ? 'crosshair' : 'grab';
+                }
+            
+                setMarkerMode(false);
+            
+                function colorForCategory(category) {
+                    return categoryPalette[category] || categoryPalette.other;
+                }
+            
+                function labelForCategory(category) {
+                    return categoryLabels[category] || category;
+                }
+            
+                function createTextSprite(text, color) {
+                    const canvas = document.createElement('canvas');
+                    const context = canvas.getContext('2d');
+                    const padding = 24;
+                    const fontSize = 64;
+                    context.font = `${fontSize}px Inter, sans-serif`;
+                    const textWidth = context.measureText(text).width;
+                    canvas.width = textWidth + padding * 2;
+                    canvas.height = fontSize + padding * 1.5;
+                    context.fillStyle = 'rgba(15, 23, 42, 0.9)';
+                    context.strokeStyle = color;
+                    context.lineWidth = 8;
+                    context.fillRect(0, 0, canvas.width, canvas.height);
+                    context.strokeRect(0, 0, canvas.width, canvas.height);
+                    context.fillStyle = '#f8fafc';
+                    context.textBaseline = 'middle';
+                    context.font = `${fontSize}px Inter, sans-serif`;
+                    context.fillText(text, padding, canvas.height / 2);
+                    const texture = new THREE.CanvasTexture(canvas);
+                    texture.minFilter = THREE.LinearFilter;
+                    texture.encoding = THREE.sRGBEncoding;
+                    const material = new THREE.SpriteMaterial({ map: texture, depthTest: false, depthWrite: false });
+                    const sprite = new THREE.Sprite(material);
+                    const scale = 0.0025 * modelScale;
+                    sprite.scale.set(canvas.width * scale * 0.5, canvas.height * scale * 0.5, 1);
+                    return sprite;
+                }
+            
+                function addAnnotation(point) {
+                    const category = categorySelect ? categorySelect.value : 'other';
+                    const label = (labelInput && labelInput.value.trim()) || `${labelForCategory(category)} ${annotations.length + 1}`;
+                    const color = colorForCategory(category);
+                    const markerSize = Math.max(modelScale * 0.015, 2.5);
+                    const markerGeometry = new THREE.SphereGeometry(markerSize, 24, 24);
+                    const markerMaterial = new THREE.MeshStandardMaterial({ color, emissive: color, emissiveIntensity: 0.35, metalness: 0.15, roughness: 0.45 });
+                    const sphere = new THREE.Mesh(markerGeometry, markerMaterial);
+                    const sprite = createTextSprite(label, color);
+                    sprite.position.set(0, markerSize * 3.2, 0);
+                    const group = new THREE.Group();
+                    group.add(sphere);
+                    group.add(sprite);
+                    group.position.copy(point);
+                    scene.add(group);
+            
+                    const annotation = {
+                        id: `cad-marker-${Math.random().toString(36).slice(2, 9)}`,
+                        category,
+                        label,
+                        position: point.clone(),
+                        object3d: group
+                    };
+                    annotations.push(annotation);
+            
+                    if (annotationList) {
+                        const wrapper = document.createElement('article');
+                        wrapper.className = 'cad-annotation-entry';
+                        wrapper.dataset.annotationId = annotation.id;
+                        wrapper.innerHTML = `
+                            <header>
+                                <h3>${label}</h3>
+                                <span>${labelForCategory(category)}</span>
+                            </header>
+                            <p>Position: x=${point.x.toFixed(1)}, y=${point.y.toFixed(1)}, z=${point.z.toFixed(1)}</p>
+                        `;
+                        const removeButton = document.createElement('button');
+                        removeButton.type = 'button';
+                        removeButton.textContent = 'Entfernen';
+                        removeButton.addEventListener('click', () => {
+                            scene.remove(group);
+                            const index = annotations.findIndex((item) => item.id === annotation.id);
+                            if (index >= 0) {
+                                annotations.splice(index, 1);
+                            }
+                            wrapper.remove();
+                        });
+                        wrapper.appendChild(removeButton);
+                        annotationList.appendChild(wrapper);
+                    }
+                }
+            
+                function handleAnnotationEvent(event) {
+                    if (!markerMode || !currentModel) {
+                        return;
+                    }
+                    const rect = renderer.domElement.getBoundingClientRect();
+                    pointer.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+                    pointer.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+                    raycaster.setFromCamera(pointer, camera);
+                    const intersections = raycaster.intersectObject(currentModel, true);
+                    if (intersections.length === 0) {
+                        updateStatus('Kein Schnittpunkt gefunden. Bitte erneut versuchen.', 'error');
+                        return;
+                    }
+                    updateStatus('Marker hinzugefügt.', null);
+                    addAnnotation(intersections[0].point);
+                }
+            
+                renderer.domElement.addEventListener('pointerdown', (event) => {
+                    if (markerMode && event.button === 0) {
+                        event.preventDefault();
+                        handleAnnotationEvent(event);
+                    }
+                });
+            
+                renderer.domElement.addEventListener('contextmenu', (event) => event.preventDefault());
+            
+                function buildMeshGroup(result) {
+                    const group = new THREE.Group();
+                    if (!result || !result.success || !Array.isArray(result.meshes)) {
+                        return group;
+                    }
+                    const meshes = result.meshes.map((meshData) => {
+                        const geometry = new THREE.BufferGeometry();
+                        const positions = meshData?.attributes?.position?.array || [];
+                        const positionData = positions instanceof Float32Array ? positions : new Float32Array(positions);
+                        geometry.setAttribute('position', new THREE.Float32BufferAttribute(positionData, 3));
+                        const normals = meshData?.attributes?.normal?.array;
+                        if (normals && normals.length) {
+                            const normalData = normals instanceof Float32Array ? normals : new Float32Array(normals);
+                            geometry.setAttribute('normal', new THREE.Float32BufferAttribute(normalData, 3));
+                        }
+                        const indices = meshData?.index?.array;
+                        if (indices && indices.length) {
+                            const indexData =
+                                indices instanceof Uint32Array ||
+                                indices instanceof Uint16Array ||
+                                indices instanceof Uint8Array
+                                    ? indices
+                                    : new Uint32Array(indices);
+                            geometry.setIndex(indexData);
+                        }
+                        if (!normals || !normals.length) {
+                            geometry.computeVertexNormals();
+                        }
+                        const colorArray = meshData?.color;
+                        const color = Array.isArray(colorArray)
+                            ? new THREE.Color(colorArray[0] / 255, colorArray[1] / 255, colorArray[2] / 255)
+                            : new THREE.Color('#94a3b8');
+                        const material = new THREE.MeshStandardMaterial({
+                            color,
+                            metalness: 0.15,
+                            roughness: 0.75,
+                            side: THREE.DoubleSide
+                        });
+                        const mesh = new THREE.Mesh(geometry, material);
+                        mesh.name = meshData?.name || 'STEP Mesh';
+                        return mesh;
+                    });
+            
+                    function attachNode(node) {
+                        const nodeGroup = new THREE.Group();
+                        nodeGroup.name = node?.name || 'StepNode';
+                        if (Array.isArray(node?.meshes)) {
+                            node.meshes.forEach((index) => {
+                                const mesh = meshes[index];
+                                if (mesh) {
+                                    nodeGroup.add(mesh.clone());
+                                }
+                            });
+                        }
+                        if (Array.isArray(node?.children)) {
+                            node.children.forEach((child) => {
+                                nodeGroup.add(attachNode(child));
+                            });
+                        }
+                        return nodeGroup;
+                    }
+            
+                    group.add(attachNode(result.root));
+                    return group;
+                }
+            
+                function fitCameraToGroup(group) {
+                    const box = new THREE.Box3().setFromObject(group);
+                    const center = box.getCenter(new THREE.Vector3());
+                    const size = box.getSize(new THREE.Vector3());
+                    const maxDim = Math.max(size.x, size.y, size.z, 1);
+                    group.position.set(-center.x, -center.y, -center.z);
+                    modelScale = maxDim;
+                    controls.setTarget(new THREE.Vector3(0, 0, 0));
+                    const distance = maxDim * 1.8;
+                    controls.setRadius(distance);
+                    camera.position.set(distance, distance * 0.7, distance);
+                    camera.near = Math.max(0.1, distance / 400);
+                    camera.far = Math.max(1000, distance * 20);
+                    camera.updateProjectionMatrix();
+                }
+            
+                async function loadStepFile(file) {
+                    if (!file) {
+                        return;
+                    }
+                    updateStatus(`Lade ${file.name} ...`, 'loading');
+                    const occt = await occtPromise;
+                    if (!occt) {
+                        updateStatus('STEP-Parser nicht verfügbar.', 'error');
+                        return;
+                    }
+                    try {
+                        const buffer = await file.arrayBuffer();
+                        const result = occt.ReadStepFile(new Uint8Array(buffer), null);
+                        if (!result || !result.success) {
+                            updateStatus('STEP-Datei konnte nicht gelesen werden.', 'error');
+                            return;
+                        }
+                        if (currentModel) {
+                            scene.remove(currentModel);
+                        }
+                        clearAnnotations();
+                        currentModel = buildMeshGroup(result);
+                        scene.add(currentModel);
+                        fitCameraToGroup(currentModel);
+                        updateStatus(`${file.name} geladen. Marker-Modus aktivieren, um Punkte zu setzen.`, null);
+                    } catch (error) {
+                        console.error(error);
+                        updateStatus('Fehler beim Lesen der STEP-Datei.', 'error');
+                    }
+                }
+            
+                if (fileInput) {
+                    fileInput.addEventListener('change', (event) => {
+                        const file = event.target.files && event.target.files[0];
+                        if (file) {
+                            loadStepFile(file);
+                        }
+                    });
+                }
+            
+                if (markerToggle) {
+                    markerToggle.addEventListener('click', () => {
+                        setMarkerMode(!markerMode);
+                    });
+                }
+            
+                if (clearMarkersButton) {
+                    clearMarkersButton.addEventListener('click', () => {
+                        clearAnnotations();
+                        updateStatus('Alle Marker entfernt.', null);
+                    });
+                }
+            
+                if (resetViewButton) {
+                    resetViewButton.addEventListener('click', () => {
+                        if (currentModel) {
+                            fitCameraToGroup(currentModel);
+                        } else {
+                            controls.setTarget(new THREE.Vector3(0, 0, 0));
+                            controls.setRadius(480);
+                            camera.position.set(320, 220, 320);
+                            camera.updateProjectionMatrix();
+                        }
+                        updateStatus('Kamera zurückgesetzt.', null);
+                    });
+                }
+            
+                ['dragenter', 'dragover'].forEach((type) => {
+                    viewport.addEventListener(type, (event) => {
+                        event.preventDefault();
+                        viewport.classList.add('drag-active');
+                    });
+                });
+            
+                ['dragleave', 'drop'].forEach((type) => {
+                    viewport.addEventListener(type, (event) => {
+                        event.preventDefault();
+                        if (type === 'drop') {
+                            const file = event.dataTransfer && event.dataTransfer.files && event.dataTransfer.files[0];
+                            if (file) {
+                                loadStepFile(file);
+                            }
+                        }
+                        viewport.classList.remove('drag-active');
+                    });
+                });
+            
+                function animate() {
+                    requestAnimationFrame(animate);
+                    renderer.render(scene, camera);
+                }
+            
+                animate();
+            })();
+        </script>
         </body>
         </html>
         """
@@ -988,6 +1737,156 @@ def create_app() -> FastAPI:
                     color: rgba(226, 232, 240, 0.88);
                 }
 
+                .cad-panel {
+                    margin-top: 1.8rem;
+                    display: grid;
+                    gap: 1rem;
+                    padding: 1.5rem;
+                    border-radius: 1.1rem;
+                    border: 1px solid rgba(148, 163, 184, 0.25);
+                    background: rgba(15, 23, 42, 0.88);
+                    box-shadow: 0 32px 64px rgba(15, 23, 42, 0.6);
+                }
+
+                .cad-panel header {
+                    display: grid;
+                    gap: 0.45rem;
+                }
+
+                .cad-panel h2 {
+                    margin: 0;
+                    font-size: 1.3rem;
+                    color: #f8fafc;
+                }
+
+                .cad-panel p {
+                    margin: 0;
+                    font-size: 0.9rem;
+                    color: rgba(148, 163, 184, 0.85);
+                    line-height: 1.6;
+                }
+
+                .cad-toolbox {
+                    display: grid;
+                    gap: 0.75rem;
+                }
+
+                .cad-toolbox .row {
+                    display: flex;
+                    flex-wrap: wrap;
+                    gap: 0.85rem;
+                }
+
+                .cad-toolbox label {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 0.4rem;
+                    font-size: 0.85rem;
+                    color: rgba(226, 232, 240, 0.85);
+                }
+
+                .cad-toolbox input[type="file"] {
+                    padding: 0.5rem;
+                    background: rgba(30, 41, 59, 0.75);
+                    border: 1px dashed rgba(56, 189, 248, 0.4);
+                    border-radius: 0.65rem;
+                    color: #e2e8f0;
+                    cursor: pointer;
+                }
+
+                .cad-toolbox input[type="text"],
+                .cad-toolbox select {
+                    background: rgba(30, 41, 59, 0.65);
+                    border: 1px solid rgba(148, 163, 184, 0.35);
+                    border-radius: 0.6rem;
+                    padding: 0.5rem 0.75rem;
+                    color: #e2e8f0;
+                    font-size: 0.95rem;
+                }
+
+                .cad-toolbox button {
+                    background: rgba(30, 41, 59, 0.78);
+                    border: 1px solid rgba(148, 163, 184, 0.35);
+                    border-radius: 0.7rem;
+                    padding: 0.55rem 1rem;
+                    color: #f8fafc;
+                    font-weight: 600;
+                    cursor: pointer;
+                    transition: transform 0.12s ease, border-color 0.2s ease;
+                }
+
+                .cad-toolbox button:hover,
+                .cad-toolbox button.active {
+                    transform: translateY(-1px);
+                    border-color: #38bdf8;
+                    box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.25);
+                }
+
+                .cad-status {
+                    font-size: 0.85rem;
+                    color: rgba(148, 163, 184, 0.85);
+                }
+
+                .cad-status[data-state="error"] {
+                    color: #fca5a5;
+                }
+
+                .cad-status[data-state="loading"] {
+                    color: #fbbf24;
+                }
+
+                .cad-viewer {
+                    position: relative;
+                    min-height: 440px;
+                    border-radius: 1rem;
+                    border: 1px solid rgba(148, 163, 184, 0.2);
+                    background: radial-gradient(circle at top, rgba(30, 41, 59, 0.92), rgba(15, 23, 42, 0.96));
+                    overflow: hidden;
+                }
+
+                .cad-viewer.drag-active {
+                    border-color: #38bdf8;
+                    box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.35);
+                }
+
+                .cad-annotation-list {
+                    display: grid;
+                    gap: 0.6rem;
+                }
+
+                .cad-annotation-entry {
+                    display: grid;
+                    gap: 0.35rem;
+                    padding: 0.75rem;
+                    border-radius: 0.85rem;
+                    border: 1px solid rgba(148, 163, 184, 0.28);
+                    background: rgba(30, 41, 59, 0.72);
+                }
+
+                .cad-annotation-entry header {
+                    display: flex;
+                    justify-content: space-between;
+                    gap: 0.5rem;
+                    align-items: baseline;
+                }
+
+                .cad-annotation-entry h3 {
+                    margin: 0;
+                    font-size: 1rem;
+                    color: #f8fafc;
+                }
+
+                .cad-annotation-entry span {
+                    font-size: 0.75rem;
+                    letter-spacing: 0.05em;
+                    text-transform: uppercase;
+                    color: rgba(56, 189, 248, 0.78);
+                }
+
+                .cad-annotation-entry button {
+                    justify-self: start;
+                }
+
                 .canvas-shell {
                     border-radius: 1.2rem;
                     border: 1px solid rgba(148, 163, 184, 0.25);
@@ -1113,6 +2012,56 @@ def create_app() -> FastAPI:
                             <image id=\"backgroundImage\" x=\"0\" y=\"0\" width=\"1280\" height=\"720\" preserveAspectRatio=\"xMidYMid meet\"></image>
                         </svg>
                     </div>
+                    <section class=\"cad-panel\">
+                        <header>
+                            <h2>3D-CAD-Vorschau</h2>
+                            <p>
+                                Ergänze den 2D-Plan um eine echte 3D-Ansicht. Lade STEP-Modelle deines Druckers oder einzelner
+                                Baugruppen, bewege die Perspektive frei und setze Marker für Riemen, Führungen, Kabel oder
+                                Sensorik.
+                            </p>
+                        </header>
+                        <div class=\"cad-toolbox\">
+                            <div class=\"row\">
+                                <label>
+                                    STEP-Datei
+                                    <input id=\"printerCadFile\" type=\"file\" accept=\".step,.stp,model/step\" />
+                                </label>
+                                <label>
+                                    Marker-Kategorie
+                                    <select id=\"printerCadCategory\">
+                                        <option value=\"device\">Baugruppe / Gerät</option>
+                                        <option value=\"rails\">Linearführungen</option>
+                                        <option value=\"belts\">Riemen &amp; Antriebe</option>
+                                        <option value=\"cables\">Kabelwege</option>
+                                        <option value=\"sensors\">Sensoren</option>
+                                        <option value=\"other\">Sonstige</option>
+                                    </select>
+                                </label>
+                                <label>
+                                    Marker-Beschriftung
+                                    <input id=\"printerCadLabel\" type=\"text\" placeholder=\"z. B. Filamentsensor\" />
+                                </label>
+                            </div>
+                            <div class=\"row\">
+                                <button id=\"printerCadMarkerMode\" type=\"button\">Marker platzieren</button>
+                                <button id=\"printerCadResetView\" type=\"button\">Kamera zurücksetzen</button>
+                                <button id=\"printerCadClearMarkers\" type=\"button\">Marker entfernen</button>
+                            </div>
+                            <p class=\"cad-status\" id=\"printerCadStatus\" aria-live=\"polite\">
+                                Ziehe eine STEP-Datei auf die Ansicht oder verwende den Button, um die Vorschau zu starten.
+                            </p>
+                            <p class=\"hint\">
+                                Hinweis: Im Marker-Modus setzt ein Linksklick einen Punkt. Im Navigationsmodus dreht der Linksklick,
+                                Rechtsklick verschiebt die Ansicht, das Mausrad zoomt.
+                            </p>
+                        </div>
+                        <div class=\"cad-viewer\" id=\"printerCadViewport\" tabindex=\"0\" aria-label=\"Interaktive 3D-Ansicht des Druckers\"></div>
+                        <section>
+                            <h3>3D-Markierungen</h3>
+                            <div id=\"printerCadAnnotationList\" class=\"cad-annotation-list\"></div>
+                        </section>
+                    </section>
                 </main>
             </div>
             <script>
@@ -1502,7 +2451,557 @@ def create_app() -> FastAPI:
 
                     currentShape = null;
                 });
-            </script>
+            <script src="https://raw.githubusercontent.com/mrdoob/three.js/r160/build/three.min.js"></script>
+        <script src="https://raw.githubusercontent.com/kovacsv/occt-import-js/master/dist/occt-import-js.js"></script>
+        <script>
+            (function () {
+                const viewport = document.getElementById('printerCadViewport');
+                const statusElement = document.getElementById('printerCadStatus');
+                if (!viewport) {
+                    return;
+                }
+            
+                if (typeof THREE === 'undefined') {
+                    if (statusElement) {
+                        statusElement.textContent = '3D-Viewer konnte nicht initialisiert werden (THREE.js nicht verfügbar).';
+                        statusElement.dataset.state = 'error';
+                    }
+                    return;
+                }
+            
+                const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+                renderer.setPixelRatio(window.devicePixelRatio || 1);
+                renderer.setSize(viewport.clientWidth, viewport.clientHeight, false);
+                renderer.outputEncoding = THREE.sRGBEncoding;
+                viewport.appendChild(renderer.domElement);
+            
+                const scene = new THREE.Scene();
+                scene.background = new THREE.Color(0x0f172a);
+            
+                const grid = new THREE.GridHelper(1000, 50, 0x1f2937, 0x1f2937);
+                if (Array.isArray(grid.material)) {
+                    grid.material.forEach((material) => {
+                        material.opacity = 0.2;
+                        material.transparent = true;
+                    });
+                } else {
+                    grid.material.opacity = 0.2;
+                    grid.material.transparent = true;
+                }
+                scene.add(grid);
+            
+                const ambient = new THREE.HemisphereLight(0xf1f5f9, 0x0f172a, 0.9);
+                const directional = new THREE.DirectionalLight(0xffffff, 0.8);
+                directional.position.set(320, 420, 320);
+                scene.add(ambient);
+                scene.add(directional);
+            
+                const camera = new THREE.PerspectiveCamera(50, Math.max(viewport.clientWidth / Math.max(viewport.clientHeight, 1), 1), 0.1, 15000);
+                camera.position.set(420, 260, 420);
+                camera.lookAt(0, 0, 0);
+            
+                const raycaster = new THREE.Raycaster();
+                const pointer = new THREE.Vector2();
+            
+                const annotationList = document.getElementById('printerCadAnnotationList');
+                const fileInput = document.getElementById('printerCadFile');
+                const categorySelect = document.getElementById('printerCadCategory');
+                const labelInput = document.getElementById('printerCadLabel');
+                const markerToggle = document.getElementById('printerCadMarkerMode');
+                const resetViewButton = document.getElementById('printerCadResetView');
+                const clearMarkersButton = document.getElementById('printerCadClearMarkers');
+            
+                const categoryPalette = {
+                    device: '#38bdf8',
+                    rails: '#22d3ee',
+                    belts: '#f97316',
+                    cables: '#facc15',
+                    sensors: '#a855f7',
+                    other: '#94a3b8'
+                };
+            
+                const categoryLabels = {
+                    device: 'Baugruppe / Gerät',
+                    rails: 'Linearführungen',
+                    belts: 'Riemen & Antriebe',
+                    cables: 'Kabelwege',
+                    sensors: 'Sensor',
+                    other: 'Sonstige'
+                };
+            
+                let markerMode = false;
+                let currentModel = null;
+                let modelScale = 400;
+                const annotations = [];
+            
+                const occtPromise = typeof occtimportjs === 'function' ? occtimportjs() : Promise.resolve(null);
+            
+                function updateStatus(message, state) {
+                    if (!statusElement) {
+                        return;
+                    }
+                    statusElement.textContent = message;
+                    if (state) {
+                        statusElement.dataset.state = state;
+                    } else {
+                        statusElement.removeAttribute('data-state');
+                    }
+                }
+            
+                updateStatus('Ziehe eine STEP-Datei auf die Ansicht oder verwende den Button, um zu starten.', null);
+            
+                function createSimpleOrbitControls(camera, domElement, options) {
+                    const shouldHandlePointer = options && options.shouldHandlePointer ? options.shouldHandlePointer : () => true;
+                    const state = {
+                        pointerId: null,
+                        rotating: false,
+                        panning: false,
+                        lastPosition: new THREE.Vector2(),
+                        spherical: new THREE.Spherical(),
+                        target: new THREE.Vector3()
+                    };
+                    const tempVec = new THREE.Vector3();
+                    const xAxis = new THREE.Vector3();
+                    const yAxis = new THREE.Vector3();
+            
+                    function syncSpherical() {
+                        tempVec.copy(camera.position).sub(state.target);
+                        state.spherical.setFromVector3(tempVec);
+                    }
+            
+                    function apply() {
+                        tempVec.setFromSpherical(state.spherical);
+                        camera.position.copy(state.target).add(tempVec);
+                        camera.lookAt(state.target);
+                    }
+            
+                    syncSpherical();
+                    apply();
+            
+                    function onPointerDown(event) {
+                        if (!shouldHandlePointer(event)) {
+                            return;
+                        }
+                        domElement.setPointerCapture(event.pointerId);
+                        state.pointerId = event.pointerId;
+                        state.lastPosition.set(event.clientX, event.clientY);
+                        if (event.button === 2 || event.button === 1 || event.shiftKey) {
+                            state.panning = true;
+                            domElement.style.cursor = 'move';
+                        } else {
+                            state.rotating = true;
+                            domElement.style.cursor = 'grabbing';
+                        }
+                    }
+            
+                    function onPointerMove(event) {
+                        if (state.pointerId !== event.pointerId) {
+                            return;
+                        }
+                        const deltaX = event.clientX - state.lastPosition.x;
+                        const deltaY = event.clientY - state.lastPosition.y;
+                        state.lastPosition.set(event.clientX, event.clientY);
+                        if (state.rotating) {
+                            const rotateSpeed = 0.005;
+                            state.spherical.theta -= deltaX * rotateSpeed;
+                            state.spherical.phi -= deltaY * rotateSpeed;
+                            state.spherical.phi = Math.max(0.1, Math.min(Math.PI - 0.1, state.spherical.phi));
+                            apply();
+                        } else if (state.panning) {
+                            camera.updateMatrixWorld();
+                            const panSpeed = 0.0015 * state.spherical.radius;
+                            const panX = -deltaX * panSpeed;
+                            const panY = deltaY * panSpeed;
+                            xAxis.setFromMatrixColumn(camera.matrixWorld, 0);
+                            yAxis.setFromMatrixColumn(camera.matrixWorld, 1);
+                            state.target.addScaledVector(xAxis, panX);
+                            state.target.addScaledVector(yAxis, panY);
+                            apply();
+                        }
+                    }
+            
+                    function onPointerUp(event) {
+                        if (state.pointerId !== event.pointerId) {
+                            return;
+                        }
+                        domElement.releasePointerCapture(event.pointerId);
+                        state.rotating = false;
+                        state.panning = false;
+                        domElement.style.cursor = markerMode ? 'crosshair' : 'grab';
+                        state.pointerId = null;
+                    }
+            
+                    function onWheel(event) {
+                        event.preventDefault();
+                        const delta = event.deltaY;
+                        const factor = 1 + Math.min(Math.abs(delta) * 0.0015, 0.25);
+                        if (delta > 0) {
+                            state.spherical.radius *= factor;
+                        } else {
+                            state.spherical.radius /= factor;
+                        }
+                        state.spherical.radius = Math.max(5, Math.min(8000, state.spherical.radius));
+                        apply();
+                    }
+            
+                    domElement.addEventListener('pointerdown', onPointerDown);
+                    domElement.addEventListener('pointermove', onPointerMove);
+                    domElement.addEventListener('pointerup', onPointerUp);
+                    domElement.addEventListener('pointercancel', onPointerUp);
+                    domElement.addEventListener('wheel', onWheel, { passive: false });
+            
+                    return {
+                        setTarget(target) {
+                            state.target.copy(target);
+                            syncSpherical();
+                            apply();
+                        },
+                        setRadius(distance) {
+                            state.spherical.radius = Math.max(5, distance);
+                            apply();
+                        },
+                        refresh() {
+                            syncSpherical();
+                            apply();
+                        }
+                    };
+                }
+            
+                const controls = createSimpleOrbitControls(camera, renderer.domElement, {
+                    shouldHandlePointer(event) {
+                        return !(markerMode && event.button === 0);
+                    }
+                });
+            
+                controls.setTarget(new THREE.Vector3(0, 0, 0));
+                controls.setRadius(620);
+            
+                function resizeRenderer() {
+                    const width = viewport.clientWidth;
+                    const height = Math.max(viewport.clientHeight, 1);
+                    renderer.setSize(width, height, false);
+                    camera.aspect = width / height;
+                    camera.updateProjectionMatrix();
+                }
+            
+                window.addEventListener('resize', resizeRenderer);
+                if (window.ResizeObserver) {
+                    new ResizeObserver(resizeRenderer).observe(viewport);
+                }
+            
+                function clearAnnotations() {
+                    while (annotations.length) {
+                        const annotation = annotations.pop();
+                        scene.remove(annotation.object3d);
+                    }
+                    if (annotationList) {
+                        annotationList.innerHTML = '';
+                    }
+                }
+            
+                function setMarkerMode(enabled) {
+                    markerMode = enabled;
+                    if (markerToggle) {
+                        markerToggle.classList.toggle('active', enabled);
+                        markerToggle.textContent = enabled ? 'Marker-Modus aktiv' : 'Marker platzieren';
+                    }
+                    renderer.domElement.style.cursor = enabled ? 'crosshair' : 'grab';
+                }
+            
+                setMarkerMode(false);
+            
+                function colorForCategory(category) {
+                    return categoryPalette[category] || categoryPalette.other;
+                }
+            
+                function labelForCategory(category) {
+                    return categoryLabels[category] || category;
+                }
+            
+                function createTextSprite(text, color) {
+                    const canvas = document.createElement('canvas');
+                    const context = canvas.getContext('2d');
+                    const padding = 26;
+                    const fontSize = 64;
+                    context.font = `${fontSize}px Inter, sans-serif`;
+                    const textWidth = context.measureText(text).width;
+                    canvas.width = textWidth + padding * 2;
+                    canvas.height = fontSize + padding * 1.6;
+                    context.fillStyle = 'rgba(15, 23, 42, 0.9)';
+                    context.strokeStyle = color;
+                    context.lineWidth = 8;
+                    context.fillRect(0, 0, canvas.width, canvas.height);
+                    context.strokeRect(0, 0, canvas.width, canvas.height);
+                    context.fillStyle = '#f8fafc';
+                    context.textBaseline = 'middle';
+                    context.font = `${fontSize}px Inter, sans-serif`;
+                    context.fillText(text, padding, canvas.height / 2);
+                    const texture = new THREE.CanvasTexture(canvas);
+                    texture.minFilter = THREE.LinearFilter;
+                    texture.encoding = THREE.sRGBEncoding;
+                    const material = new THREE.SpriteMaterial({ map: texture, depthTest: false, depthWrite: false });
+                    const sprite = new THREE.Sprite(material);
+                    const scale = 0.0023 * modelScale;
+                    sprite.scale.set(canvas.width * scale * 0.5, canvas.height * scale * 0.5, 1);
+                    return sprite;
+                }
+            
+                function addAnnotation(point) {
+                    const category = categorySelect ? categorySelect.value : 'other';
+                    const label = (labelInput && labelInput.value.trim()) || `${labelForCategory(category)} ${annotations.length + 1}`;
+                    const color = colorForCategory(category);
+                    const markerSize = Math.max(modelScale * 0.014, 2.5);
+                    const markerGeometry = new THREE.SphereGeometry(markerSize, 24, 24);
+                    const markerMaterial = new THREE.MeshStandardMaterial({ color, emissive: color, emissiveIntensity: 0.3, metalness: 0.15, roughness: 0.45 });
+                    const sphere = new THREE.Mesh(markerGeometry, markerMaterial);
+                    const sprite = createTextSprite(label, color);
+                    sprite.position.set(0, markerSize * 3.4, 0);
+                    const group = new THREE.Group();
+                    group.add(sphere);
+                    group.add(sprite);
+                    group.position.copy(point);
+                    scene.add(group);
+            
+                    const annotation = {
+                        id: `printer-marker-${Math.random().toString(36).slice(2, 9)}`,
+                        category,
+                        label,
+                        position: point.clone(),
+                        object3d: group
+                    };
+                    annotations.push(annotation);
+            
+                    if (annotationList) {
+                        const wrapper = document.createElement('article');
+                        wrapper.className = 'cad-annotation-entry';
+                        wrapper.dataset.annotationId = annotation.id;
+                        wrapper.innerHTML = `
+                            <header>
+                                <h3>${label}</h3>
+                                <span>${labelForCategory(category)}</span>
+                            </header>
+                            <p>Position: x=${point.x.toFixed(1)}, y=${point.y.toFixed(1)}, z=${point.z.toFixed(1)}</p>
+                        `;
+                        const removeButton = document.createElement('button');
+                        removeButton.type = 'button';
+                        removeButton.textContent = 'Entfernen';
+                        removeButton.addEventListener('click', () => {
+                            scene.remove(group);
+                            const index = annotations.findIndex((item) => item.id === annotation.id);
+                            if (index >= 0) {
+                                annotations.splice(index, 1);
+                            }
+                            wrapper.remove();
+                        });
+                        wrapper.appendChild(removeButton);
+                        annotationList.appendChild(wrapper);
+                    }
+                }
+            
+                function handleAnnotationEvent(event) {
+                    if (!markerMode || !currentModel) {
+                        return;
+                    }
+                    const rect = renderer.domElement.getBoundingClientRect();
+                    pointer.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+                    pointer.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+                    raycaster.setFromCamera(pointer, camera);
+                    const intersections = raycaster.intersectObject(currentModel, true);
+                    if (intersections.length === 0) {
+                        updateStatus('Kein Schnittpunkt gefunden. Bitte erneut versuchen.', 'error');
+                        return;
+                    }
+                    updateStatus('Marker hinzugefügt.', null);
+                    addAnnotation(intersections[0].point);
+                }
+            
+                renderer.domElement.addEventListener('pointerdown', (event) => {
+                    if (markerMode && event.button === 0) {
+                        event.preventDefault();
+                        handleAnnotationEvent(event);
+                    }
+                });
+            
+                renderer.domElement.addEventListener('contextmenu', (event) => event.preventDefault());
+            
+                function buildMeshGroup(result) {
+                    const group = new THREE.Group();
+                    if (!result || !result.success || !Array.isArray(result.meshes)) {
+                        return group;
+                    }
+                    const meshes = result.meshes.map((meshData) => {
+                        const geometry = new THREE.BufferGeometry();
+                        const positions = meshData?.attributes?.position?.array || [];
+                        const positionData = positions instanceof Float32Array ? positions : new Float32Array(positions);
+                        geometry.setAttribute('position', new THREE.Float32BufferAttribute(positionData, 3));
+                        const normals = meshData?.attributes?.normal?.array;
+                        if (normals && normals.length) {
+                            const normalData = normals instanceof Float32Array ? normals : new Float32Array(normals);
+                            geometry.setAttribute('normal', new THREE.Float32BufferAttribute(normalData, 3));
+                        }
+                        const indices = meshData?.index?.array;
+                        if (indices && indices.length) {
+                            const indexData =
+                                indices instanceof Uint32Array ||
+                                indices instanceof Uint16Array ||
+                                indices instanceof Uint8Array
+                                    ? indices
+                                    : new Uint32Array(indices);
+                            geometry.setIndex(indexData);
+                        }
+                        if (!normals || !normals.length) {
+                            geometry.computeVertexNormals();
+                        }
+                        const colorArray = meshData?.color;
+                        const color = Array.isArray(colorArray)
+                            ? new THREE.Color(colorArray[0] / 255, colorArray[1] / 255, colorArray[2] / 255)
+                            : new THREE.Color('#94a3b8');
+                        const material = new THREE.MeshStandardMaterial({
+                            color,
+                            metalness: 0.15,
+                            roughness: 0.75,
+                            side: THREE.DoubleSide
+                        });
+                        const mesh = new THREE.Mesh(geometry, material);
+                        mesh.name = meshData?.name || 'STEP Mesh';
+                        return mesh;
+                    });
+            
+                    function attachNode(node) {
+                        const nodeGroup = new THREE.Group();
+                        nodeGroup.name = node?.name || 'StepNode';
+                        if (Array.isArray(node?.meshes)) {
+                            node.meshes.forEach((index) => {
+                                const mesh = meshes[index];
+                                if (mesh) {
+                                    nodeGroup.add(mesh.clone());
+                                }
+                            });
+                        }
+                        if (Array.isArray(node?.children)) {
+                            node.children.forEach((child) => {
+                                nodeGroup.add(attachNode(child));
+                            });
+                        }
+                        return nodeGroup;
+                    }
+            
+                    group.add(attachNode(result.root));
+                    return group;
+                }
+            
+                function fitCameraToGroup(group) {
+                    const box = new THREE.Box3().setFromObject(group);
+                    const center = box.getCenter(new THREE.Vector3());
+                    const size = box.getSize(new THREE.Vector3());
+                    const maxDim = Math.max(size.x, size.y, size.z, 1);
+                    group.position.set(-center.x, -center.y, -center.z);
+                    modelScale = maxDim;
+                    controls.setTarget(new THREE.Vector3(0, 0, 0));
+                    const distance = maxDim * 1.9;
+                    controls.setRadius(distance);
+                    camera.position.set(distance, distance * 0.75, distance);
+                    camera.near = Math.max(0.1, distance / 500);
+                    camera.far = Math.max(1200, distance * 25);
+                    camera.updateProjectionMatrix();
+                }
+            
+                async function loadStepFile(file) {
+                    if (!file) {
+                        return;
+                    }
+                    updateStatus(`Lade ${file.name} ...`, 'loading');
+                    const occt = await occtPromise;
+                    if (!occt) {
+                        updateStatus('STEP-Parser nicht verfügbar.', 'error');
+                        return;
+                    }
+                    try {
+                        const buffer = await file.arrayBuffer();
+                        const result = occt.ReadStepFile(new Uint8Array(buffer), null);
+                        if (!result || !result.success) {
+                            updateStatus('STEP-Datei konnte nicht gelesen werden.', 'error');
+                            return;
+                        }
+                        if (currentModel) {
+                            scene.remove(currentModel);
+                        }
+                        clearAnnotations();
+                        currentModel = buildMeshGroup(result);
+                        scene.add(currentModel);
+                        fitCameraToGroup(currentModel);
+                        updateStatus(`${file.name} geladen. Aktiviere den Marker-Modus, um Punkte zu setzen.`, null);
+                    } catch (error) {
+                        console.error(error);
+                        updateStatus('Fehler beim Lesen der STEP-Datei.', 'error');
+                    }
+                }
+            
+                if (fileInput) {
+                    fileInput.addEventListener('change', (event) => {
+                        const file = event.target.files && event.target.files[0];
+                        if (file) {
+                            loadStepFile(file);
+                        }
+                    });
+                }
+            
+                if (markerToggle) {
+                    markerToggle.addEventListener('click', () => {
+                        setMarkerMode(!markerMode);
+                    });
+                }
+            
+                if (clearMarkersButton) {
+                    clearMarkersButton.addEventListener('click', () => {
+                        clearAnnotations();
+                        updateStatus('Alle Marker entfernt.', null);
+                    });
+                }
+            
+                if (resetViewButton) {
+                    resetViewButton.addEventListener('click', () => {
+                        if (currentModel) {
+                            fitCameraToGroup(currentModel);
+                        } else {
+                            controls.setTarget(new THREE.Vector3(0, 0, 0));
+                            controls.setRadius(620);
+                            camera.position.set(420, 260, 420);
+                            camera.updateProjectionMatrix();
+                        }
+                        updateStatus('Kamera zurückgesetzt.', null);
+                    });
+                }
+            
+                ['dragenter', 'dragover'].forEach((type) => {
+                    viewport.addEventListener(type, (event) => {
+                        event.preventDefault();
+                        viewport.classList.add('drag-active');
+                    });
+                });
+            
+                ['dragleave', 'drop'].forEach((type) => {
+                    viewport.addEventListener(type, (event) => {
+                        event.preventDefault();
+                        if (type === 'drop') {
+                            const file = event.dataTransfer && event.dataTransfer.files && event.dataTransfer.files[0];
+                            if (file) {
+                                loadStepFile(file);
+                            }
+                        }
+                        viewport.classList.remove('drag-active');
+                    });
+                });
+            
+                function animate() {
+                    requestAnimationFrame(animate);
+                    renderer.render(scene, camera);
+                }
+            
+                animate();
+            })();
+        </script>
+        </script>
         </body>
         </html>
         """
