@@ -96,6 +96,8 @@ Dockerfile           # Container-Build
 ## Designer & Definition Registry
 
 - **Landingpage (`/`)** – bündelt Einstiegspunkte in Board- und Drucker-Designer und erklärt den geplanten Konfigurations-Generator.
+- **Board-Designer (`/board-designer`)** – erlaubt das Annotieren von Pins, Steckern und Signalen auf hochgeladenen Bildern.
+- **Printer-Designer (`/printer-designer`)** – erlaubt Bild-Uploads, markiert Extruder, Schalter, Sensoren, Lüfter oder Stepper mit Rechtecken, Kreisen und Maßpfeilen und erfasst Rotationsdistanzen für Antriebe. Die Werkzeuge rechnen Maus- und Touch-Positionen auf die aktuelle ViewBox um, sodass Overlays exakt der Cursorbewegung folgen.
 - **Board-Designer (`/board-designer`)** – erlaubt das Annotieren von Pins, Steckern und Signalen auf hochgeladenen Bildern und bietet zusätzlich einen STEP-Viewer, um Baugruppen in 3D zu markieren.
 - **Printer-Designer (`/printer-designer`)** – erlaubt Bild-Uploads, markiert Extruder, Schalter, Sensoren, Lüfter oder Stepper mit Rechtecken, Kreisen und Maßpfeilen, erfasst Rotationsdistanzen für Antriebe und ergänzt einen interaktiven 3D-CAD-Modus für STEP-Dateien.
 - **Persistente Registry** – neue Tabellen `board_definition_documents` und `printer_definition_documents` speichern Designer-Ergebnisse inklusive Metadaten und Vorschaubild-Links.

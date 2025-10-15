@@ -747,14 +747,26 @@ def create_app() -> FastAPI:
                 }
 
                 function svgCursor(event) {
-                    const point = boardCanvas.createSVGPoint();
-                    point.x = event.offsetX;
-                    point.y = event.offsetY;
-                    const ctm = boardCanvas.getScreenCTM();
-                    if (!ctm) {
+                    const rect = boardCanvas.getBoundingClientRect();
+                    if (rect.width === 0 || rect.height === 0) {
                         return null;
                     }
-                    return point.matrixTransform(ctm.inverse());
+
+                    const touch = 'touches' in event && event.touches.length ? event.touches[0] : null;
+                    const clientX = touch ? touch.clientX : event.clientX;
+                    const clientY = touch ? touch.clientY : event.clientY;
+
+                    if (typeof clientX !== 'number' || typeof clientY !== 'number') {
+                        return null;
+                    }
+
+                    const normalizedX = (clientX - rect.left) / rect.width;
+                    const normalizedY = (clientY - rect.top) / rect.height;
+
+                    return {
+                        x: viewBox.x + normalizedX * viewBox.width,
+                        y: viewBox.y + normalizedY * viewBox.height
+                    };
                 }
 
                 function addShapeEntry(id, type, label, color, geometry) {
@@ -2105,14 +2117,26 @@ def create_app() -> FastAPI:
                 }
 
                 function svgCursor(event) {
-                    const point = printerCanvas.createSVGPoint();
-                    point.x = event.offsetX;
-                    point.y = event.offsetY;
-                    const ctm = printerCanvas.getScreenCTM();
-                    if (!ctm) {
+                    const rect = printerCanvas.getBoundingClientRect();
+                    if (rect.width === 0 || rect.height === 0) {
                         return null;
                     }
-                    return point.matrixTransform(ctm.inverse());
+
+                    const touch = 'touches' in event && event.touches.length ? event.touches[0] : null;
+                    const clientX = touch ? touch.clientX : event.clientX;
+                    const clientY = touch ? touch.clientY : event.clientY;
+
+                    if (typeof clientX !== 'number' || typeof clientY !== 'number') {
+                        return null;
+                    }
+
+                    const normalizedX = (clientX - rect.left) / rect.width;
+                    const normalizedY = (clientY - rect.top) / rect.height;
+
+                    return {
+                        x: viewBox.x + normalizedX * viewBox.width,
+                        y: viewBox.y + normalizedY * viewBox.height
+                    };
                 }
 
                 function createShapeId() {

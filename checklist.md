@@ -14,6 +14,7 @@
 - [x] Landingpage mit Verlinkung auf Board- und Drucker-Designer erstellen
 - [x] Persistente Tabellen sowie API-Endpunkte für Board- und Druckerdefinitionen anlegen
 - [x] Drucker-Designer mit Bild-Upload, Annotationen und Maßpfeilen implementieren
+- [x] Cursor-Koordinaten im Board- und Drucker-Designer an die ViewBox-Skalierung anpassen
 - [x] 3D-CAD-Viewer mit STEP-Import und Marker-Workflow für Board- und Drucker-Designer integrieren
 
 ## Offene Schritte Richtung Produktivbetrieb
