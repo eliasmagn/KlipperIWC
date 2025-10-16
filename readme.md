@@ -97,9 +97,9 @@ Dockerfile           # Container-Build
 
 - **Landingpage (`/`)** – bündelt Einstiegspunkte in Board- und Drucker-Designer und erklärt den geplanten Konfigurations-Generator.
 - **Board-Designer (`/board-designer`)** – erlaubt das Annotieren von Pins, Steckern und Signalen auf hochgeladenen Bildern.
-- **Printer-Designer (`/printer-designer`)** – erlaubt Bild-Uploads, markiert Extruder, Schalter, Sensoren, Lüfter oder Stepper mit Rechtecken, Kreisen und Maßpfeilen und erfasst Rotationsdistanzen für Antriebe. Die Werkzeuge rechnen Maus- und Touch-Positionen auf die aktuelle ViewBox um, sodass Overlays exakt der Cursorbewegung folgen.
+- **Printer-Designer (`/printer-designer`)** – erlaubt Bild-Uploads, markiert Extruder, Schalter, Sensoren, Lüfter oder Stepper mit Rechtecken, Kreisen und Maßpfeilen, erfasst Rotationsdistanzen für Antriebe und sammelt ein strukturiertes Druckerprofil (Name, Kinematik, Hotend, Board, Lead Screws, Riemen, Übersetzungen, Heizbett). Die eingebettete Konstanten-Datenbank liefert Vorauswahlen und verlinkt per Tooltip direkt in die Klipper-Dokumentation.
 - **Board-Designer (`/board-designer`)** – erlaubt das Annotieren von Pins, Steckern und Signalen auf hochgeladenen Bildern und bietet zusätzlich einen STEP-Viewer, um Baugruppen in 3D zu markieren.
-- **Printer-Designer (`/printer-designer`)** – erlaubt Bild-Uploads, markiert Extruder, Schalter, Sensoren, Lüfter oder Stepper mit Rechtecken, Kreisen und Maßpfeilen, erfasst Rotationsdistanzen für Antriebe und ergänzt einen interaktiven 3D-CAD-Modus für STEP-Dateien.
+- **Printer-Designer (`/printer-designer`)** – kombiniert den 2D-Workflow mit einem interaktiven 3D-CAD-Modus für STEP-Dateien, zeigt einen konfigurierbaren Klipper-Optionskatalog mit Dokumentationslinks und hält die benötigten Bibliotheken (three.js) lokal im Repository vor.
 - **Persistente Registry** – neue Tabellen `board_definition_documents` und `printer_definition_documents` speichern Designer-Ergebnisse inklusive Metadaten und Vorschaubild-Links.
 - **REST-API** – über `/api/definitions/boards` und `/api/definitions/printers` lassen sich Definitionen anlegen, abrufen und aktualisieren.
 
@@ -412,3 +412,7 @@ Der Prototyp für die Board-Visualisierung ist unter `http://localhost:8000/boar
 ## Interaktiver Printer-Designer (Prototyp)
 
 Der Drucker-Designer unter `http://localhost:8000/printer-designer` kombiniert eine Bild-basierte Arbeitsfläche mit geometrischen Werkzeugen und einen 3D-CAD-Modus. Rechtecke, Kreise und Maßpfeile markieren Extruder, Motoren oder Sensoren auf dem hochgeladenen Plan; ergänzend kann ein STEP-Modell des Rahmens geladen werden. Über den integrierten Viewer lassen sich Perspektive und Zoom frei steuern, Marker für Führungen, Riemen, Kabelbäume oder Sensorik setzen und anschließend gemeinsam mit den 2D-Einträgen verwalten. So entsteht eine vollständige, räumlich verortete Dokumentation des Aufbaus.
+
+Der Arbeitsablauf startet mit einem Druckerprofil: Name, Kinematik, Hotend, Mainboard, Lead Screws, Riemen, Übersetzungen und Heizbett werden aus einer gepflegten Konstantenliste gewählt. Jeder Eintrag blendet Tooltips mit Links zur passenden Klipper-Dokumentation ein. Erst nach Benennung der Maschine wird der Upload der Hintergrundgrafik freigeschaltet, sodass Profile eindeutig zuordenbar bleiben.
+
+Unter der Markierungsübersicht fasst ein Klipper-Konfigurationskatalog die wichtigsten Sections (z. B. `printer`, `stepper_*`, `extruder`, `heater_bed`, `bed_mesh`) samt kurzer Beschreibung und Dokumentationslink zusammen. Damit entsteht ein Spickzettel, der während der Definition sofort Kontext liefert. Der 3D-Viewer lädt `three.js` nicht mehr aus einem CDN, sondern nutzt die lokal ausgelieferte Datei unter `/static/js/three.min.js`, was reproduzierbare Deployments ohne externe Abhängigkeiten ermöglicht.

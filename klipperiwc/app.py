@@ -8,9 +8,11 @@ import os
 from contextlib import suppress
 from datetime import datetime, timedelta, timezone
 from functools import lru_cache
+from pathlib import Path
 
 from fastapi import FastAPI
 from fastapi.responses import HTMLResponse
+from fastapi.staticfiles import StaticFiles
 
 from klipperiwc.api import (
     board_assets_router,
@@ -30,6 +32,12 @@ logger = logging.getLogger(__name__)
 def create_app() -> FastAPI:
     """Create and configure the FastAPI application instance."""
     app = FastAPI(title="KlipperIWC", description="Klipper Integration Web Console")
+
+    static_root = Path(__file__).resolve().parent / "static"
+    if static_root.exists():
+        app.mount("/static", StaticFiles(directory=static_root), name="static")
+    else:
+        logger.warning("Static directory %s not found – skipping static mount.", static_root)
 
     Base.metadata.create_all(engine)
 
@@ -971,7 +979,7 @@ def create_app() -> FastAPI:
                     currentShape = null;
                 });
             </script>
-        <script src="https://raw.githubusercontent.com/mrdoob/three.js/r160/build/three.min.js"></script>
+        <script src="/static/js/three.min.js"></script>
         <script src="https://raw.githubusercontent.com/kovacsv/occt-import-js/master/dist/occt-import-js.js"></script>
         <script>
             (function () {
@@ -1682,6 +1690,160 @@ def create_app() -> FastAPI:
                     line-height: 1.5;
                 }
 
+                .control.disabled label,
+                .control.disabled input,
+                .control.disabled select {
+                    opacity: 0.5;
+                    cursor: not-allowed;
+                }
+
+                .metadata-panel {
+                    display: grid;
+                    gap: 1rem;
+                    margin-bottom: 1.5rem;
+                    padding: 1.25rem;
+                    border-radius: 1rem;
+                    border: 1px solid rgba(148, 163, 184, 0.2);
+                    background: rgba(15, 23, 42, 0.55);
+                }
+
+                .metadata-panel h2 {
+                    margin: 0;
+                    font-size: 1.3rem;
+                    color: #f8fafc;
+                }
+
+                .metadata-grid {
+                    display: grid;
+                    gap: 0.75rem;
+                }
+
+                .profile-summary {
+                    margin-top: 0.75rem;
+                    padding: 0.85rem;
+                    border-radius: 0.75rem;
+                    border: 1px solid rgba(56, 189, 248, 0.32);
+                    background: rgba(30, 64, 175, 0.28);
+                    display: grid;
+                    gap: 0.4rem;
+                }
+
+                .profile-summary div {
+                    display: flex;
+                    justify-content: space-between;
+                    gap: 0.5rem;
+                    font-size: 0.9rem;
+                }
+
+                .profile-summary span {
+                    color: rgba(226, 232, 240, 0.75);
+                }
+
+                .profile-summary strong {
+                    color: #e0f2fe;
+                    font-weight: 600;
+                    text-align: right;
+                }
+
+                .doc-link {
+                    display: inline-flex;
+                    align-items: center;
+                    justify-content: center;
+                    width: 1.2rem;
+                    height: 1.2rem;
+                    margin-left: 0.35rem;
+                    border-radius: 999px;
+                    background: rgba(56, 189, 248, 0.18);
+                    color: #38bdf8;
+                    font-size: 0.75rem;
+                    font-weight: 700;
+                    text-decoration: none;
+                    position: relative;
+                    cursor: pointer;
+                }
+
+                .doc-link::after {
+                    content: attr(data-tooltip);
+                    position: absolute;
+                    bottom: -0.5rem;
+                    left: 50%;
+                    transform: translate(-50%, 100%);
+                    background: rgba(15, 23, 42, 0.95);
+                    color: #e2e8f0;
+                    padding: 0.4rem 0.6rem;
+                    border-radius: 0.5rem;
+                    font-size: 0.7rem;
+                    line-height: 1.3;
+                    width: max-content;
+                    max-width: 220px;
+                    opacity: 0;
+                    pointer-events: none;
+                    transition: opacity 0.15s ease;
+                    box-shadow: 0 8px 20px rgba(2, 6, 23, 0.35);
+                    z-index: 20;
+                }
+
+                .doc-link:hover::after,
+                .doc-link:focus-visible::after {
+                    opacity: 1;
+                }
+
+                .config-section {
+                    margin-top: 2rem;
+                    display: grid;
+                    gap: 0.75rem;
+                }
+
+                .config-catalog {
+                    display: grid;
+                    gap: 0.75rem;
+                    max-height: 260px;
+                    overflow: auto;
+                    padding-right: 0.25rem;
+                }
+
+                .config-catalog details {
+                    border: 1px solid rgba(148, 163, 184, 0.22);
+                    border-radius: 0.85rem;
+                    background: rgba(15, 23, 42, 0.55);
+                    padding: 0.5rem 0.75rem;
+                }
+
+                .config-catalog summary {
+                    cursor: pointer;
+                    font-weight: 600;
+                    color: #f8fafc;
+                    display: flex;
+                    align-items: center;
+                    gap: 0.5rem;
+                }
+
+                .config-catalog ul {
+                    list-style: none;
+                    padding: 0.5rem 0 0.5rem 0;
+                    margin: 0;
+                    display: grid;
+                    gap: 0.6rem;
+                }
+
+                .config-catalog li {
+                    display: grid;
+                    gap: 0.35rem;
+                    font-size: 0.85rem;
+                    color: rgba(226, 232, 240, 0.8);
+                }
+
+                .config-catalog li strong {
+                    color: #bae6fd;
+                    font-weight: 600;
+                }
+
+                .config-catalog a.inline-doc {
+                    font-size: 0.75rem;
+                    color: #38bdf8;
+                    text-decoration: none;
+                }
+
                 .shape-list {
                     display: grid;
                     gap: 0.8rem;
@@ -1955,48 +2117,101 @@ def create_app() -> FastAPI:
             </header>
             <div class=\"layout\">
                 <aside>
-                    <div class=\"control-group\">
-                        <div class=\"control\">
-                            <label for=\"backgroundUpload\">Hintergrundgrafik</label>
-                            <input id=\"backgroundUpload\" type=\"file\" accept=\"image/*\" />
-                            <p class=\"hint\">Unterstützt PNG, JPG und SVG. Das Bild legt die Dimension der Zeichenfläche fest.</p>
+                    <section class="metadata-panel" aria-labelledby="metadataHeading">
+                        <h2 id="metadataHeading">Druckerprofil</h2>
+                        <div class="metadata-grid">
+                            <div class="control">
+                                <label for="printerName">Druckername</label>
+                                <input id="printerName" type="text" placeholder="z. B. Voron Trident" />
+                                <p class="hint">Der Name aktiviert den Bild-Upload und wird für gespeicherte Profile verwendet.</p>
+                            </div>
+                            <div class="control">
+                                <label for="printerType">Druckertyp<a id="printerTypeDoc" class="doc-link" href="#" target="_blank" rel="noreferrer" data-tooltip="">?</a></label>
+                                <select id="printerType"></select>
+                            </div>
+                            <div class="control">
+                                <label for="hotend">Hotend<a id="hotendDoc" class="doc-link" href="#" target="_blank" rel="noreferrer" data-tooltip="">?</a></label>
+                                <select id="hotend"></select>
+                            </div>
+                            <div class="control">
+                                <label for="controlBoard">Mainboard<a id="controlBoardDoc" class="doc-link" href="#" target="_blank" rel="noreferrer" data-tooltip="">?</a></label>
+                                <select id="controlBoard"></select>
+                            </div>
+                            <div class="control">
+                                <label for="leadScrew">Lead Screw<a id="leadScrewDoc" class="doc-link" href="#" target="_blank" rel="noreferrer" data-tooltip="">?</a></label>
+                                <select id="leadScrew"></select>
+                            </div>
+                            <div class="control">
+                                <label for="belt">Riemen<a id="beltDoc" class="doc-link" href="#" target="_blank" rel="noreferrer" data-tooltip="">?</a></label>
+                                <select id="belt"></select>
+                            </div>
+                            <div class="control">
+                                <label for="gearRatio">Getriebe / Ratio<a id="gearRatioDoc" class="doc-link" href="#" target="_blank" rel="noreferrer" data-tooltip="">?</a></label>
+                                <select id="gearRatio"></select>
+                            </div>
+                            <div class="control">
+                                <label for="heatedBed">Heizbettgröße<a id="heatedBedDoc" class="doc-link" href="#" target="_blank" rel="noreferrer" data-tooltip="">?</a></label>
+                                <select id="heatedBed"></select>
+                            </div>
                         </div>
-                        <div class=\"control\">
-                            <label for=\"componentType\">Komponententyp</label>
-                            <select id=\"componentType\">
-                                <option value=\"switch\">Endstop / Schalter</option>
-                                <option value=\"extruder\">Extruder / Hotend</option>
-                                <option value=\"stepper\" selected>Stepper-Motor</option>
-                                <option value=\"lead_screw\">Lead Screw / Z-Antrieb</option>
-                                <option value=\"sensor\">Sensor</option>
-                                <option value=\"fan\">Lüfter</option>
-                                <option value=\"custom\">Benutzerdefiniert</option>
+                        <div class="profile-summary" id="printerProfileSummary" aria-live="polite">
+                            <div><span>Name</span><strong>–</strong></div>
+                            <div><span>Typ</span><strong>–</strong></div>
+                            <div><span>Hotend</span><strong>–</strong></div>
+                            <div><span>Mainboard</span><strong>–</strong></div>
+                            <div><span>Lead Screw</span><strong>–</strong></div>
+                            <div><span>Riemen</span><strong>–</strong></div>
+                            <div><span>Getriebe</span><strong>–</strong></div>
+                            <div><span>Heizbett</span><strong>–</strong></div>
+                        </div>
+                    </section>
+                    <div class="control-group">
+                        <div class="control disabled">
+                            <label for="backgroundUpload">Hintergrundgrafik</label>
+                            <input id="backgroundUpload" type="file" accept="image/*" disabled />
+                            <p class="hint">Unterstützt PNG, JPG und SVG. Der Upload wird nach Benennung des Druckers aktiviert.</p>
+                        </div>
+                        <div class="control">
+                            <label for="componentType">Komponententyp</label>
+                            <select id="componentType">
+                                <option value="switch">Endstop / Schalter</option>
+                                <option value="extruder">Extruder / Hotend</option>
+                                <option value="stepper" selected>Stepper-Motor</option>
+                                <option value="lead_screw">Lead Screw / Z-Antrieb</option>
+                                <option value="sensor">Sensor</option>
+                                <option value="fan">Lüfter</option>
+                                <option value="custom">Benutzerdefiniert</option>
                             </select>
                         </div>
-                        <div class=\"control rotational\">
-                            <label for=\"rotationalDistance\">Rotationsdistanz (mm)</label>
-                            <input id=\"rotationalDistance\" type=\"number\" step=\"0.01\" placeholder=\"z. B. 32.0\" />
-                            <p class=\"hint\">Wird für Stepper- und Lead-Screw-Markierungen übernommen.</p>
+                        <div class="control rotational">
+                            <label for="rotationalDistance">Rotationsdistanz (mm)</label>
+                            <input id="rotationalDistance" type="number" step="0.01" placeholder="z. B. 32.0" />
+                            <p class="hint">Wird für Stepper- und Lead-Screw-Markierungen übernommen.</p>
                         </div>
-                        <div class=\"control\">
-                            <label for=\"highlightColor\">Farbe</label>
-                            <input id=\"highlightColor\" type=\"color\" value=\"#22c55e\" />
+                        <div class="control">
+                            <label for="highlightColor">Farbe</label>
+                            <input id="highlightColor" type="color" value="#22c55e" />
                         </div>
-                        <div class=\"control\">
+                        <div class="control">
                             <label>Werkzeuge</label>
-                            <div class=\"toolbar\">
-                                <button id=\"rectTool\" type=\"button\">Rechteck</button>
-                                <button id=\"circleTool\" type=\"button\">Kreis</button>
-                                <button id=\"arrowTool\" type=\"button\">Maßpfeil</button>
-                                <button id=\"panTool\" type=\"button\">Verschieben</button>
+                            <div class="toolbar">
+                                <button id="rectTool" type="button">Rechteck</button>
+                                <button id="circleTool" type="button">Kreis</button>
+                                <button id="arrowTool" type="button">Maßpfeil</button>
+                                <button id="panTool" type="button">Verschieben</button>
                             </div>
-                            <p class=\"hint\">Zeichne mit zwei Klicks. Pfeile benötigen Start- und Endpunkt sowie ein Maß. Vorgeschlagene Maße orientieren sich an Pixeln, eigene mm-Angaben können eingetragen werden.</p>
+                            <p class="hint">Zeichne mit zwei Klicks. Pfeile benötigen Start- und Endpunkt sowie ein Maß. Vorgeschlagene Maße orientieren sich an Pixeln, eigene mm-Angaben können eingetragen werden.</p>
                         </div>
                     </div>
                     <div>
                         <h2>Markierungen</h2>
-                        <div id=\"printerShapeList\" class=\"shape-list\"></div>
+                        <div id="printerShapeList" class="shape-list"></div>
                     </div>
+                    <section class="config-section">
+                        <h2>Klipper-Konfiguration</h2>
+                        <p class="hint">Überblick über zentrale Optionen. Die Links öffnen direkt die Referenz im Browser.</p>
+                        <div id="configCatalog" class="config-catalog"></div>
+                    </section>
                 </aside>
                 <main>
                     <div class=\"canvas-shell\">
@@ -2076,6 +2291,26 @@ def create_app() -> FastAPI:
                 const rotationalDistanceInput = document.getElementById('rotationalDistance');
                 const highlightColorInput = document.getElementById('highlightColor');
                 const shapeList = document.getElementById('printerShapeList');
+                const printerNameInput = document.getElementById('printerName');
+                const printerTypeSelect = document.getElementById('printerType');
+                const hotendSelect = document.getElementById('hotend');
+                const controlBoardSelect = document.getElementById('controlBoard');
+                const leadScrewSelect = document.getElementById('leadScrew');
+                const beltSelect = document.getElementById('belt');
+                const gearRatioSelect = document.getElementById('gearRatio');
+                const heatedBedSelect = document.getElementById('heatedBed');
+                const printerProfileSummary = document.getElementById('printerProfileSummary');
+                const configCatalogContainer = document.getElementById('configCatalog');
+                const metadataDocAnchors = {
+                    printerType: document.getElementById('printerTypeDoc'),
+                    hotend: document.getElementById('hotendDoc'),
+                    controlBoard: document.getElementById('controlBoardDoc'),
+                    leadScrew: document.getElementById('leadScrewDoc'),
+                    belt: document.getElementById('beltDoc'),
+                    gearRatio: document.getElementById('gearRatioDoc'),
+                    heatedBed: document.getElementById('heatedBedDoc')
+                };
+                const backgroundControl = backgroundUpload ? backgroundUpload.closest('.control') : null;
 
                 const defaultPalette = {
                     switch: '#f97316',
@@ -2096,6 +2331,511 @@ def create_app() -> FastAPI:
                     fan: 'Lüfter',
                     custom: 'Benutzerdefiniert'
                 };
+
+                const PRINTER_CONSTANTS = Object.freeze({
+                    printerTypes: [
+                        {
+                            id: 'corexy',
+                            label: 'CoreXY',
+                            description: 'Gekreuzte XY-Riemen mit stehendem Bett.',
+                            docUrl: 'https://www.klipper3d.org/Config_Reference.html#printer'
+                        },
+                        {
+                            id: 'cartesian',
+                            label: 'Cartesian',
+                            description: 'Klassische XYZ-Kinematik mit unabhängigen Achsen.',
+                            docUrl: 'https://www.klipper3d.org/Config_Reference.html#printer'
+                        },
+                        {
+                            id: 'delta',
+                            label: 'Delta',
+                            description: 'Dreieckskinematik mit vertikalen Türmen.',
+                            docUrl: 'https://www.klipper3d.org/Config_Reference.html#delta-kinematics'
+                        },
+                        {
+                            id: 'voron_switchwire',
+                            label: 'CoreXZ / Switchwire',
+                            description: 'Voron Switchwire bzw. CoreXZ-Aufbau.',
+                            docUrl: 'https://www.klipper3d.org/Config_Reference.html#printer'
+                        },
+                        {
+                            id: 'scara',
+                            label: 'SCARA',
+                            description: 'Schwenkarm-Kinematik für hohe Reichweite.',
+                            docUrl: 'https://www.klipper3d.org/Config_Reference.html#scara-kinematics'
+                        },
+                    ],
+                    hotends: [
+                        {
+                            id: 'e3d_revo',
+                            label: 'E3D Revo',
+                            description: 'Schnellwechsel-Düse mit integriertem Heizblock.',
+                            docUrl: 'https://e3d-online.com/blogs/news/revo-hardware-introduction'
+                        },
+                        {
+                            id: 'dragon',
+                            label: 'Phaetus Dragon',
+                            description: 'All-Metal-Hotend mit hoher Durchflussleistung.',
+                            docUrl: 'https://www.phaetus.com/product/dragon-hotend/'
+                        },
+                        {
+                            id: 'mosquito',
+                            label: 'Slice Mosquito',
+                            description: 'Modulares Hotend mit austauschbaren Düsen.',
+                            docUrl: 'https://www.sliceengineering.com/products/mosquito-hotend'
+                        },
+                        {
+                            id: 'rapido',
+                            label: 'Rapido UHF',
+                            description: 'Hochdurchfluss-Hotend für CoreXY-Systeme.',
+                            docUrl: 'https://bondtech.se/product/rapido-hotend/'
+                        },
+                        {
+                            id: 'mk8',
+                            label: 'MK8 / Creality Standard',
+                            description: 'Bowden-Hotend, häufig in i3-basierten Druckern.',
+                            docUrl: 'https://www.klipper3d.org/Config_Reference.html#extruder'
+                        },
+                    ],
+                    controlBoards: [
+                        {
+                            id: 'btt_octopus',
+                            label: 'BTT Octopus',
+                            description: '32-Bit STM32F446 mit 8–12 Treiber-Steckplätzen.',
+                            docUrl: 'https://github.com/bigtreetech/BIGTREETECH-OCTOPUS-V1.0'
+                        },
+                        {
+                            id: 'btt_manta_m8p',
+                            label: 'BTT Manta M8P',
+                            description: 'Kombiboard mit integrierter CM4-Trägerplatine.',
+                            docUrl: 'https://github.com/bigtreetech/BigTreeTech-Manta-M8P'
+                        },
+                        {
+                            id: 'fysetc_spider',
+                            label: 'FYSETC Spider',
+                            description: 'STM32F446-Board, ausgelegt für Voron-Drucker.',
+                            docUrl: 'https://wiki.fysetc.com/Spider/'
+                        },
+                        {
+                            id: 'duet2_wifi',
+                            label: 'Duet 2 WiFi',
+                            description: 'ARM-basiertes 32-Bit-Board mit Weboberfläche.',
+                            docUrl: 'https://duet3d.dozuki.com/Wiki/Duet_2_Wifi_Ethernet'
+                        },
+                        {
+                            id: 'skr_mini_e3',
+                            label: 'BTT SKR Mini E3',
+                            description: 'Drop-in-Board für viele Creality-Modelle.',
+                            docUrl: 'https://github.com/bigtreetech/BIGTREETECH-SKR-mini-E3'
+                        },
+                    ],
+                    leadScrews: [
+                        {
+                            id: 't8_2',
+                            label: 'T8 P2',
+                            description: 'Trapezspindel mit 2 mm Steigung pro Umdrehung.',
+                            docUrl: 'https://www.klipper3d.org/Rotation_Distance.html'
+                        },
+                        {
+                            id: 't8_4',
+                            label: 'T8 P4',
+                            description: '2 mm Steigung, viergängige Spindel (8 mm Hub).',
+                            docUrl: 'https://www.klipper3d.org/Rotation_Distance.html'
+                        },
+                        {
+                            id: 't12_3',
+                            label: 'T12 P3',
+                            description: 'Robuste Z-Achsen-Spindel für größere Formate.',
+                            docUrl: 'https://www.klipper3d.org/Rotation_Distance.html'
+                        },
+                        {
+                            id: 'ball_screw_1605',
+                            label: 'Kugelgewindetrieb 1605',
+                            description: 'Präziser Kugelgewindetrieb mit 5 mm Steigung.',
+                            docUrl: 'https://www.klipper3d.org/Rotation_Distance.html'
+                        },
+                    ],
+                    belts: [
+                        {
+                            id: 'gt2_6',
+                            label: 'GT2 6 mm',
+                            description: 'Standard-Riemenbreite für i3-Drucker.',
+                            docUrl: 'https://www.klipper3d.org/Rotation_Distance.html#belt-driven-axes'
+                        },
+                        {
+                            id: 'gt2_9',
+                            label: 'GT2 9 mm',
+                            description: 'Stärkerer Riemen für CoreXY-Systeme.',
+                            docUrl: 'https://www.klipper3d.org/Rotation_Distance.html#belt-driven-axes'
+                        },
+                        {
+                            id: 'gt2_12',
+                            label: 'GT2 12 mm',
+                            description: 'Verstärkte Variante für hohe Beschleunigungen.',
+                            docUrl: 'https://www.klipper3d.org/Rotation_Distance.html#belt-driven-axes'
+                        },
+                        {
+                            id: 'gates_2gt',
+                            label: 'Gates 2GT',
+                            description: 'Original Gates-Riemen mit hoher Lebensdauer.',
+                            docUrl: 'https://www.gates.com/us/en/gg-drive-systems/powergrip-gt3-timing-belt/p/9453-00000000.html'
+                        },
+                    ],
+                    gearRatios: [
+                        {
+                            id: '1_1',
+                            label: 'Direktantrieb 1:1',
+                            description: 'Kein Übersetzungsverhältnis.',
+                            docUrl: 'https://www.klipper3d.org/Rotation_Distance.html#extruder-calibration'
+                        },
+                        {
+                            id: '3_1',
+                            label: '3:1 Getriebe',
+                            description: 'Typisch für Bondtech BMG / LGX Lite.',
+                            docUrl: 'https://www.klipper3d.org/Rotation_Distance.html#extruder-calibration'
+                        },
+                        {
+                            id: '5_1',
+                            label: '5:1 Getriebe',
+                            description: 'Hohe Auflösung, z. B. bei E3D Hemera.',
+                            docUrl: 'https://www.klipper3d.org/Rotation_Distance.html#extruder-calibration'
+                        },
+                        {
+                            id: '7_5_1',
+                            label: '7.5:1 Planetengetriebe',
+                            description: 'Planetengetriebe für maximale Präzision.',
+                            docUrl: 'https://www.klipper3d.org/Rotation_Distance.html#extruder-calibration'
+                        },
+                    ],
+                    heatedBeds: [
+                        {
+                            id: '220x220',
+                            label: '220 x 220 mm',
+                            description: 'Standardgröße vieler i3-Drucker.',
+                            docUrl: 'https://www.klipper3d.org/Config_Reference.html#heater_bed'
+                        },
+                        {
+                            id: '250x250',
+                            label: '250 x 250 mm',
+                            description: 'Kompatibel mit Voron 2.4 (250).',
+                            docUrl: 'https://www.klipper3d.org/Config_Reference.html#heater_bed'
+                        },
+                        {
+                            id: '300x300',
+                            label: '300 x 300 mm',
+                            description: 'Voron 2.4 (300) oder RatRig V-Core 3.',
+                            docUrl: 'https://www.klipper3d.org/Config_Reference.html#heater_bed'
+                        },
+                        {
+                            id: '350x350',
+                            label: '350 x 350 mm',
+                            description: 'Großformatige CoreXY-Plattformen.',
+                            docUrl: 'https://www.klipper3d.org/Config_Reference.html#heater_bed'
+                        },
+                        {
+                            id: '400x400',
+                            label: '400 x 400 mm',
+                            description: 'DIY- und Industrie-Großformatdrucker.',
+                            docUrl: 'https://www.klipper3d.org/Config_Reference.html#heater_bed'
+                        },
+                    ],
+                });
+
+                const KLIPPER_CONFIG_CATALOG = Object.freeze([
+                    {
+                        section: 'printer',
+                        title: 'Printer',
+                        docUrl: 'https://www.klipper3d.org/Config_Reference.html#printer',
+                        tooltip: 'Grundlegende Kinematik und Bewegungsparameter.',
+                        options: [
+                            { key: 'kinematics', description: 'Legt den Achsaufbau fest (corexy, cartesian, delta, ...).' },
+                            { key: 'max_velocity', description: 'Maximale Verfahrgeschwindigkeit aller Achsen.' },
+                            { key: 'max_accel', description: 'Maximale Beschleunigung für Bewegungen.' },
+                            { key: 'square_corner_velocity', description: 'Regelt wie aggressiv Kurven abgerundet werden.' },
+                        ],
+                    },
+                    {
+                        section: 'stepper_x',
+                        title: 'Stepper X',
+                        docUrl: 'https://www.klipper3d.org/Config_Reference.html#stepper_x',
+                        tooltip: 'Motor- und Endstop-Definition für die X-Achse.',
+                        options: [
+                            { key: 'step_pin', description: 'GPIO-Pin für Schrittimpulse der X-Achse.' },
+                            { key: 'dir_pin', description: 'Richtungspin (ggf. mit ! invertiert).' },
+                            { key: 'rotation_distance', description: 'Weg pro Umdrehung, abhängig von Riemen oder Spindel.' },
+                            { key: 'endstop_pin', description: 'Pin und Signal für den X-Endstop.' },
+                        ],
+                    },
+                    {
+                        section: 'stepper_y',
+                        title: 'Stepper Y',
+                        docUrl: 'https://www.klipper3d.org/Config_Reference.html#stepper_y',
+                        tooltip: 'Definition der Y-Achse analog zur X-Achse.',
+                        options: [
+                            { key: 'step_pin', description: 'GPIO-Pin für Y-Schrittimpulse.' },
+                            { key: 'rotation_distance', description: 'Riemen-/Spindelweg der Y-Achse.' },
+                            { key: 'endstop_pin', description: 'Endstop oder Sensor zum Referenzieren.' },
+                            { key: 'microsteps', description: 'Feinabstimmung der Treiberauflösung.' },
+                        ],
+                    },
+                    {
+                        section: 'stepper_z',
+                        title: 'Stepper Z',
+                        docUrl: 'https://www.klipper3d.org/Config_Reference.html#stepper_z',
+                        tooltip: 'Z-Antrieb inklusive mehreren Motoren und Endstops.',
+                        options: [
+                            { key: 'step_pin', description: 'GPIO-Pin für den Z-Schrittimpuls.' },
+                            { key: 'gear_ratio', description: 'Optionales Übersetzungsverhältnis bei Getrieben.' },
+                            { key: 'position_min', description: 'Mechanischer Mindestwert (typisch 0 oder negativ).' },
+                            { key: 'position_max', description: 'Maximale Bauhöhe des Druckers.' },
+                        ],
+                    },
+                    {
+                        section: 'extruder',
+                        title: 'Extruder',
+                        docUrl: 'https://www.klipper3d.org/Config_Reference.html#extruder',
+                        tooltip: 'Konfiguration des Filamentantriebs und Hotends.',
+                        options: [
+                            { key: 'rotation_distance', description: 'Filamentweg pro Umdrehung (abhängig vom Getriebe).' },
+                            { key: 'gear_ratio', description: 'Übersetzung für Direkt- oder Bowdenextruder.' },
+                            { key: 'nozzle_diameter', description: 'Aktuelle Düsenöffnung in mm.' },
+                            { key: 'max_extrude_only_velocity', description: 'Grenze für reine Extrusionsgeschwindigkeit.' },
+                        ],
+                    },
+                    {
+                        section: 'heater_bed',
+                        title: 'Heater Bed',
+                        docUrl: 'https://www.klipper3d.org/Config_Reference.html#heater_bed',
+                        tooltip: 'Parameter für das beheizte Druckbett.',
+                        options: [
+                            { key: 'sensor_type', description: 'Thermistortyp oder PT100/PT1000-Konfiguration.' },
+                            { key: 'control', description: 'Regler (PID, bang-bang) für das Heizbett.' },
+                            { key: 'pid_Kp/Ki/Kd', description: 'PID-Werte für stabile Temperaturregelung.' },
+                            { key: 'max_power', description: 'Leistungsbegrenzung zum Schutz des Netzteils.' },
+                        ],
+                    },
+                    {
+                        section: 'probe',
+                        title: 'Probe / Z-Taster',
+                        docUrl: 'https://www.klipper3d.org/Config_Reference.html#probe',
+                        tooltip: 'Automatische Bettnivellierung und Tasterparameter.',
+                        options: [
+                            { key: 'pin', description: 'Signalpin für den Sensor (Induktiv, Klicky, BLTouch, ...).' },
+                            { key: 'x_offset', description: 'Versatz des Sensors zur Düse auf der X-Achse.' },
+                            { key: 'y_offset', description: 'Versatz auf der Y-Achse.' },
+                            { key: 'speed', description: 'Antastgeschwindigkeit beim Leveling.' },
+                        ],
+                    },
+                    {
+                        section: 'bed_mesh',
+                        title: 'Bed Mesh',
+                        docUrl: 'https://www.klipper3d.org/Bed_Mesh.html',
+                        tooltip: 'Erzeugt ein Höhenprofil für unebene Druckbetten.',
+                        options: [
+                            { key: 'probe_count', description: 'Rastergröße für Messpunkte (z. B. 5,5).' },
+                            { key: 'speed', description: 'Geschwindigkeit der Messfahrten.' },
+                            { key: 'mesh_min/max', description: 'Ausdehnung des Messbereichs relativ zur Düse.' },
+                            { key: 'fade_start', description: 'Entfernungswert, ab dem die Korrektur ausgeblendet wird.' },
+                        ],
+                    },
+                    {
+                        section: 'fan',
+                        title: 'Part-/Hotend-Lüfter',
+                        docUrl: 'https://www.klipper3d.org/Config_Reference.html#fan',
+                        tooltip: 'Lüftersteuerung für Bauteil- und Hotend-Lüfter.',
+                        options: [
+                            { key: 'pin', description: 'Ausgangspin für den PWM-geregelten Lüfter.' },
+                            { key: 'max_power', description: 'Begrenzung der Lüfterleistung.' },
+                            { key: 'kick_start_time', description: 'Startbooster für träge Lüfter.' },
+                            { key: 'off_below', description: 'Schwellwert, ab dem der Lüfter vollständig deaktiviert wird.' },
+                        ],
+                    },
+                    {
+                        section: 'temperature_sensor',
+                        title: 'Temperatursensor',
+                        docUrl: 'https://www.klipper3d.org/Config_Reference.html#temperature-sensor',
+                        tooltip: 'Allgemeine Sensoren für Elektronik- oder Raumtemperatur.',
+                        options: [
+                            { key: 'sensor_type', description: 'Typ des Sensors (NTC, PT100, Analog).' },
+                            { key: 'sensor_pin', description: 'Eingangspin für den Sensor.' },
+                            { key: 'min_temp', description: 'Untergrenze für gültige Messwerte.' },
+                            { key: 'max_temp', description: 'Obere Grenze für Sicherheitsabschaltungen.' },
+                        ],
+                    },
+                ]);
+
+                const printerProfile = {
+                    name: '',
+                    type: null,
+                    hotend: null,
+                    controlBoard: null,
+                    leadScrew: null,
+                    belt: null,
+                    gearRatio: null,
+                    heatedBed: null,
+                };
+
+                function escapeHtml(value) {
+                    let output = String(value ?? '');
+                    output = output.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+                    return output;
+                }
+
+                function populateSelectFromConstants(select, entries) {
+                    if (!select) {
+                        return;
+                    }
+                    const placeholder = document.createElement('option');
+                    placeholder.value = '';
+                    placeholder.disabled = true;
+                    placeholder.selected = true;
+                    placeholder.textContent = 'Bitte wählen';
+                    select.innerHTML = '';
+                    select.appendChild(placeholder);
+                    entries.forEach((entry) => {
+                        const option = document.createElement('option');
+                        option.value = entry.id;
+                        option.textContent = entry.label;
+                        option.dataset.description = entry.description || '';
+                        option.dataset.doc = entry.docUrl || '';
+                        select.appendChild(option);
+                    });
+                }
+
+                function updateDocAnchor(anchor, entry) {
+                    if (!anchor) {
+                        return;
+                    }
+                    if (entry && entry.docUrl) {
+                        anchor.href = entry.docUrl;
+                        anchor.dataset.tooltip = entry.description || entry.tooltip || 'Dokumentation öffnen';
+                        anchor.style.display = '';
+                    } else {
+                        anchor.href = '#';
+                        anchor.dataset.tooltip = 'Keine Dokumentation verfügbar';
+                        anchor.style.display = 'none';
+                    }
+                }
+
+                function updateProfilePreview() {
+                    if (!printerProfileSummary) {
+                        return;
+                    }
+                    const summaryEntries = [
+                        { label: 'Name', value: printerProfile.name.trim() || '–' },
+                        { label: 'Typ', value: printerProfile.type ? printerProfile.type.label : '–' },
+                        { label: 'Hotend', value: printerProfile.hotend ? printerProfile.hotend.label : '–' },
+                        { label: 'Mainboard', value: printerProfile.controlBoard ? printerProfile.controlBoard.label : '–' },
+                        { label: 'Lead Screw', value: printerProfile.leadScrew ? printerProfile.leadScrew.label : '–' },
+                        { label: 'Riemen', value: printerProfile.belt ? printerProfile.belt.label : '–' },
+                        { label: 'Getriebe', value: printerProfile.gearRatio ? printerProfile.gearRatio.label : '–' },
+                        { label: 'Heizbett', value: printerProfile.heatedBed ? printerProfile.heatedBed.label : '–' },
+                    ];
+                    printerProfileSummary.innerHTML = summaryEntries
+                        .map((entry) => `<div><span>${escapeHtml(entry.label)}</span><strong>${escapeHtml(entry.value)}</strong></div>`)
+                        .join('');
+                }
+
+                function updateUploadAvailability() {
+                    const nameProvided = printerProfile.name.trim().length > 0;
+                    if (backgroundUpload) {
+                        backgroundUpload.disabled = !nameProvided;
+                        if (!nameProvided) {
+                            backgroundUpload.value = '';
+                        }
+                    }
+                    if (backgroundControl) {
+                        backgroundControl.classList.toggle('disabled', !nameProvided);
+                    }
+                }
+
+                function bindMetadataSelect(key, select, entries, anchor) {
+                    if (!select) {
+                        return;
+                    }
+                    populateSelectFromConstants(select, entries);
+                    select.addEventListener('change', () => {
+                        const entry = entries.find((item) => item.id === select.value) || null;
+                        printerProfile[key] = entry;
+                        if (entry && entry.description) {
+                            select.title = entry.description;
+                        } else {
+                            select.removeAttribute('title');
+                        }
+                        updateDocAnchor(anchor, entry);
+                        updateProfilePreview();
+                    });
+                    updateDocAnchor(anchor, null);
+                }
+
+                function renderConfigCatalog() {
+                    if (!configCatalogContainer) {
+                        return;
+                    }
+                    configCatalogContainer.innerHTML = '';
+                    KLIPPER_CONFIG_CATALOG.forEach((section) => {
+                        const details = document.createElement('details');
+                        const summary = document.createElement('summary');
+                        summary.textContent = section.title;
+                        summary.title = section.tooltip || '';
+                        if (section.docUrl) {
+                            const docLink = document.createElement('a');
+                            docLink.href = section.docUrl;
+                            docLink.target = '_blank';
+                            docLink.rel = 'noreferrer';
+                            docLink.className = 'doc-link';
+                            docLink.dataset.tooltip = 'Dokumentation öffnen';
+                            docLink.textContent = '?';
+                            summary.appendChild(docLink);
+                        }
+                        details.appendChild(summary);
+                        const list = document.createElement('ul');
+                        section.options.forEach((option) => {
+                            const item = document.createElement('li');
+                            const keyLabel = document.createElement('strong');
+                            keyLabel.textContent = option.key;
+                            item.appendChild(keyLabel);
+                            const desc = document.createElement('span');
+                            desc.textContent = option.description;
+                            item.appendChild(desc);
+                            const docUrl = option.docUrl || section.docUrl;
+                            if (docUrl) {
+                                const anchor = document.createElement('a');
+                                anchor.href = docUrl;
+                                anchor.target = '_blank';
+                                anchor.rel = 'noreferrer';
+                                anchor.className = 'inline-doc';
+                                anchor.textContent = 'Referenz öffnen';
+                                item.appendChild(anchor);
+                            }
+                            list.appendChild(item);
+                        });
+                        details.appendChild(list);
+                        configCatalogContainer.appendChild(details);
+                    });
+                }
+
+                window.PRINTER_CONSTANTS = PRINTER_CONSTANTS;
+                window.KLIPPER_CONFIG_CATALOG = KLIPPER_CONFIG_CATALOG;
+
+                if (printerNameInput) {
+                    printerNameInput.addEventListener('input', () => {
+                        printerProfile.name = printerNameInput.value;
+                        updateProfilePreview();
+                        updateUploadAvailability();
+                    });
+                }
+
+                bindMetadataSelect('type', printerTypeSelect, PRINTER_CONSTANTS.printerTypes, metadataDocAnchors.printerType);
+                bindMetadataSelect('hotend', hotendSelect, PRINTER_CONSTANTS.hotends, metadataDocAnchors.hotend);
+                bindMetadataSelect('controlBoard', controlBoardSelect, PRINTER_CONSTANTS.controlBoards, metadataDocAnchors.controlBoard);
+                bindMetadataSelect('leadScrew', leadScrewSelect, PRINTER_CONSTANTS.leadScrews, metadataDocAnchors.leadScrew);
+                bindMetadataSelect('belt', beltSelect, PRINTER_CONSTANTS.belts, metadataDocAnchors.belt);
+                bindMetadataSelect('gearRatio', gearRatioSelect, PRINTER_CONSTANTS.gearRatios, metadataDocAnchors.gearRatio);
+                bindMetadataSelect('heatedBed', heatedBedSelect, PRINTER_CONSTANTS.heatedBeds, metadataDocAnchors.heatedBed);
+                updateProfilePreview();
+                updateUploadAvailability();
+                renderConfigCatalog();
 
                 let activeTool = 'rect';
                 let drawing = false;
@@ -2451,7 +3191,7 @@ def create_app() -> FastAPI:
 
                     currentShape = null;
                 });
-            <script src="https://raw.githubusercontent.com/mrdoob/three.js/r160/build/three.min.js"></script>
+            <script src="/static/js/three.min.js"></script>
         <script src="https://raw.githubusercontent.com/kovacsv/occt-import-js/master/dist/occt-import-js.js"></script>
         <script>
             (function () {
