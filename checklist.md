@@ -16,6 +16,7 @@
 - [x] Drucker-Designer mit Bild-Upload, Annotationen und Maßpfeilen implementieren
 - [x] Cursor-Koordinaten im Board- und Drucker-Designer an die ViewBox-Skalierung anpassen
 - [x] 3D-CAD-Viewer mit STEP-Import und Marker-Workflow für Board- und Drucker-Designer integrieren
+- [x] Drucker-Designer um Profil-Assistent (Konstanten, Dokumentations-Tooltips) und Klipper-Konfigurationskatalog erweitern
 
 ## Offene Schritte Richtung Produktivbetrieb
 
