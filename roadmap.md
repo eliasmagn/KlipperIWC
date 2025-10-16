@@ -35,6 +35,7 @@
 - [x] Drucker-Designer um Profil-Erfassung und Klipper-Konfigurationskatalog mit Dokumentationslinks erweitern
 - [x] Landingpage um einen geführten Ablauf für Board-, Drucker- und Konfigurationsschritte erweitern
 - [x] Drucker-Designer: 2D-Layout und 3D-CAD-Ansicht in einem Workspace mit Umschalter vereinen
+- [x] Board-Designer: 2D-Layout und 3D-CAD-Ansicht in einem Workspace mit Umschalter vereinen
 - [x] STEP-Parser über ein CDN einbinden, um die Verfügbarkeit der 3D-Vorschau sicherzustellen
 - [ ] Web-Frontend mit Dashboard, Verlaufsgrafiken und Konfigurationsseiten entwickeln
 - [ ] Bearbeitungsfunktionen (Bewegen/Löschen) in Board- und Drucker-Designer ergänzen

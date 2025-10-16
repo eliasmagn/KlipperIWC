@@ -96,7 +96,7 @@ Dockerfile           # Container-Build
 ## Designer & Definition Registry
 
 - **Landingpage (`/`)** – bündelt die Einstiegspunkte in Board- und Drucker-Designer, erklärt den geplanten Konfigurations-Generator und führt Besucher jetzt mit einem geführten Dreischritt durch Board-Auswahl, Druckerdefinition und zukünftigen Konfigurations-Assistenten.
-- **Board-Designer (`/board-designer`)** – erlaubt das Annotieren von Pins, Steckern und Signalen auf hochgeladenen Bildern und stellt eine 3D-CAD-Ansicht mit STEP-Import bereit. Die Parser-Bibliothek (`occt-import-js`) wird über jsDelivr geladen und funktioniert damit auch hinter restriktiven Firewalls zuverlässig.
+- **Board-Designer (`/board-designer`)** – erlaubt das Annotieren von Pins, Steckern und Signalen auf hochgeladenen Bildern, teilt sich mit dem Printer-Designer einen Workspace-Umschalter zwischen 2D-Overlay und 3D-CAD-Explorer und stellt eine STEP-basierte Vorschau bereit. Die Parser-Bibliothek (`occt-import-js`) wird über jsDelivr geladen und funktioniert damit auch hinter restriktiven Firewalls zuverlässig.
 - **Printer-Designer (`/printer-designer`)** – kombiniert den 2D-Workflow mit einem interaktiven 3D-CAD-Modus für STEP-Dateien, bietet einen Workspace-Umschalter zwischen Hintergrundbild und CAD-Ansicht, zeigt einen konfigurierbaren Klipper-Optionskatalog mit Dokumentationslinks und hält die benötigten Bibliotheken (three.js, occt-import-js) lokal bzw. über ein CDN bereit.
 - **Persistente Registry** – neue Tabellen `board_definition_documents` und `printer_definition_documents` speichern Designer-Ergebnisse inklusive Metadaten und Vorschaubild-Links.
 - **REST-API** – über `/api/definitions/boards` und `/api/definitions/printers` lassen sich Definitionen anlegen, abrufen und aktualisieren.
@@ -405,7 +405,7 @@ Siehe `roadmap.md` für geplante Erweiterungen und `checklist.md` für den aktue
 
 ## Interaktiver Board-Designer (Prototyp)
 
-Der Prototyp für die Board-Visualisierung ist unter `http://localhost:8000/board-designer` verfügbar, sobald der Server läuft. Auf der Zeichenfläche lassen sich Rechtecke und Kreise platzieren, um Steckverbinder oder Pin-Gruppen hervorzuheben. Anschließend können individuelle Labels vergeben werden, die in der Seitenleiste als Referenz erscheinen. Ergänzend steht ein 3D-Viewer bereit, der STEP-Dateien lädt, per Orbit-Steuerung inspiziert und Marker im Raum positioniert. Die erzeugten Markierungen dienen als Grundlage für künftige Board-Definitionen, die weiterhin über GitHub versioniert werden.
+Der Prototyp für die Board-Visualisierung ist unter `http://localhost:8000/board-designer` verfügbar, sobald der Server läuft. Der Arbeitsbereich bündelt 2D-Overlay und 3D-CAD in einem gemeinsamen Workspace, der sich per Umschalter zwischen Layout und Explorer wechseln lässt. Auf der Zeichenfläche lassen sich Rechtecke und Kreise platzieren, um Steckverbinder oder Pin-Gruppen hervorzuheben. Anschließend können individuelle Labels vergeben werden, die in der Seitenleiste als Referenz erscheinen. Ergänzend steht ein 3D-Viewer bereit, der STEP-Dateien lädt, per Orbit-Steuerung inspiziert und Marker im Raum positioniert. Die erzeugten Markierungen dienen als Grundlage für künftige Board-Definitionen, die weiterhin über GitHub versioniert werden.
 
 ## Interaktiver Printer-Designer (Prototyp)
 
