@@ -340,22 +340,28 @@ Moderationsendpunkt freigegeben werden, bevor sie in Standardlisten erscheinen.
 
 ## Board-Definitionen versionieren & prüfen
 
-Hardware-Definitionen werden als JSON-Dateien im Verzeichnis `board-definitions/`
-versioniert. Das Schema `schemas/board-definition.schema.json` dokumentiert Pflichtfelder
+Hardware-Definitionen werden als JSON-Dateien in einem Registry-Verzeichnis
+verwaltet. Standardmäßig zeigt die Anwendung auf `board-definitions/`, das aus
+Gründen des Repos-Umfangs nicht eingecheckt ist. Das Verzeichnis muss daher bei
+Bedarf lokal angelegt oder über `BOARD_DEFINITION_ROOT` auf einen eigenen Pfad
+konfiguriert werden. Das Schema `schemas/board-definition.schema.json` dokumentiert Pflichtfelder
 für Metadaten (`identifier`, `name`, `manufacturer`, `revision`), Steckverbinder (`id`,
 `name`, `type`, `pins`) sowie Pins (`number`, `signal`). Über den Schlüssel
 `x-klipperiwc-version` ist ersichtlich, welche `schema_version` gültige Definitionen
 verwenden müssen. Die Pfade können über die Umgebungsvariablen
 `BOARD_DEFINITION_ROOT` (Standard: `./board-definitions`) und
 `BOARD_DEFINITION_SCHEMA` (Standard: `./schemas/board-definition.schema.json`) angepasst
-werden.
+werden. Beiträge können ihre Definitionen in einem separaten Repository
+bereitstellen und per Git Submodule oder Deployment-Schritt einbinden. Alternativ
+lassen sich einzelne JSON-Dateien direkt im lokal angelegten Registry-Ordner
+ablegen, solange sie dem erwarteten Schema folgen.
 
 **Empfohlener Workflow:**
 
 1. Unter `http://localhost:8000/board-designer` Steckverbinder markieren und Pins
    benennen. Die Markierungen dienen als Vorlage für die JSON-Definition.
-2. Eine Datei `<identifier>/<revision>.json` im Registry-Ordner anlegen und anhand des
-   Schemas ausfüllen.
+2. Eine Datei `<identifier>/<revision>.json` im (ggf. selbst angelegten) Registry-Ordner
+   ablegen und anhand des Schemas ausfüllen.
 3. Über `GET /api/boards/schema` prüfen, welche Schema-Version aktuell erwartet wird.
 4. Mit `POST /api/boards/definitions/validate` sämtliche Definitionen validieren. Die
    Antwort enthält pro Datei Validierungsfehler und bei Erfolg eine komprimierte
