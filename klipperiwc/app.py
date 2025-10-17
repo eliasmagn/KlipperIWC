@@ -151,6 +151,12 @@ def create_app() -> FastAPI:
                     box-shadow: none;
                 }
 
+                .actions a.tertiary {
+                    background: rgba(226, 232, 240, 0.06);
+                    color: rgba(226, 232, 240, 0.95);
+                    box-shadow: inset 0 0 0 1px rgba(148, 163, 184, 0.4);
+                }
+
                 .actions a:hover {
                     transform: translateY(-2px);
                     box-shadow: 0 18px 36px rgba(56, 189, 248, 0.32);
@@ -169,6 +175,66 @@ def create_app() -> FastAPI:
                     display: grid;
                     gap: 1.5rem;
                     grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+                }
+
+                .flow-steps {
+                    display: grid;
+                    gap: 1.2rem;
+                    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+                }
+
+                .flow-step {
+                    display: grid;
+                    gap: 0.6rem;
+                    padding: 1.6rem;
+                    border-radius: 1.2rem;
+                    background: rgba(15, 23, 42, 0.72);
+                    border: 1px solid rgba(148, 163, 184, 0.25);
+                    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04), 0 16px 36px rgba(8, 145, 178, 0.2);
+                    position: relative;
+                }
+
+                .flow-step strong {
+                    font-size: 1.5rem;
+                    display: inline-flex;
+                    align-items: center;
+                    gap: 0.6rem;
+                }
+
+                .flow-step strong span {
+                    display: inline-flex;
+                    align-items: center;
+                    justify-content: center;
+                    width: 2.1rem;
+                    height: 2.1rem;
+                    border-radius: 999px;
+                    background: linear-gradient(135deg, rgba(56, 189, 248, 0.85), rgba(14, 165, 233, 0.85));
+                    color: #0f172a;
+                    font-weight: 700;
+                }
+
+                .flow-step p {
+                    margin: 0;
+                    color: rgba(226, 232, 240, 0.85);
+                    line-height: 1.55;
+                }
+
+                .flow-step a {
+                    margin-top: 0.4rem;
+                    justify-self: start;
+                    color: #38bdf8;
+                    font-weight: 600;
+                    text-decoration: none;
+                }
+
+                .flow-step a[aria-disabled="true"] {
+                    color: rgba(148, 163, 184, 0.6);
+                    pointer-events: none;
+                    cursor: not-allowed;
+                }
+
+                .flow-step a:hover:not([aria-disabled="true"]) {
+                    text-decoration: underline;
                 }
 
                 .card {
@@ -246,12 +312,42 @@ def create_app() -> FastAPI:
                     bezogen werden können.
                 </p>
                 <div class=\"actions\">
+                    <a href=\"#guidedFlow\" class=\"secondary\">Geführten Ablauf starten</a>
                     <a href=\"/board-designer\">Board-Designer öffnen →</a>
-                    <a class=\"secondary\" href=\"/printer-designer\">Drucker-Designer entdecken</a>
+                    <a class=\"tertiary\" href=\"/printer-designer\">Direkt zum Drucker-Designer</a>
                 </div>
             </header>
 
             <main>
+                <section id=\"guidedFlow\">
+                    <h3>Geführter Ablauf</h3>
+                    <div class=\"flow-steps\">
+                        <article class=\"flow-step\">
+                            <strong><span>1</span>Board auswählen oder erstellen</strong>
+                            <p>
+                                Lade ein bestehendes Layout oder erstelle ein neues Board mit markierten Pins und Steckplätzen.
+                                Die resultierende JSON-Struktur bildet die Basis für spätere Konfigurationen.
+                            </p>
+                            <a href=\"/board-designer\">Zum Board-Designer</a>
+                        </article>
+                        <article class=\"flow-step\">
+                            <strong><span>2</span>Druckerhardware definieren</strong>
+                            <p>
+                                Beschreibe Mechanik, Hotend, Steuerung und Sensorik deines Druckers. Nutze Bild-Upload und 3D-
+                                CAD-Vorschau, um Markierungen präzise zu platzieren.
+                            </p>
+                            <a href=\"/printer-designer\">Drucker-Designer öffnen</a>
+                        </article>
+                        <article class=\"flow-step\">
+                            <strong><span>3</span>Konfiguration zusammenstellen</strong>
+                            <p>
+                                Kombiniere Board- und Druckerdefinitionen zu vollständigen <code>klipper.conf</code>-Profilen.
+                                Der Assistent ist in Arbeit und wird in Kürze freigeschaltet.
+                            </p>
+                            <a href=\"#\" aria-disabled=\"true\">Konfigurator in Planung</a>
+                        </article>
+                    </div>
+                </section>
                 <section>
                     <h3>Designer-Übersicht</h3>
                     <div class=\"card-grid\">
@@ -346,9 +442,17 @@ def create_app() -> FastAPI:
                 body {
                     margin: 0;
                     min-height: 100vh;
-                    display: grid;
-                    grid-template-columns: minmax(260px, 320px) 1fr;
+                    display: flex;
+                    flex-direction: column;
                     background: #0f172a;
+                }
+
+                .layout {
+                    flex: 1;
+                    display: grid;
+                    grid-template-columns: minmax(280px, 320px) 1fr;
+                    gap: 1.5rem;
+                    padding: 1.5rem 1.8rem 2.2rem;
                 }
 
                 header {
@@ -388,19 +492,67 @@ def create_app() -> FastAPI:
 
                 aside {
                     padding: 1.5rem;
-                    border-right: 1px solid rgba(148, 163, 184, 0.3);
+                    border-radius: 1.1rem;
+                    border: 1px solid rgba(148, 163, 184, 0.28);
                     background: rgba(15, 23, 42, 0.85);
                     backdrop-filter: blur(14px);
                     display: flex;
                     flex-direction: column;
                     gap: 1.5rem;
+                    box-shadow: 0 24px 48px rgba(15, 23, 42, 0.45);
                 }
 
                 main {
-                    padding: 1.5rem;
                     display: flex;
                     flex-direction: column;
-                    gap: 1rem;
+                    gap: 1.5rem;
+                }
+
+                .workspace-panel {
+                    display: grid;
+                    gap: 1.5rem;
+                }
+
+                .workspace-toggle {
+                    display: inline-flex;
+                    align-items: center;
+                    gap: 0.4rem;
+                    padding: 0.35rem;
+                    border-radius: 999px;
+                    border: 1px solid rgba(148, 163, 184, 0.35);
+                    background: rgba(15, 23, 42, 0.6);
+                    width: fit-content;
+                }
+
+                .workspace-toggle button {
+                    border-radius: 999px;
+                    padding: 0.45rem 1.35rem;
+                    font-weight: 600;
+                    background: transparent;
+                    color: rgba(226, 232, 240, 0.82);
+                    border: none;
+                }
+
+                .workspace-toggle button.active {
+                    background: rgba(56, 189, 248, 0.18);
+                    color: #38bdf8;
+                    box-shadow: inset 0 0 0 1px rgba(56, 189, 248, 0.4);
+                }
+
+                .workspace-panel .plan-view {
+                    display: none;
+                }
+
+                .workspace-panel .cad-panel {
+                    display: none;
+                }
+
+                .workspace-panel[data-active-view="plan"] .plan-view {
+                    display: block;
+                }
+
+                .workspace-panel[data-active-view="cad"] .cad-panel {
+                    display: grid;
                 }
 
                 .toolbar {
@@ -631,17 +783,17 @@ def create_app() -> FastAPI:
                 }
 
                 @media (max-width: 900px) {
-                    body {
-                        display: flex;
-                        flex-direction: column;
+                    .layout {
+                        grid-template-columns: 1fr;
+                        padding: 1.2rem;
+                        gap: 1.2rem;
                     }
 
                     aside {
-                        border-right: none;
-                        border-bottom: 1px solid rgba(148, 163, 184, 0.3);
                         flex-direction: row;
                         flex-wrap: wrap;
                         gap: 1rem;
+                        margin-bottom: 0.5rem;
                     }
 
                     .shape-entry {
@@ -659,76 +811,86 @@ def create_app() -> FastAPI:
                 <h1>Board Designer Prototype</h1>
                 <p>Create annotated board overlays before the user-generated workflow is available.</p>
             </header>
-            <aside>
-                <div>
-                    <h2>Workflow</h2>
-                    <p class=\"hint\">Select a tool, drag on the canvas, then name the connector/pin.</p>
-                    <div class=\"toolbar\">
-                        <button id=\"rectTool\" type=\"button\">Rectangle</button>
-                        <button id=\"circleTool\" type=\"button\">Circle</button>
-                        <button id=\"panTool\" type=\"button\">Pan</button>
-                        <input type=\"color\" id=\"colorPicker\" value=\"#38bdf8\" title=\"Highlight color\" />
-                    </div>
-                </div>
-                <section>
-                    <h2>Annotated Pins</h2>
-                    <div id=\"shapeList\"></div>
-                </section>
-            </aside>
-            <main>
-                <div class=\"canvas-shell\">
-                    <svg id=\"boardCanvas\" viewBox=\"0 0 1280 720\" role=\"img\" aria-label=\"Board designer canvas\"></svg>
-                </div>
-                <section class=\"cad-panel\">
-                    <header>
-                        <h2>3D CAD Explorer</h2>
-                        <p>
-                            Lade eine STEP-Datei, um dein Board in 3D zu inspizieren, Komponenten zu markieren und die Perspektive
-                            frei zu bewegen. Ziehe die Datei per Drag &amp; Drop oder nutze den Dateiauswahldialog.
-                        </p>
-                    </header>
-                    <div class=\"cad-toolbox\">
-                        <div class=\"row\">
-                            <label>
-                                STEP-Datei laden
-                                <input id=\"boardCadFile\" type=\"file\" accept=\".step,.stp,model/step\" />
-                            </label>
-                            <label>
-                                Marker-Kategorie
-                                <select id=\"boardCadCategory\">
-                                    <option value=\"device\">Gerät / Modul</option>
-                                    <option value=\"rails\">Führungen &amp; Rails</option>
-                                    <option value=\"belts\">Riemen &amp; Antriebe</option>
-                                    <option value=\"cables\">Kabel &amp; Looms</option>
-                                    <option value=\"sensors\">Sensoren</option>
-                                    <option value=\"other\">Sonstige</option>
-                                </select>
-                            </label>
-                            <label>
-                                Marker-Beschriftung
-                                <input id=\"boardCadLabel\" type=\"text\" placeholder=\"z. B. X-Limit-Switch\" />
-                            </label>
+            <div class=\"layout\">
+                <aside>
+                    <div>
+                        <h2>Workflow</h2>
+                        <p class=\"hint\">Select a tool, drag on the canvas, then name the connector/pin.</p>
+                        <div class=\"toolbar\">
+                            <button id=\"rectTool\" type=\"button\">Rectangle</button>
+                            <button id=\"circleTool\" type=\"button\">Circle</button>
+                            <button id=\"panTool\" type=\"button\">Pan</button>
+                            <input type=\"color\" id=\"colorPicker\" value=\"#38bdf8\" title=\"Highlight color\" />
                         </div>
-                        <div class=\"row\">
-                            <button id=\"boardCadMarkerMode\" type=\"button\">Marker platzieren</button>
-                            <button id=\"boardCadResetView\" type=\"button\">Kamera zurücksetzen</button>
-                            <button id=\"boardCadClearMarkers\" type=\"button\">Marker entfernen</button>
-                        </div>
-                        <p class=\"cad-status\" id=\"boardCadStatus\" aria-live=\"polite\">
-                            Keine STEP-Datei geladen. Ziehe eine Datei auf die Ansicht oder verwende den Button.
-                        </p>
-                        <p class=\"hint\">
-                            Tipp: Im Marker-Modus mit einem Klick Punkte setzen. Außerhalb des Modus lässt sich das Modell per
-                            Linksklick drehen, mit Rechtsklick verschieben und mit dem Mausrad zoomen.
-                        </p>
                     </div>
-                    <div class=\"cad-viewer\" id=\"boardCadViewport\" tabindex=\"0\" aria-label=\"Interaktive 3D-Ansicht des Boards\"></div>
                     <section>
-                        <h3>3D-Markierungen</h3>
-                        <div id=\"boardCadAnnotationList\" class=\"cad-annotation-list\"></div>
+                        <h2>Annotated Pins</h2>
+                        <div id=\"shapeList\"></div>
                     </section>
-                </section>
-            </main>
+                </aside>
+                <main>
+                    <section class=\"workspace-panel\" id=\"boardWorkspace\" data-active-view=\"plan\">
+                        <div class=\"workspace-toggle\" role=\"tablist\" aria-label=\"Darstellungsmodus wählen\">
+                            <button type=\"button\" class=\"active\" data-view-target=\"plan\" role=\"tab\" aria-selected=\"true\">2D-Layout</button>
+                            <button type=\"button\" data-view-target=\"cad\" role=\"tab\" aria-selected=\"false\">3D-CAD</button>
+                        </div>
+                        <div class=\"plan-view\" data-view=\"plan\">
+                            <div class=\"canvas-shell\">
+                                <svg id=\"boardCanvas\" viewBox=\"0 0 1280 720\" role=\"img\" aria-label=\"Board designer canvas\"></svg>
+                            </div>
+                        </div>
+                        <section class=\"cad-panel\" data-view=\"cad\">
+                            <header>
+                                <h2>3D CAD Explorer</h2>
+                                <p>
+                                    Lade eine STEP-Datei, um dein Board in 3D zu inspizieren, Komponenten zu markieren und die Perspektive
+                                    frei zu bewegen. Ziehe die Datei per Drag &amp; Drop oder nutze den Dateiauswahldialog.
+                                </p>
+                            </header>
+                            <div class=\"cad-toolbox\">
+                                <div class=\"row\">
+                                    <label>
+                                        STEP-Datei laden
+                                        <input id=\"boardCadFile\" type=\"file\" accept=\".step,.stp,model/step\" />
+                                    </label>
+                                    <label>
+                                        Marker-Kategorie
+                                        <select id=\"boardCadCategory\">
+                                            <option value=\"device\">Gerät / Modul</option>
+                                            <option value=\"rails\">Führungen &amp; Rails</option>
+                                            <option value=\"belts\">Riemen &amp; Antriebe</option>
+                                            <option value=\"cables\">Kabel &amp; Looms</option>
+                                            <option value=\"sensors\">Sensoren</option>
+                                            <option value=\"other\">Sonstige</option>
+                                        </select>
+                                    </label>
+                                    <label>
+                                        Marker-Beschriftung
+                                        <input id=\"boardCadLabel\" type=\"text\" placeholder=\"z. B. X-Limit-Switch\" />
+                                    </label>
+                                </div>
+                                <div class=\"row\">
+                                    <button id=\"boardCadMarkerMode\" type=\"button\">Marker platzieren</button>
+                                    <button id=\"boardCadResetView\" type=\"button\">Kamera zurücksetzen</button>
+                                    <button id=\"boardCadClearMarkers\" type=\"button\">Marker entfernen</button>
+                                </div>
+                                <p class=\"cad-status\" id=\"boardCadStatus\" aria-live=\"polite\">
+                                    Keine STEP-Datei geladen. Ziehe eine Datei auf die Ansicht oder verwende den Button.
+                                </p>
+                                <p class=\"hint\">
+                                    Tipp: Im Marker-Modus mit einem Klick Punkte setzen. Außerhalb des Modus lässt sich das Modell per
+                                    Linksklick drehen, mit Rechtsklick verschieben und mit dem Mausrad zoomen.
+                                </p>
+                            </div>
+                            <div class=\"cad-viewer\" id=\"boardCadViewport\" tabindex=\"0\" aria-label=\"Interaktive 3D-Ansicht des Boards\"></div>
+                            <section>
+                                <h3>3D-Markierungen</h3>
+                                <div id=\"boardCadAnnotationList\" class=\"cad-annotation-list\"></div>
+                            </section>
+                        </section>
+                    </section>
+                </main>
+            </div>
 
             <script>
                 const boardCanvas = document.getElementById('boardCanvas');
@@ -737,6 +899,10 @@ def create_app() -> FastAPI:
                 const panTool = document.getElementById('panTool');
                 const colorPicker = document.getElementById('colorPicker');
                 const shapeList = document.getElementById('shapeList');
+                const workspacePanel = document.getElementById('boardWorkspace');
+                const viewToggleButtons = workspacePanel
+                    ? workspacePanel.querySelectorAll('[data-view-target]')
+                    : [];
 
                 let activeTool = null;
                 let drawing = false;
@@ -822,6 +988,28 @@ def create_app() -> FastAPI:
                 });
 
                 setActiveTool('rect');
+
+                if (workspacePanel && viewToggleButtons.length) {
+                    viewToggleButtons.forEach((button) => {
+                        button.addEventListener('click', () => {
+                            const target = button.dataset.viewTarget;
+                            if (!target) {
+                                return;
+                            }
+                            workspacePanel.dataset.activeView = target;
+                            viewToggleButtons.forEach((other) => {
+                                const isActive = other === button;
+                                other.classList.toggle('active', isActive);
+                                other.setAttribute('aria-selected', String(isActive));
+                            });
+                            if (target === 'cad') {
+                                window.setTimeout(() => {
+                                    window.dispatchEvent(new Event('resize'));
+                                }, 50);
+                            }
+                        });
+                    });
+                }
 
                 boardCanvas.addEventListener('mousedown', (event) => {
                     const cursorPoint = svgCursor(event);
@@ -980,7 +1168,7 @@ def create_app() -> FastAPI:
                 });
             </script>
         <script src="/static/js/three.min.js"></script>
-        <script src="https://raw.githubusercontent.com/kovacsv/occt-import-js/master/dist/occt-import-js.js"></script>
+        <script src="https://cdn.jsdelivr.net/gh/kovacsv/occt-import-js@master/dist/occt-import-js.js" crossorigin="anonymous"></script>
         <script>
             (function () {
                 const viewport = document.getElementById('boardCadViewport');
@@ -2214,25 +2402,32 @@ def create_app() -> FastAPI:
                     </section>
                 </aside>
                 <main>
-                    <div class=\"canvas-shell\">
-                        <svg id=\"printerCanvas\" viewBox=\"0 0 1280 720\" role=\"img\" aria-label=\"Printer designer canvas\">
-                            <defs>
-                                <marker id=\"arrowhead-end\" markerWidth=\"10\" markerHeight=\"10\" refX=\"6\" refY=\"3\" orient=\"auto\" markerUnits=\"strokeWidth\">
-                                    <path d=\"M0,0 L6,3 L0,6 z\" fill=\"currentColor\"></path>
-                                </marker>
-                                <marker id=\"arrowhead-start\" markerWidth=\"10\" markerHeight=\"10\" refX=\"4\" refY=\"3\" orient=\"auto-start-reverse\" markerUnits=\"strokeWidth\">
-                                    <path d=\"M0,0 L6,3 L0,6 z\" fill=\"currentColor\"></path>
-                                </marker>
-                            </defs>
-                            <image id=\"backgroundImage\" x=\"0\" y=\"0\" width=\"1280\" height=\"720\" preserveAspectRatio=\"xMidYMid meet\"></image>
-                        </svg>
-                    </div>
-                    <section class=\"cad-panel\">
-                        <header>
-                            <h2>3D-CAD-Vorschau</h2>
-                            <p>
-                                Ergänze den 2D-Plan um eine echte 3D-Ansicht. Lade STEP-Modelle deines Druckers oder einzelner
-                                Baugruppen, bewege die Perspektive frei und setze Marker für Riemen, Führungen, Kabel oder
+                    <section class=\"workspace-panel\" id=\"printerWorkspace\" data-active-view=\"plan\">
+                        <div class=\"workspace-toggle\" role=\"tablist\" aria-label=\"Darstellungsmodus wählen\">
+                            <button type=\"button\" class=\"active\" data-view-target=\"plan\" role=\"tab\" aria-selected=\"true\">2D-Layout</button>
+                            <button type=\"button\" data-view-target=\"cad\" role=\"tab\" aria-selected=\"false\">3D-CAD</button>
+                        </div>
+                        <div class=\"plan-view\" data-view=\"plan\">
+                            <div class=\"canvas-shell\">
+                                <svg id=\"printerCanvas\" viewBox=\"0 0 1280 720\" role=\"img\" aria-label=\"Printer designer canvas\">
+                                    <defs>
+                                        <marker id=\"arrowhead-end\" markerWidth=\"10\" markerHeight=\"10\" refX=\"6\" refY=\"3\" orient=\"auto\" markerUnits=\"strokeWidth\">
+                                            <path d=\"M0,0 L6,3 L0,6 z\" fill=\"currentColor\"></path>
+                                        </marker>
+                                        <marker id=\"arrowhead-start\" markerWidth=\"10\" markerHeight=\"10\" refX=\"4\" refY=\"3\" orient=\"auto-start-reverse\" markerUnits=\"strokeWidth\">
+                                            <path d=\"M0,0 L6,3 L0,6 z\" fill=\"currentColor\"></path>
+                                        </marker>
+                                    </defs>
+                                    <image id=\"backgroundImage\" x=\"0\" y=\"0\" width=\"1280\" height=\"720\" preserveAspectRatio=\"xMidYMid meet\"></image>
+                                </svg>
+                            </div>
+                        </div>
+                        <section class=\"cad-panel\" data-view=\"cad\">
+                            <header>
+                                <h2>3D-CAD-Vorschau</h2>
+                                <p>
+                                    Ergänze den 2D-Plan um eine echte 3D-Ansicht. Lade STEP-Modelle deines Druckers oder einzelner
+                                    Baugruppen, bewege die Perspektive frei und setze Marker für Riemen, Führungen, Kabel oder
                                 Sensorik.
                             </p>
                         </header>
@@ -2276,6 +2471,7 @@ def create_app() -> FastAPI:
                             <h3>3D-Markierungen</h3>
                             <div id=\"printerCadAnnotationList\" class=\"cad-annotation-list\"></div>
                         </section>
+                        </section>
                     </section>
                 </main>
             </div>
@@ -2311,6 +2507,10 @@ def create_app() -> FastAPI:
                     heatedBed: document.getElementById('heatedBedDoc')
                 };
                 const backgroundControl = backgroundUpload ? backgroundUpload.closest('.control') : null;
+                const workspacePanel = document.getElementById('printerWorkspace');
+                const viewToggleButtons = workspacePanel
+                    ? workspacePanel.querySelectorAll('[data-view-target]')
+                    : [];
 
                 const defaultPalette = {
                     switch: '#f97316',
@@ -2818,6 +3018,23 @@ def create_app() -> FastAPI:
                 window.PRINTER_CONSTANTS = PRINTER_CONSTANTS;
                 window.KLIPPER_CONFIG_CATALOG = KLIPPER_CONFIG_CATALOG;
 
+                if (workspacePanel && viewToggleButtons.length) {
+                    viewToggleButtons.forEach((button) => {
+                        button.addEventListener('click', () => {
+                            const target = button.dataset.viewTarget;
+                            if (!target) {
+                                return;
+                            }
+                            workspacePanel.dataset.activeView = target;
+                            viewToggleButtons.forEach((other) => {
+                                const isActive = other === button;
+                                other.classList.toggle('active', isActive);
+                                other.setAttribute('aria-selected', String(isActive));
+                            });
+                        });
+                    });
+                }
+
                 if (printerNameInput) {
                     printerNameInput.addEventListener('input', () => {
                         printerProfile.name = printerNameInput.value;
@@ -3191,8 +3408,8 @@ def create_app() -> FastAPI:
 
                     currentShape = null;
                 });
-            <script src="/static/js/three.min.js"></script>
-        <script src="https://raw.githubusercontent.com/kovacsv/occt-import-js/master/dist/occt-import-js.js"></script>
+        <script src="/static/js/three.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/gh/kovacsv/occt-import-js@master/dist/occt-import-js.js" crossorigin="anonymous"></script>
         <script>
             (function () {
                 const viewport = document.getElementById('printerCadViewport');

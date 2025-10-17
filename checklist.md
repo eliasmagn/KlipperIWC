@@ -17,6 +17,10 @@
 - [x] Cursor-Koordinaten im Board- und Drucker-Designer an die ViewBox-Skalierung anpassen
 - [x] 3D-CAD-Viewer mit STEP-Import und Marker-Workflow für Board- und Drucker-Designer integrieren
 - [x] Drucker-Designer um Profil-Assistent (Konstanten, Dokumentations-Tooltips) und Klipper-Konfigurationskatalog erweitern
+- [x] Landingpage um geführten Ablauf mit Schritt-für-Schritt-Karten erweitern
+- [x] Drucker-Designer: 2D-Layout und 3D-CAD-Ansicht in einem Workspace mit Umschalter zusammenführen
+- [x] Board-Designer: 2D-Layout und 3D-CAD-Ansicht in einem gemeinsamen Workspace mit Umschalter kombinieren
+- [x] STEP-Parser über ein zuverlässiges CDN laden und Verfügbarkeit der 3D-Vorschau verbessern
 
 ## Offene Schritte Richtung Produktivbetrieb
 
