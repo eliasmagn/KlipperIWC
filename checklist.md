@@ -22,6 +22,7 @@
 - [x] Board-Designer: 2D-Layout und 3D-CAD-Ansicht in einem gemeinsamen Workspace mit Umschalter kombinieren
 - [x] STEP-Parser über ein zuverlässiges CDN laden und Verfügbarkeit der 3D-Vorschau verbessern
 - [x] Dokumentation zum extern verwalteten Registry-Verzeichnis für Board-Definitionen ergänzen
+- [x] 3D-CAD-Viewer mit konfigurierbarem Pixelratio-Limit ausstatten und Resize-Handling für DPI-Wechsel aktualisieren
 
 ## Offene Schritte Richtung Produktivbetrieb
 
