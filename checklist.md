@@ -23,6 +23,7 @@
 - [x] STEP-Parser über ein zuverlässiges CDN laden und Verfügbarkeit der 3D-Vorschau verbessern
 - [x] Dokumentation zum extern verwalteten Registry-Verzeichnis für Board-Definitionen ergänzen
 - [x] 3D-CAD-Viewer mit konfigurierbarem Pixelratio-Limit ausstatten und Resize-Handling für DPI-Wechsel aktualisieren
+- [x] STEP-Viewer: Tessellationsparameter optimieren und Materialien gemeinsam nutzen, um große Baugruppen performanter zu laden
 
 ## Offene Schritte Richtung Produktivbetrieb
 
