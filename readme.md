@@ -4,7 +4,7 @@ KlipperIWC ist eine FastAPI-basierte Backend-Anwendung, die als Grundlage für e
 
 > **Hinweis:** Eine Benutzerverwaltung bzw. ein Login ist derzeit nicht vorgesehen und wird erst in einer späteren Phase ergänzt.
 
-Neue Board- oder Druckerdefinitionen werden aktuell über Pull Requests im GitHub-Repository gepflegt. Sobald eine Authentifizierung verfügbar ist, sollen Anwender fehlende Hardware direkt in der Weboberfläche ergänzen können. Die Landingpage (`/`) verlinkt bereits auf den Board-Designer sowie einen interaktiven Printer-Designer. Beide erzeugen angereicherte JSON-Dokumente, die über neue REST-Endpunkte dauerhaft gespeichert werden können.
+Neue Board- oder Druckerdefinitionen werden aktuell über Pull Requests in dedizierten Registry-Repositories gepflegt. Standardmäßig erwartet die Anwendung ein lokales `board-definitions/`-Verzeichnis, das nicht Teil dieses Repositories ist und bei Bedarf separat angelegt oder eingehängt werden muss. Sobald eine Authentifizierung verfügbar ist, sollen Anwender fehlende Hardware direkt in der Weboberfläche ergänzen können. Die Landingpage (`/`) verlinkt bereits auf den Board-Designer sowie einen interaktiven Printer-Designer. Beide erzeugen angereicherte JSON-Dokumente, die über neue REST-Endpunkte dauerhaft gespeichert werden können.
 
 ## Voraussetzungen
 
@@ -408,17 +408,17 @@ reconnecten.
 ## Weiterführende Schritte
 
 Die nächsten Meilensteine sind in der [Roadmap](roadmap.md#phase-1--basisdienst-aktuell) und in der
-[Aufgaben-Checkliste](checklist.md#offene-schritte-richtung-produktivbetrieb) dokumentiert. Aktuell arbeiten wir vorrangig an:
+[Aufgaben-Checkliste](checklist.md#offene-schritte-richtung-produktivbetrieb) dokumentiert. Aktuell stehen folgende Arbeitspakete im Fokus:
 
-- **Klipper-Backend-Anbindung:** Ein Service-Layer soll Status- und Jobdaten direkt vom Klipper-Backend abrufen und damit die bisherigen Platzhalter ablösen.
-- **Dashboard-UI:** Auf Basis der bestehenden API- und Websocket-Daten entsteht ein Navigationskonzept mit Live-Widgets für Temperaturen, Jobs und Verlaufsgrafiken.
-- **Sicherheits- und Steuerfunktionen:** Start/Stop-/Notaus-Aktionen werden mit Authentifizierungs- und Schutzmechanismen ergänzt, um zukünftige Remote-Steuerung abzusichern.
+- **Klipper-Service-Layer:** Die Status- und Jobendpunkte sollen reale Daten aus einer Klipper-Instanz konsumieren und so die bisherigen Mock-Werte ablösen.
+- **Dashboard-Frontend:** Ein erstes UI mit Navigation, Live-Widgets und Visualisierungen soll die bereitgestellten API- und Websocket-Daten nutzbar machen.
+- **Websocket-Schutzmechanismen:** Authentifizierung und Rate-Limits sichern den Statuskanal ab, bevor Steuerfunktionen und Remote-Zugriffe freigeschaltet werden.
 
 Diese Punkte bereiten den Übergang vom dokumentierenden Prototyp hin zu einer produktionsreifen Überwachungs- und Steuerplattform vor.
 
 ## Interaktiver Board-Designer (Prototyp)
 
-Der Prototyp für die Board-Visualisierung ist unter `http://localhost:8000/board-designer` verfügbar, sobald der Server läuft. Der Arbeitsbereich bündelt 2D-Overlay und 3D-CAD in einem gemeinsamen Workspace, der sich per Umschalter zwischen Layout und Explorer wechseln lässt. Auf der Zeichenfläche lassen sich Rechtecke und Kreise platzieren, um Steckverbinder oder Pin-Gruppen hervorzuheben. Anschließend können individuelle Labels vergeben werden, die in der Seitenleiste als Referenz erscheinen. Ergänzend steht ein 3D-Viewer bereit, der STEP-Dateien lädt, per Orbit-Steuerung inspiziert und Marker im Raum positioniert. Die erzeugten Markierungen dienen als Grundlage für künftige Board-Definitionen, die weiterhin über GitHub versioniert werden.
+Der Prototyp für die Board-Visualisierung ist unter `http://localhost:8000/board-designer` verfügbar, sobald der Server läuft. Der Arbeitsbereich bündelt 2D-Overlay und 3D-CAD in einem gemeinsamen Workspace, der sich per Umschalter zwischen Layout und Explorer wechseln lässt. Auf der Zeichenfläche lassen sich Rechtecke und Kreise platzieren, um Steckverbinder oder Pin-Gruppen hervorzuheben. Anschließend können individuelle Labels vergeben werden, die in der Seitenleiste als Referenz erscheinen. Ergänzend steht ein 3D-Viewer bereit, der STEP-Dateien lädt, per Orbit-Steuerung inspiziert und Marker im Raum positioniert. Die erzeugten Markierungen dienen als Grundlage für künftige Board-Definitionen, die in einem separaten Registry-Repository oder in einem lokalen Verzeichnis versioniert werden.
 
 ## Interaktiver Printer-Designer (Prototyp)
 
