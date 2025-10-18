@@ -882,7 +882,13 @@ def create_app() -> FastAPI:
                                     Linksklick drehen, mit Rechtsklick verschieben und mit dem Mausrad zoomen.
                                 </p>
                             </div>
-                            <div class=\"cad-viewer\" id=\"boardCadViewport\" tabindex=\"0\" aria-label=\"Interaktive 3D-Ansicht des Boards\"></div>
+                            <div
+                                class=\"cad-viewer\"
+                                id=\"boardCadViewport\"
+                                tabindex=\"0\"
+                                aria-label=\"Interaktive 3D-Ansicht des Boards\"
+                                data-max-pixel-ratio=\"1.5\"
+                            ></div>
                             <section>
                                 <h3>3D-Markierungen</h3>
                                 <div id=\"boardCadAnnotationList\" class=\"cad-annotation-list\"></div>
@@ -1186,7 +1192,20 @@ def create_app() -> FastAPI:
                 }
             
                 const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-                renderer.setPixelRatio(window.devicePixelRatio || 1);
+                const pixelRatioCap = (() => {
+                    const rawValue = viewport ? parseFloat(viewport.dataset.maxPixelRatio || '1.5') : NaN;
+                    if (!Number.isFinite(rawValue) || rawValue <= 0) {
+                        return 1.5;
+                    }
+                    return Math.max(0.5, rawValue);
+                })();
+
+                function getEffectivePixelRatio() {
+                    const ratio = window.devicePixelRatio || 1;
+                    return Math.min(ratio, pixelRatioCap);
+                }
+
+                renderer.setPixelRatio(getEffectivePixelRatio());
                 renderer.setSize(viewport.clientWidth, viewport.clientHeight, false);
                 renderer.outputEncoding = THREE.sRGBEncoding;
                 viewport.appendChild(renderer.domElement);
@@ -1395,15 +1414,50 @@ def create_app() -> FastAPI:
                 function resizeRenderer() {
                     const width = viewport.clientWidth;
                     const height = Math.max(viewport.clientHeight, 1);
+                    renderer.setPixelRatio(getEffectivePixelRatio());
                     renderer.setSize(width, height, false);
                     camera.aspect = width / height;
                     camera.updateProjectionMatrix();
                 }
-            
+
                 window.addEventListener('resize', resizeRenderer);
                 if (window.ResizeObserver) {
                     new ResizeObserver(resizeRenderer).observe(viewport);
                 }
+
+                let pixelRatioQuery = null;
+
+                function handlePixelRatioChange() {
+                    setupPixelRatioObserver();
+                    resizeRenderer();
+                }
+
+                function setupPixelRatioObserver() {
+                    if (!window.matchMedia) {
+                        return;
+                    }
+                    const ratio = Math.round((window.devicePixelRatio || 1) * 100) / 100;
+                    const query = window.matchMedia(`(resolution: ${ratio}dppx)`);
+
+                    if (pixelRatioQuery) {
+                        if (pixelRatioQuery.removeEventListener) {
+                            pixelRatioQuery.removeEventListener('change', handlePixelRatioChange);
+                        } else if (pixelRatioQuery.removeListener) {
+                            pixelRatioQuery.removeListener(handlePixelRatioChange);
+                        }
+                    }
+
+                    pixelRatioQuery = query;
+
+                    if (pixelRatioQuery.addEventListener) {
+                        pixelRatioQuery.addEventListener('change', handlePixelRatioChange);
+                    } else if (pixelRatioQuery.addListener) {
+                        pixelRatioQuery.addListener(handlePixelRatioChange);
+                    }
+                }
+
+                setupPixelRatioObserver();
+                resizeRenderer();
             
                 function clearAnnotations() {
                     while (annotations.length) {
@@ -2466,7 +2520,13 @@ def create_app() -> FastAPI:
                                 Rechtsklick verschiebt die Ansicht, das Mausrad zoomt.
                             </p>
                         </div>
-                        <div class=\"cad-viewer\" id=\"printerCadViewport\" tabindex=\"0\" aria-label=\"Interaktive 3D-Ansicht des Druckers\"></div>
+                        <div
+                            class=\"cad-viewer\"
+                            id=\"printerCadViewport\"
+                            tabindex=\"0\"
+                            aria-label=\"Interaktive 3D-Ansicht des Druckers\"
+                            data-max-pixel-ratio=\"1.5\"
+                        ></div>
                         <section>
                             <h3>3D-Markierungen</h3>
                             <div id=\"printerCadAnnotationList\" class=\"cad-annotation-list\"></div>
@@ -3427,7 +3487,20 @@ def create_app() -> FastAPI:
                 }
             
                 const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-                renderer.setPixelRatio(window.devicePixelRatio || 1);
+                const pixelRatioCap = (() => {
+                    const rawValue = viewport ? parseFloat(viewport.dataset.maxPixelRatio || '1.5') : NaN;
+                    if (!Number.isFinite(rawValue) || rawValue <= 0) {
+                        return 1.5;
+                    }
+                    return Math.max(0.5, rawValue);
+                })();
+
+                function getEffectivePixelRatio() {
+                    const ratio = window.devicePixelRatio || 1;
+                    return Math.min(ratio, pixelRatioCap);
+                }
+
+                renderer.setPixelRatio(getEffectivePixelRatio());
                 renderer.setSize(viewport.clientWidth, viewport.clientHeight, false);
                 renderer.outputEncoding = THREE.sRGBEncoding;
                 viewport.appendChild(renderer.domElement);
@@ -3636,15 +3709,50 @@ def create_app() -> FastAPI:
                 function resizeRenderer() {
                     const width = viewport.clientWidth;
                     const height = Math.max(viewport.clientHeight, 1);
+                    renderer.setPixelRatio(getEffectivePixelRatio());
                     renderer.setSize(width, height, false);
                     camera.aspect = width / height;
                     camera.updateProjectionMatrix();
                 }
-            
+
                 window.addEventListener('resize', resizeRenderer);
                 if (window.ResizeObserver) {
                     new ResizeObserver(resizeRenderer).observe(viewport);
                 }
+
+                let pixelRatioQuery = null;
+
+                function handlePixelRatioChange() {
+                    setupPixelRatioObserver();
+                    resizeRenderer();
+                }
+
+                function setupPixelRatioObserver() {
+                    if (!window.matchMedia) {
+                        return;
+                    }
+                    const ratio = Math.round((window.devicePixelRatio || 1) * 100) / 100;
+                    const query = window.matchMedia(`(resolution: ${ratio}dppx)`);
+
+                    if (pixelRatioQuery) {
+                        if (pixelRatioQuery.removeEventListener) {
+                            pixelRatioQuery.removeEventListener('change', handlePixelRatioChange);
+                        } else if (pixelRatioQuery.removeListener) {
+                            pixelRatioQuery.removeListener(handlePixelRatioChange);
+                        }
+                    }
+
+                    pixelRatioQuery = query;
+
+                    if (pixelRatioQuery.addEventListener) {
+                        pixelRatioQuery.addEventListener('change', handlePixelRatioChange);
+                    } else if (pixelRatioQuery.addListener) {
+                        pixelRatioQuery.addListener(handlePixelRatioChange);
+                    }
+                }
+
+                setupPixelRatioObserver();
+                resizeRenderer();
             
                 function clearAnnotations() {
                     while (annotations.length) {

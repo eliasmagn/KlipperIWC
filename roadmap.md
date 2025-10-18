@@ -39,6 +39,7 @@
 - [x] Drucker-Designer: 2D-Layout und 3D-CAD-Ansicht in einem Workspace mit Umschalter vereinen
 - [x] Board-Designer: 2D-Layout und 3D-CAD-Ansicht in einem Workspace mit Umschalter vereinen
 - [x] STEP-Parser über ein CDN einbinden, um die Verfügbarkeit der 3D-Vorschau sicherzustellen
+- [x] High-DPI-Optimierung der 3D-CAD-Viewer (Pixelratio-Limit & automatische Größenanpassung)
 - [ ] Web-Frontend mit Dashboard, Verlaufsgrafiken und Konfigurationsseiten entwickeln
 - [ ] Bearbeitungsfunktionen (Bewegen/Löschen) in Board- und Drucker-Designer ergänzen
 - [ ] Responsive Layout und dunkler Modus
