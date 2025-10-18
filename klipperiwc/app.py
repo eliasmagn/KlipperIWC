@@ -1599,6 +1599,26 @@ def create_app() -> FastAPI:
                     if (!result || !result.success || !Array.isArray(result.meshes)) {
                         return group;
                     }
+                    const materialCache = new Map();
+
+                    function getMaterialForColor(color) {
+                        const colorHex = color.getHexString();
+                        if (!materialCache.has(colorHex)) {
+                            const base = new THREE.Color(`#${colorHex}`);
+                            const lightened = base.clone().lerp(new THREE.Color('#f8fafc'), 0.2);
+                            materialCache.set(
+                                colorHex,
+                                new THREE.MeshStandardMaterial({
+                                    color: lightened,
+                                    metalness: 0.1,
+                                    roughness: 0.85,
+                                    side: THREE.FrontSide
+                                })
+                            );
+                        }
+                        return materialCache.get(colorHex);
+                    }
+
                     const meshes = result.meshes.map((meshData) => {
                         const geometry = new THREE.BufferGeometry();
                         const positions = meshData?.attributes?.position?.array || [];
@@ -1626,12 +1646,7 @@ def create_app() -> FastAPI:
                         const color = Array.isArray(colorArray)
                             ? new THREE.Color(colorArray[0] / 255, colorArray[1] / 255, colorArray[2] / 255)
                             : new THREE.Color('#94a3b8');
-                        const material = new THREE.MeshStandardMaterial({
-                            color,
-                            metalness: 0.15,
-                            roughness: 0.75,
-                            side: THREE.DoubleSide
-                        });
+                        const material = getMaterialForColor(color);
                         const mesh = new THREE.Mesh(geometry, material);
                         mesh.name = meshData?.name || 'STEP Mesh';
                         return mesh;
@@ -1688,7 +1703,12 @@ def create_app() -> FastAPI:
                     }
                     try {
                         const buffer = await file.arrayBuffer();
-                        const result = occt.ReadStepFile(new Uint8Array(buffer), null);
+                        const tessellationOptions = {
+                            linearTolerance: 0.75,
+                            angularTolerance: 0.6,
+                            maxEdgeLength: 1.5
+                        };
+                        const result = occt.ReadStepFile(new Uint8Array(buffer), tessellationOptions);
                         if (!result || !result.success) {
                             updateStatus('STEP-Datei konnte nicht gelesen werden.', 'error');
                             return;
@@ -3894,6 +3914,26 @@ def create_app() -> FastAPI:
                     if (!result || !result.success || !Array.isArray(result.meshes)) {
                         return group;
                     }
+                    const materialCache = new Map();
+
+                    function getMaterialForColor(color) {
+                        const colorHex = color.getHexString();
+                        if (!materialCache.has(colorHex)) {
+                            const base = new THREE.Color(`#${colorHex}`);
+                            const lightened = base.clone().lerp(new THREE.Color('#f8fafc'), 0.2);
+                            materialCache.set(
+                                colorHex,
+                                new THREE.MeshStandardMaterial({
+                                    color: lightened,
+                                    metalness: 0.1,
+                                    roughness: 0.85,
+                                    side: THREE.FrontSide
+                                })
+                            );
+                        }
+                        return materialCache.get(colorHex);
+                    }
+
                     const meshes = result.meshes.map((meshData) => {
                         const geometry = new THREE.BufferGeometry();
                         const positions = meshData?.attributes?.position?.array || [];
@@ -3921,12 +3961,7 @@ def create_app() -> FastAPI:
                         const color = Array.isArray(colorArray)
                             ? new THREE.Color(colorArray[0] / 255, colorArray[1] / 255, colorArray[2] / 255)
                             : new THREE.Color('#94a3b8');
-                        const material = new THREE.MeshStandardMaterial({
-                            color,
-                            metalness: 0.15,
-                            roughness: 0.75,
-                            side: THREE.DoubleSide
-                        });
+                        const material = getMaterialForColor(color);
                         const mesh = new THREE.Mesh(geometry, material);
                         mesh.name = meshData?.name || 'STEP Mesh';
                         return mesh;
@@ -3983,7 +4018,12 @@ def create_app() -> FastAPI:
                     }
                     try {
                         const buffer = await file.arrayBuffer();
-                        const result = occt.ReadStepFile(new Uint8Array(buffer), null);
+                        const tessellationOptions = {
+                            linearTolerance: 0.75,
+                            angularTolerance: 0.6,
+                            maxEdgeLength: 1.5
+                        };
+                        const result = occt.ReadStepFile(new Uint8Array(buffer), tessellationOptions);
                         if (!result || !result.success) {
                             updateStatus('STEP-Datei konnte nicht gelesen werden.', 'error');
                             return;
