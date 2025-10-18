@@ -11,7 +11,8 @@
 - [ ] Klipper-Service-Layer für Status-/Jobdaten mit realem Backend anbinden
 
 ## Phase 2 – Beobachtung und Steuerung
-- [x] Websocket-Streaming für Echtzeit-Updates inklusive Gateway und Autorisierung integrieren (Auth & Rate-Limits folgen)
+- [x] Websocket-Streaming für Echtzeit-Updates inklusive Gateway bereitstellen
+- [ ] Autorisierung und Rate-Limits für das Websocket-Gateway implementieren
 - [ ] Dashboard-Layout mit Navigation, Live-Widgets und Temperatur-/Jobvisualisierungen entwickeln
 - [ ] Steuerbefehle (Start/Stop/Notaus) mit Sicherheitsmechanismen versehen
 - [ ] Alarm- und Benachrichtigungssystem für kritische Ereignisse hinzufügen

@@ -27,6 +27,8 @@
 
 - [ ] Klipper-Polling-Client bzw. Event-Receiver implementieren und als Service-Layer kapseln
 - [x] Websocket-Gateway zur Verteilung der Status-Updates an UI-Clients entwickeln
+- [ ] Authentifizierungsmechanismus für das Websocket-Gateway umsetzen (z. B. Token oder Session)
+- [ ] Rate-Limiting und Verbindungsgrenzen für das Websocket-Gateway hinzufügen
 - [ ] Dashboard-Layout im Webfrontend mit Navigation und Grundseiten strukturieren
 - [ ] Interaktive Nachbearbeitung (Bewegen/Löschen) für Board- und Drucker-Markierungen ergänzen
 - [ ] Live-Widgets für Temperaturkurven und Jobfortschritt mit Dashboard-/Websocket-Daten verknüpfen
