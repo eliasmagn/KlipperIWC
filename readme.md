@@ -407,7 +407,14 @@ reconnecten.
 
 ## Weiterführende Schritte
 
-Siehe `roadmap.md` für geplante Erweiterungen und `checklist.md` für den aktuellen Arbeitsfortschritt. Der aktuelle Fokus liegt auf der Definition der Status-API, der Integration eines Klipper-Service-Layers und dem Aufbau einer kleinen Statushistorie, um den Weg in Richtung produktiver Einsatz zu ebnen.
+Die nächsten Meilensteine sind in der [Roadmap](roadmap.md#phase-1--basisdienst-aktuell) und in der
+[Aufgaben-Checkliste](checklist.md#offene-schritte-richtung-produktivbetrieb) dokumentiert. Aktuell arbeiten wir vorrangig an:
+
+- **Klipper-Backend-Anbindung:** Ein Service-Layer soll Status- und Jobdaten direkt vom Klipper-Backend abrufen und damit die bisherigen Platzhalter ablösen.
+- **Dashboard-UI:** Auf Basis der bestehenden API- und Websocket-Daten entsteht ein Navigationskonzept mit Live-Widgets für Temperaturen, Jobs und Verlaufsgrafiken.
+- **Sicherheits- und Steuerfunktionen:** Start/Stop-/Notaus-Aktionen werden mit Authentifizierungs- und Schutzmechanismen ergänzt, um zukünftige Remote-Steuerung abzusichern.
+
+Diese Punkte bereiten den Übergang vom dokumentierenden Prototyp hin zu einer produktionsreifen Überwachungs- und Steuerplattform vor.
 
 ## Interaktiver Board-Designer (Prototyp)
 
