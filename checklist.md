@@ -24,6 +24,8 @@
 - [x] Dokumentation zum extern verwalteten Registry-Verzeichnis für Board-Definitionen ergänzen
 - [x] 3D-CAD-Viewer mit konfigurierbarem Pixelratio-Limit ausstatten und Resize-Handling für DPI-Wechsel aktualisieren
 - [x] STEP-Viewer: Tessellationsparameter optimieren und Materialien gemeinsam nutzen, um große Baugruppen performanter zu laden
+- [x] Board-Designer: CAD-Werkzeuge als Overlay platzieren und einen Ladefortschritt für STEP-Importe anzeigen
+- [x] STEP-Viewer: Fehlende Geometrie-Daten beim Import abfangen, um Renderer-Fehler zu vermeiden
 
 ## Offene Schritte Richtung Produktivbetrieb
 
