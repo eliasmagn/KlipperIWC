@@ -41,6 +41,7 @@
 - [x] STEP-Parser über ein CDN einbinden, um die Verfügbarkeit der 3D-Vorschau sicherzustellen
 - [x] High-DPI-Optimierung der 3D-CAD-Viewer (Pixelratio-Limit & automatische Größenanpassung)
 - [x] Performanceoptimierung der STEP-Viewer durch grobere Tessellation und geteilte Materialien
+- [x] Board-Designer: Overlay-basierte CAD-Steuerung inkl. Fortschrittsanzeige und robustem STEP-Import
 - [ ] Web-Frontend mit Dashboard, Verlaufsgrafiken und Konfigurationsseiten entwickeln
 - [ ] Bearbeitungsfunktionen (Bewegen/Löschen) in Board- und Drucker-Designer ergänzen
 - [ ] Responsive Layout und dunkler Modus

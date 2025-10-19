@@ -449,10 +449,11 @@ def create_app() -> FastAPI:
 
                 .layout {
                     flex: 1;
-                    display: grid;
-                    grid-template-columns: minmax(280px, 320px) 1fr;
-                    gap: 1.5rem;
-                    padding: 1.5rem 1.8rem 2.2rem;
+                    position: relative;
+                    display: flex;
+                    align-items: stretch;
+                    padding: clamp(1.2rem, 2.5vw, 2rem);
+                    overflow: hidden;
                 }
 
                 header {
@@ -490,7 +491,10 @@ def create_app() -> FastAPI:
                     font-size: 0.95rem;
                 }
 
-                aside {
+                .overlay-panel {
+                    position: absolute;
+                    top: clamp(1rem, 2vw, 1.8rem);
+                    left: clamp(1rem, 2vw, 1.8rem);
                     padding: 1.5rem;
                     border-radius: 1.1rem;
                     border: 1px solid rgba(148, 163, 184, 0.28);
@@ -500,28 +504,42 @@ def create_app() -> FastAPI:
                     flex-direction: column;
                     gap: 1.5rem;
                     box-shadow: 0 24px 48px rgba(15, 23, 42, 0.45);
+                    max-width: min(360px, 28vw);
+                    z-index: 20;
+                }
+
+                .overlay-panel[data-overlay="cad"] {
+                    left: auto;
+                    right: clamp(1rem, 2vw, 1.8rem);
+                    max-height: calc(100% - clamp(2.5rem, 5vw, 4rem));
+                    overflow-y: auto;
                 }
 
                 main {
-                    display: flex;
-                    flex-direction: column;
-                    gap: 1.5rem;
+                    flex: 1;
+                    position: relative;
+                    min-height: 0;
                 }
 
                 .workspace-panel {
-                    display: grid;
-                    gap: 1.5rem;
+                    position: relative;
+                    height: 100%;
                 }
 
                 .workspace-toggle {
+                    position: absolute;
+                    top: clamp(1rem, 2vw, 1.5rem);
+                    left: 50%;
+                    transform: translateX(-50%);
                     display: inline-flex;
                     align-items: center;
                     gap: 0.4rem;
                     padding: 0.35rem;
                     border-radius: 999px;
                     border: 1px solid rgba(148, 163, 184, 0.35);
-                    background: rgba(15, 23, 42, 0.6);
+                    background: rgba(15, 23, 42, 0.68);
                     width: fit-content;
+                    z-index: 30;
                 }
 
                 .workspace-toggle button {
@@ -539,20 +557,20 @@ def create_app() -> FastAPI:
                     box-shadow: inset 0 0 0 1px rgba(56, 189, 248, 0.4);
                 }
 
-                .workspace-panel .plan-view {
-                    display: none;
+                .view-layer {
+                    position: absolute;
+                    inset: 0;
+                    border-radius: 1.2rem;
+                    overflow: hidden;
+                    opacity: 0;
+                    pointer-events: none;
+                    transition: opacity 0.28s ease;
                 }
 
-                .workspace-panel .cad-panel {
-                    display: none;
-                }
-
-                .workspace-panel[data-active-view="plan"] .plan-view {
-                    display: block;
-                }
-
-                .workspace-panel[data-active-view="cad"] .cad-panel {
-                    display: grid;
+                #boardWorkspace[data-active-view="plan"] .plan-view,
+                #boardWorkspace[data-active-view="cad"] .cad-panel {
+                    opacity: 1;
+                    pointer-events: auto;
                 }
 
                 .toolbar {
@@ -582,10 +600,16 @@ def create_app() -> FastAPI:
                     border-color: #38bdf8;
                 }
 
+                .plan-view {
+                    display: flex;
+                    align-items: stretch;
+                    height: 100%;
+                }
+
                 .canvas-shell {
                     flex: 1;
-                    min-height: 60vh;
-                    border-radius: 0.75rem;
+                    min-height: 100%;
+                    border-radius: 1.2rem;
                     border: 1px solid rgba(148, 163, 184, 0.3);
                     background: radial-gradient(circle at top, rgba(148, 163, 184, 0.08), rgba(15, 23, 42, 0.9));
                     position: relative;
@@ -627,28 +651,24 @@ def create_app() -> FastAPI:
                 }
 
                 .cad-panel {
-                    display: grid;
-                    gap: 1rem;
-                    margin-top: 1.5rem;
-                    padding: 1.5rem;
-                    border-radius: 1rem;
-                    border: 1px solid rgba(148, 163, 184, 0.25);
-                    background: rgba(15, 23, 42, 0.82);
-                    box-shadow: 0 24px 48px rgba(15, 23, 42, 0.55);
+                    display: flex;
+                    align-items: stretch;
+                    height: 100%;
+                    position: relative;
                 }
 
-                .cad-panel header {
+                .cad-overlay header {
                     display: grid;
                     gap: 0.4rem;
                 }
 
-                .cad-panel h2 {
+                .cad-overlay h2 {
                     margin: 0;
                     font-size: 1.25rem;
                     color: #f1f5f9;
                 }
 
-                .cad-panel p {
+                .cad-overlay p {
                     margin: 0;
                     font-size: 0.9rem;
                     color: rgba(148, 163, 184, 0.85);
@@ -725,17 +745,54 @@ def create_app() -> FastAPI:
                 }
 
                 .cad-viewer {
+                    flex: 1;
                     position: relative;
                     min-height: 420px;
                     border-radius: 0.9rem;
                     border: 1px solid rgba(148, 163, 184, 0.2);
                     background: radial-gradient(circle at top, rgba(30, 41, 59, 0.9), rgba(15, 23, 42, 0.95));
                     overflow: hidden;
-                }
+                    }
 
                 .cad-viewer.drag-active {
                     border-color: #38bdf8;
                     box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.35);
+                }
+
+                .cad-loading-overlay {
+                    position: absolute;
+                    inset: 0;
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    justify-content: center;
+                    gap: 0.75rem;
+                    background: rgba(15, 23, 42, 0.72);
+                    backdrop-filter: blur(6px);
+                    color: #e2e8f0;
+                    z-index: 25;
+                    text-align: center;
+                }
+
+                .cad-loading-overlay[hidden] {
+                    display: none;
+                }
+
+                .cad-progress-bar {
+                    width: min(320px, 60%);
+                    height: 0.55rem;
+                    border-radius: 999px;
+                    background: rgba(148, 163, 184, 0.25);
+                    overflow: hidden;
+                }
+
+                .cad-progress-bar span {
+                    display: block;
+                    height: 100%;
+                    width: 0%;
+                    border-radius: inherit;
+                    background: linear-gradient(90deg, #38bdf8, #22d3ee);
+                    transition: width 0.25s ease;
                 }
 
                 .cad-annotation-list {
@@ -784,20 +841,35 @@ def create_app() -> FastAPI:
 
                 @media (max-width: 900px) {
                     .layout {
-                        grid-template-columns: 1fr;
-                        padding: 1.2rem;
-                        gap: 1.2rem;
-                    }
-
-                    aside {
-                        flex-direction: row;
-                        flex-wrap: wrap;
+                        flex-direction: column;
+                        padding: 1rem;
                         gap: 1rem;
-                        margin-bottom: 0.5rem;
+                        overflow: visible;
                     }
 
-                    .shape-entry {
-                        flex: 1 1 200px;
+                    .overlay-panel {
+                        position: relative;
+                        top: auto;
+                        left: auto;
+                        right: auto;
+                        max-width: 100%;
+                        width: 100%;
+                        order: 2;
+                    }
+
+                    .overlay-panel[data-overlay="cad"] {
+                        max-height: none;
+                        overflow: visible;
+                    }
+
+                    .workspace-toggle {
+                        position: static;
+                        transform: none;
+                        margin: 0 auto 0.75rem;
+                    }
+
+                    .canvas-shell {
+                        border-radius: 0.9rem;
                     }
                 }
             </style>
@@ -812,7 +884,11 @@ def create_app() -> FastAPI:
                 <p>Create annotated board overlays before the user-generated workflow is available.</p>
             </header>
             <div class=\"layout\">
-                <aside>
+                <aside
+                    class=\"overlay-panel plan-overlay\"
+                    id=\"boardPlanOverlay\"
+                    data-overlay=\"plan\"
+                >
                     <div>
                         <h2>Workflow</h2>
                         <p class=\"hint\">Select a tool, drag on the canvas, then name the connector/pin.</p>
@@ -834,54 +910,12 @@ def create_app() -> FastAPI:
                             <button type=\"button\" class=\"active\" data-view-target=\"plan\" role=\"tab\" aria-selected=\"true\">2D-Layout</button>
                             <button type=\"button\" data-view-target=\"cad\" role=\"tab\" aria-selected=\"false\">3D-CAD</button>
                         </div>
-                        <div class=\"plan-view\" data-view=\"plan\">
+                        <div class=\"plan-view view-layer\" data-view=\"plan\">
                             <div class=\"canvas-shell\">
                                 <svg id=\"boardCanvas\" viewBox=\"0 0 1280 720\" role=\"img\" aria-label=\"Board designer canvas\"></svg>
                             </div>
                         </div>
-                        <section class=\"cad-panel\" data-view=\"cad\">
-                            <header>
-                                <h2>3D CAD Explorer</h2>
-                                <p>
-                                    Lade eine STEP-Datei, um dein Board in 3D zu inspizieren, Komponenten zu markieren und die Perspektive
-                                    frei zu bewegen. Ziehe die Datei per Drag &amp; Drop oder nutze den Dateiauswahldialog.
-                                </p>
-                            </header>
-                            <div class=\"cad-toolbox\">
-                                <div class=\"row\">
-                                    <label>
-                                        STEP-Datei laden
-                                        <input id=\"boardCadFile\" type=\"file\" accept=\".step,.stp,model/step\" />
-                                    </label>
-                                    <label>
-                                        Marker-Kategorie
-                                        <select id=\"boardCadCategory\">
-                                            <option value=\"device\">Gerät / Modul</option>
-                                            <option value=\"rails\">Führungen &amp; Rails</option>
-                                            <option value=\"belts\">Riemen &amp; Antriebe</option>
-                                            <option value=\"cables\">Kabel &amp; Looms</option>
-                                            <option value=\"sensors\">Sensoren</option>
-                                            <option value=\"other\">Sonstige</option>
-                                        </select>
-                                    </label>
-                                    <label>
-                                        Marker-Beschriftung
-                                        <input id=\"boardCadLabel\" type=\"text\" placeholder=\"z. B. X-Limit-Switch\" />
-                                    </label>
-                                </div>
-                                <div class=\"row\">
-                                    <button id=\"boardCadMarkerMode\" type=\"button\">Marker platzieren</button>
-                                    <button id=\"boardCadResetView\" type=\"button\">Kamera zurücksetzen</button>
-                                    <button id=\"boardCadClearMarkers\" type=\"button\">Marker entfernen</button>
-                                </div>
-                                <p class=\"cad-status\" id=\"boardCadStatus\" aria-live=\"polite\">
-                                    Keine STEP-Datei geladen. Ziehe eine Datei auf die Ansicht oder verwende den Button.
-                                </p>
-                                <p class=\"hint\">
-                                    Tipp: Im Marker-Modus mit einem Klick Punkte setzen. Außerhalb des Modus lässt sich das Modell per
-                                    Linksklick drehen, mit Rechtsklick verschieben und mit dem Mausrad zoomen.
-                                </p>
-                            </div>
+                        <section class=\"cad-panel view-layer\" data-view=\"cad\">
                             <div
                                 class=\"cad-viewer\"
                                 id=\"boardCadViewport\"
@@ -889,13 +923,68 @@ def create_app() -> FastAPI:
                                 aria-label=\"Interaktive 3D-Ansicht des Boards\"
                                 data-max-pixel-ratio=\"1.5\"
                             ></div>
-                            <section>
-                                <h3>3D-Markierungen</h3>
-                                <div id=\"boardCadAnnotationList\" class=\"cad-annotation-list\"></div>
-                            </section>
+                            <div class=\"cad-loading-overlay\" id=\"boardCadLoadingOverlay\" hidden>
+                                <div class=\"cad-progress-bar\">
+                                    <span id=\"boardCadLoadingBar\"></span>
+                                </div>
+                                <p id=\"boardCadLoadingLabel\">STEP-Datei wird geladen …</p>
+                            </div>
                         </section>
                     </section>
                 </main>
+                <section
+                    class=\"overlay-panel cad-overlay\"
+                    id=\"boardCadOverlay\"
+                    data-overlay=\"cad\"
+                    hidden
+                >
+                    <header>
+                        <h2>3D CAD Explorer</h2>
+                        <p>
+                            Lade eine STEP-Datei, um dein Board in 3D zu inspizieren, Komponenten zu markieren und die Perspektive
+                            frei zu bewegen. Ziehe die Datei per Drag &amp; Drop oder nutze den Dateiauswahldialog.
+                        </p>
+                    </header>
+                    <div class=\"cad-toolbox\">
+                        <div class=\"row\">
+                            <label>
+                                STEP-Datei laden
+                                <input id=\"boardCadFile\" type=\"file\" accept=\".step,.stp,model/step\" />
+                            </label>
+                            <label>
+                                Marker-Kategorie
+                                <select id=\"boardCadCategory\">
+                                    <option value=\"device\">Gerät / Modul</option>
+                                    <option value=\"rails\">Führungen &amp; Rails</option>
+                                    <option value=\"belts\">Riemen &amp; Antriebe</option>
+                                    <option value=\"cables\">Kabel &amp; Looms</option>
+                                    <option value=\"sensors\">Sensoren</option>
+                                    <option value=\"other\">Sonstige</option>
+                                </select>
+                            </label>
+                            <label>
+                                Marker-Beschriftung
+                                <input id=\"boardCadLabel\" type=\"text\" placeholder=\"z. B. X-Limit-Switch\" />
+                            </label>
+                        </div>
+                        <div class=\"row\">
+                            <button id=\"boardCadMarkerMode\" type=\"button\">Marker platzieren</button>
+                            <button id=\"boardCadResetView\" type=\"button\">Kamera zurücksetzen</button>
+                            <button id=\"boardCadClearMarkers\" type=\"button\">Marker entfernen</button>
+                        </div>
+                        <p class=\"cad-status\" id=\"boardCadStatus\" aria-live=\"polite\">
+                            Keine STEP-Datei geladen. Ziehe eine Datei auf die Ansicht oder verwende den Button.
+                        </p>
+                        <p class=\"hint\">
+                            Tipp: Im Marker-Modus mit einem Klick Punkte setzen. Außerhalb des Modus lässt sich das Modell per
+                            Linksklick drehen, mit Rechtsklick verschieben und mit dem Mausrad zoomen.
+                        </p>
+                    </div>
+                    <section class=\"cad-annotations\">
+                        <h3>3D-Markierungen</h3>
+                        <div id=\"boardCadAnnotationList\" class=\"cad-annotation-list\"></div>
+                    </section>
+                </section>
             </div>
 
             <script>
@@ -909,6 +998,22 @@ def create_app() -> FastAPI:
                 const viewToggleButtons = workspacePanel
                     ? workspacePanel.querySelectorAll('[data-view-target]')
                     : [];
+                const planOverlay = document.getElementById('boardPlanOverlay');
+                const cadOverlay = document.getElementById('boardCadOverlay');
+
+                function updateOverlayVisibility(view) {
+                    const targetView = view || (workspacePanel ? workspacePanel.dataset.activeView : 'plan');
+                    if (planOverlay) {
+                        const isPlan = targetView === 'plan';
+                        planOverlay.hidden = !isPlan;
+                        planOverlay.setAttribute('aria-hidden', isPlan ? 'false' : 'true');
+                    }
+                    if (cadOverlay) {
+                        const isCad = targetView === 'cad';
+                        cadOverlay.hidden = !isCad;
+                        cadOverlay.setAttribute('aria-hidden', isCad ? 'false' : 'true');
+                    }
+                }
 
                 let activeTool = null;
                 let drawing = false;
@@ -994,6 +1099,7 @@ def create_app() -> FastAPI:
                 });
 
                 setActiveTool('rect');
+                updateOverlayVisibility(workspacePanel ? workspacePanel.dataset.activeView : 'plan');
 
                 if (workspacePanel && viewToggleButtons.length) {
                     viewToggleButtons.forEach((button) => {
@@ -1003,6 +1109,7 @@ def create_app() -> FastAPI:
                                 return;
                             }
                             workspacePanel.dataset.activeView = target;
+                            updateOverlayVisibility(target);
                             viewToggleButtons.forEach((other) => {
                                 const isActive = other === button;
                                 other.classList.toggle('active', isActive);
@@ -1179,6 +1286,9 @@ def create_app() -> FastAPI:
             (function () {
                 const viewport = document.getElementById('boardCadViewport');
                 const statusElement = document.getElementById('boardCadStatus');
+                const loadingOverlay = document.getElementById('boardCadLoadingOverlay');
+                const loadingBar = document.getElementById('boardCadLoadingBar');
+                const loadingLabel = document.getElementById('boardCadLoadingLabel');
                 if (!viewport) {
                     return;
                 }
@@ -1271,6 +1381,45 @@ def create_app() -> FastAPI:
             
                 const occtPromise = typeof occtimportjs === 'function' ? occtimportjs() : Promise.resolve(null);
             
+                let cadProgressHideTimeout = null;
+
+                function showCadProgress(progress, label) {
+                    if (!loadingOverlay || !loadingBar) {
+                        return;
+                    }
+                    if (cadProgressHideTimeout) {
+                        window.clearTimeout(cadProgressHideTimeout);
+                        cadProgressHideTimeout = null;
+                    }
+                    loadingOverlay.hidden = false;
+                    if (typeof progress === 'number' && Number.isFinite(progress)) {
+                        const clamped = Math.max(0, Math.min(1, progress));
+                        loadingBar.style.width = `${Math.round(clamped * 100)}%`;
+                    }
+                    if (loadingLabel && label) {
+                        loadingLabel.textContent = label;
+                    }
+                }
+
+                function hideCadProgress(delay = 0) {
+                    if (!loadingOverlay || !loadingBar) {
+                        return;
+                    }
+                    if (cadProgressHideTimeout) {
+                        window.clearTimeout(cadProgressHideTimeout);
+                        cadProgressHideTimeout = null;
+                    }
+                    const applyHide = () => {
+                        loadingBar.style.width = '0%';
+                        loadingOverlay.hidden = true;
+                    };
+                    if (delay > 0) {
+                        cadProgressHideTimeout = window.setTimeout(applyHide, delay);
+                    } else {
+                        applyHide();
+                    }
+                }
+
                 function updateStatus(message, state) {
                     if (!statusElement) {
                         return;
@@ -1620,9 +1769,15 @@ def create_app() -> FastAPI:
                     }
 
                     const meshes = result.meshes.map((meshData) => {
+                        const positions = meshData?.attributes?.position?.array;
+                        if (!positions || positions.length === 0) {
+                            return null;
+                        }
                         const geometry = new THREE.BufferGeometry();
-                        const positions = meshData?.attributes?.position?.array || [];
                         const positionData = positions instanceof Float32Array ? positions : new Float32Array(positions);
+                        if (!positionData.length) {
+                            return null;
+                        }
                         geometry.setAttribute('position', new THREE.Float32BufferAttribute(positionData, 3));
                         const normals = meshData?.attributes?.normal?.array;
                         if (normals && normals.length) {
@@ -1696,13 +1851,19 @@ def create_app() -> FastAPI:
                         return;
                     }
                     updateStatus(`Lade ${file.name} ...`, 'loading');
-                    const occt = await occtPromise;
-                    if (!occt) {
-                        updateStatus('STEP-Parser nicht verfügbar.', 'error');
-                        return;
-                    }
+                    showCadProgress(0.05, `Bereite ${file.name} vor …`);
                     try {
+                        showCadProgress(0.15, 'STEP-Parser initialisieren …');
+                        const occt = await occtPromise;
+                        if (!occt) {
+                            updateStatus('STEP-Parser nicht verfügbar.', 'error');
+                            showCadProgress(1, 'STEP-Parser nicht verfügbar.');
+                            hideCadProgress(1200);
+                            return;
+                        }
+                        showCadProgress(0.35, 'Datei wird gelesen …');
                         const buffer = await file.arrayBuffer();
+                        showCadProgress(0.6, 'Geometrie wird trianguliert …');
                         const tessellationOptions = {
                             linearTolerance: 0.75,
                             angularTolerance: 0.6,
@@ -1711,19 +1872,32 @@ def create_app() -> FastAPI:
                         const result = occt.ReadStepFile(new Uint8Array(buffer), tessellationOptions);
                         if (!result || !result.success) {
                             updateStatus('STEP-Datei konnte nicht gelesen werden.', 'error');
+                            showCadProgress(1, 'STEP-Datei konnte nicht gelesen werden.');
+                            hideCadProgress(1400);
                             return;
                         }
                         if (currentModel) {
                             scene.remove(currentModel);
                         }
                         clearAnnotations();
+                        showCadProgress(0.82, 'Szene wird aufgebaut …');
                         currentModel = buildMeshGroup(result);
+                        if (!currentModel || currentModel.children.length === 0) {
+                            updateStatus('STEP-Datei enthielt keine verwertbaren Flächen.', 'error');
+                            showCadProgress(1, 'Keine Flächen gefunden.');
+                            hideCadProgress(1400);
+                            return;
+                        }
                         scene.add(currentModel);
                         fitCameraToGroup(currentModel);
                         updateStatus(`${file.name} geladen. Marker-Modus aktivieren, um Punkte zu setzen.`, null);
+                        showCadProgress(1, `${file.name} geladen.`);
+                        hideCadProgress(800);
                     } catch (error) {
                         console.error(error);
                         updateStatus('Fehler beim Lesen der STEP-Datei.', 'error');
+                        showCadProgress(1, 'Fehler beim Laden.');
+                        hideCadProgress(1400);
                     }
                 }
             
