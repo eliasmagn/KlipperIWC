@@ -8,14 +8,14 @@
 - [x] API-Spezifikation und Pydantic-Modelle für Status-/Jobdaten bereitstellen
 - [x] Persistente Statushistorie (SQLite) inklusive Service-Layer und konfigurierbarer Aufbewahrungslogik (`STATUS_HISTORY_RETENTION_DAYS`) implementieren
 - [x] Dashboard-Metrikservice und API-Routen für aggregierte Kennzahlen veröffentlichen
-- [ ] Klipper-Service-Layer für Status-/Jobdaten mit realem Backend anbinden
+- [ ] Demo-Daten-Generator für Status-/Job-Endpunkte ausbauen und Exporttests automatisieren
 
-## Phase 2 – Beobachtung und Steuerung
+## Phase 2 – Mock-Telemetrie & Dashboard
 - [x] Websocket-Streaming für Echtzeit-Updates inklusive Gateway bereitstellen
 - [ ] Autorisierung und Rate-Limits für das Websocket-Gateway implementieren
-- [ ] Dashboard-Layout mit Navigation, Live-Widgets und Temperatur-/Jobvisualisierungen entwickeln
-- [ ] Steuerbefehle (Start/Stop/Notaus) mit Sicherheitsmechanismen versehen
-- [ ] Alarm- und Benachrichtigungssystem für kritische Ereignisse hinzufügen
+- [ ] Dashboard-Layout mit Navigation, Mock-Live-Widgets und Temperatur-/Jobvisualisierungen entwickeln
+- [ ] Konfigurations-Export-UI entwerfen, die Board- und Druckerdefinitionen kombiniert
+- [ ] Validierungs- und Hinweis-System für unvollständige Profile integrieren
 
 ## Phase 3 – Hardware- und Board-Definitionen
 - [x] JSON-Schema und Versionsverwaltung für Board-Definitionen etablieren
