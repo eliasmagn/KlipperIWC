@@ -29,16 +29,16 @@
 
 ## Offene Schritte Richtung Produktivbetrieb
 
-- [ ] Klipper-Polling-Client bzw. Event-Receiver implementieren und als Service-Layer kapseln
+- [ ] Demo-Daten-Layer für Status- und Dashboard-APIs verfeinern (mehr Szenarien, Exporttests)
 - [x] Websocket-Gateway zur Verteilung der Status-Updates an UI-Clients entwickeln
 - [ ] Authentifizierungsmechanismus für das Websocket-Gateway umsetzen (z. B. Token oder Session)
 - [ ] Rate-Limiting und Verbindungsgrenzen für das Websocket-Gateway hinzufügen
 - [ ] Dashboard-Layout im Webfrontend mit Navigation und Grundseiten strukturieren
 - [ ] Interaktive Nachbearbeitung (Bewegen/Löschen) für Board- und Drucker-Markierungen ergänzen
-- [ ] Live-Widgets für Temperaturkurven und Jobfortschritt mit Dashboard-/Websocket-Daten verknüpfen
+- [ ] Live-Widgets für Temperaturkurven und Jobfortschritt mit den bereitgestellten Demo-Daten verknüpfen
 - [x] Upload-Workflow für Board-Grafiken samt S3-/Dateisystem-Storage und Moderationsschritt implementieren
 - [ ] Automatisierte Moderations-Benachrichtigungen (E-Mail/Webhook) integrieren
 - [ ] Validierungslogik für Pin-Namen gegen MCU-Datenbank ergänzen und mit Unit-Tests absichern
 - [ ] CI/CD-Pipeline mit Linting, Tests und automatischem Container-Build & Tagging aufsetzen
 - [ ] Benutzerkonten mit Freigabemodellen für Definitionen implementieren
-- [ ] Konfigurations-Generator für kombinierte Board-/Druckerprofile entwickeln
+- [ ] Konfigurations-Generator für kombinierte Board-/Druckerprofile entwickeln und Exportpfade dokumentieren

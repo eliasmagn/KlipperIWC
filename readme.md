@@ -1,6 +1,6 @@
 # KlipperIWC
 
-KlipperIWC ist eine FastAPI-basierte Backend-Anwendung, die als Grundlage für eine Integrations- und Steueroberfläche von Klipper-3D-Druckerinstallationen dient. Dieses Repository enthält alle Skripte, um die Software lokal, auf einem Server oder innerhalb eines Containers zu betreiben.
+KlipperIWC ist eine FastAPI-basierte Backend-Anwendung, die Konfigurations- und Dokumentations-Workflows für Klipper-3D-Druckerinstallationen bereitstellt. Die Software erzeugt strukturierte Definitionen und exportiert vollständige `klipper.conf`-Profile, ohne jemals mit einer laufenden Klipper-Instanz zu kommunizieren. Dieses Repository enthält alle Skripte, um die Anwendung lokal, auf einem Server oder innerhalb eines Containers zu betreiben.
 
 > **Hinweis:** Eine Benutzerverwaltung bzw. ein Login ist derzeit nicht vorgesehen und wird erst in einer späteren Phase ergänzt.
 
@@ -104,11 +104,12 @@ Dockerfile           # Container-Build
 ## HTTP-API
 
 Die Anwendung stellt Status-Endpunkte, einen Upload-Service für Board-Grafiken und ein
-Moderations-API bereit. Solange noch keine Anbindung an einen realen Klipper-Service
-existiert, liefern die Status-Endpunkte repräsentative Beispielwerte. Bei jedem Abruf
-wird der Status zusätzlich in einer Historientabelle gespeichert, sodass spätere
-Visualisierungen auf die aufgezeichneten Messwerte zugreifen können. Parallel steht ein
-Websocket-Kanal bereit, der neue Statusmeldungen automatisch an verbundene Clients
+Moderations-API bereit. Die Status-Endpunkte liefern bewusst ausschließlich repräsentative
+Beispielwerte, damit UI-Komponenten und Dashboards realistische Daten erhalten, ohne dass
+eine Verbindung zu produktiven Klipper-Instanzen erforderlich ist. Bei jedem Abruf wird
+der Demo-Status zusätzlich in einer Historientabelle gespeichert, sodass spätere
+Visualisierungen auf persistierte Beispieldatensätze zugreifen können. Parallel steht ein
+Websocket-Kanal bereit, der diese Mock-Statusmeldungen automatisch an verbundene Clients
 weiterleitet.
 
 | Methode | Pfad               | Beschreibung                                      |
@@ -167,9 +168,10 @@ Die öffentliche `GET /api/board-assets/`-Route liefert ausschließlich genehmig
 
 ### Dashboard-Metriken aus der Historie
 
-Die neuen Dashboard-Endpunkte greifen auf die persistente Historie zu und liefern
+Die neuen Dashboard-Endpunkte greifen auf die persistente Demo-Historie zu und liefern
 kompakte JSON-Strukturen für Frontend-Widgets. Damit lassen sich Diagramme oder
-KPI-Kacheln ohne zusätzliche Transformationen aufbauen.
+KPI-Kacheln ohne zusätzliche Transformationen aufbauen, obwohl keine echte Telemetrie
+eingebunden ist.
 
 **`GET /api/dashboard/overview`**
 
@@ -281,8 +283,8 @@ Statusverteilung für schnelle KPIs.
 ### Persistente Statushistorie & Aufbewahrung
 
 Die Tabellen `status_history`, `temperature_history` und `job_history` speichern jede
-eingehende Statusmeldung mitsamt Einzelmessungen. Ein Hintergrundtask entfernt Altdaten
-in regelmäßigen Abständen. Die Konfiguration erfolgt über Umgebungsvariablen:
+abgerufene Demo-Statusmeldung mitsamt Einzelmessungen. Ein Hintergrundtask entfernt
+Altdaten in regelmäßigen Abständen. Die Konfiguration erfolgt über Umgebungsvariablen:
 
 - `STATUS_HISTORY_RETENTION_DAYS` (Standard: `30`): Wie viele Tage Historie maximal
   aufbewahrt werden.
@@ -383,7 +385,8 @@ solange sie im konfigurierten Registry-Verzeichnis abgelegt werden.
 
 Für Live-Updates steht ein Websocket-Endpunkt unter `ws://<host>:<port>/ws/status`
 bereit. Nach erfolgreicher Verbindung sendet der Server automatisch neue Statusmeldungen,
-sobald sie über die HTTP-API erzeugt oder von zukünftigen Backends eingespielt werden.
+die beim Abruf der HTTP-Demo-Endpunkte entstehen. Eine Verbindung zu produktiven
+Klipper-Backends ist nicht vorgesehen.
 Jede Nachricht folgt dem Schema:
 
 ```json
@@ -401,8 +404,8 @@ Jede Nachricht folgt dem Schema:
 ```
 
 Die Verbindung ist aktuell offen zugänglich; Platzhalter für Authentifizierung und
-Rate-Limits sind bereits im Gateway hinterlegt und werden in Phase 2 mit echter Logik
-hinterlegt. Clients sollten Verbindungsabbrüche abfangen und bei Bedarf automatisch
+Rate-Limits sind bereits im Gateway hinterlegt und können für Demo- oder Messeinstallationen
+nachgeschärft werden. Clients sollten Verbindungsabbrüche abfangen und bei Bedarf automatisch
 reconnecten.
 
 ## Weiterführende Schritte
@@ -410,11 +413,11 @@ reconnecten.
 Die nächsten Meilensteine sind in der [Roadmap](roadmap.md#phase-1--basisdienst-aktuell) und in der
 [Aufgaben-Checkliste](checklist.md#offene-schritte-richtung-produktivbetrieb) dokumentiert. Aktuell stehen folgende Arbeitspakete im Fokus:
 
-- **Klipper-Service-Layer:** Die Status- und Jobendpunkte sollen reale Daten aus einer Klipper-Instanz konsumieren und so die bisherigen Mock-Werte ablösen.
-- **Dashboard-Frontend:** Ein erstes UI mit Navigation, Live-Widgets und Visualisierungen soll die bereitgestellten API- und Websocket-Daten nutzbar machen.
-- **Websocket-Schutzmechanismen:** Authentifizierung und Rate-Limits sichern den Statuskanal ab, bevor Steuerfunktionen und Remote-Zugriffe freigeschaltet werden.
+- **Konfigurations-Generator:** Exportpfade von Board- und Druckerdefinitionen hin zu vollständigen `klipper.conf`-Bundles automatisieren und validieren.
+- **Dashboard-Frontend:** Ein erstes UI mit Navigation, Mock-Live-Widgets und Visualisierungen soll die bereitgestellten Demo-API- und Websocket-Daten nutzbar machen.
+- **Websocket-Schutzmechanismen:** Authentifizierung und Rate-Limits für Demo-Streams verfeinern, um Präsentationen und öffentliche Showcases abzusichern.
 
-Diese Punkte bereiten den Übergang vom dokumentierenden Prototyp hin zu einer produktionsreifen Überwachungs- und Steuerplattform vor.
+Diese Punkte bereiten den Übergang vom dokumentierenden Prototyp hin zu einem reproduzierbaren Konfigurations-Studio vor.
 
 ## Interaktiver Board-Designer (Prototyp)
 
